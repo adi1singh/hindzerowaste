@@ -109,3 +109,66 @@ export const inEnglish: Record<Lang, string> = {
   hi: '(अंग्रेज़ी में)',
   mr: '(इंग्रजीत)',
 };
+
+/** Machinery category names for filters and cards. */
+export const categoryNames: Record<Lang, Record<string, string>> = {
+  en: {},
+  hi: {
+    'Screening & separation': 'स्क्रीनिंग और पृथक्करण',
+    'Size reduction': 'आकार घटाना',
+    Compaction: 'कॉम्पैक्शन (बेलिंग)',
+    'Organic waste': 'जैविक कचरा',
+    'Material handling': 'सामग्री परिवहन',
+    Infrastructure: 'बुनियादी ढाँचा',
+    Vehicles: 'वाहन',
+  },
+  mr: {
+    'Screening & separation': 'स्क्रीनिंग व विलगीकरण',
+    'Size reduction': 'आकार कमी करणे',
+    Compaction: 'कॉम्पॅक्शन (बेलिंग)',
+    'Organic waste': 'सेंद्रिय कचरा',
+    'Material handling': 'साहित्य हाताळणी',
+    Infrastructure: 'पायाभूत सुविधा',
+    Vehicles: 'वाहने',
+  },
+};
+
+export const categoryName = (lang: Lang, category: string) => categoryNames[lang][category] ?? category;
+
+export const statusLabels: Record<Lang, Record<string, string>> = {
+  en: { Completed: 'Completed', Ongoing: 'Ongoing', Commissioned: 'Commissioned' },
+  hi: { Completed: 'पूर्ण', Ongoing: 'जारी', Commissioned: 'कमीशन किया गया' },
+  mr: { Completed: 'पूर्ण', Ongoing: 'सुरू', Commissioned: 'कार्यान्वित' },
+};
+
+/** Hindi and Marathi wording for the six featured projects, in the same order as featuredProjects. */
+export const featuredProjectsLocal: Record<'hi' | 'mr', Record<string, unknown>[]> = {
+  hi: [
+    { client: 'पिंपरी चिंचवड महानगरपालिका', location: 'मोशी डंपिंग ग्राउंड, महाराष्ट्र', scope: 'पुराने कचरे का बायो-माइनिंग', note: '7,02,900 m³ पूर्ण' },
+    { client: 'भिवंडी निज़ामपुर महानगरपालिका', location: 'महाराष्ट्र', scope: 'पुराने कचरे का बायो-माइनिंग' },
+    { client: 'दक्षिण दिल्ली नगर निगम (रीकार्ट इनोवेशन्स के लिए)', location: 'भलस्वा डंपिंग ग्राउंड, दिल्ली', scope: 'दो बायो-माइनिंग प्लांट' },
+    {
+      client: 'तेलंगाना राज्य, क्लस्टर 6',
+      location: '14 नगरपालिकाएँ, तेलंगाना',
+      scope: 'बायो-माइनिंग और 10 वर्ष का ताज़ा कचरा प्रबंधन',
+      scale: '5 लाख टन',
+      count: { value: 5, suffix: ' लाख टन' },
+    },
+    { client: 'जैसलमेर नगर परिषद', location: 'राजस्थान', scope: 'MSW प्रसंस्करण और सैनिटरी लैंडफ़िल: डिज़ाइन, निर्माण और 30 वर्ष संचालन' },
+    { client: 'दौसा नगर परिषद', location: 'राजस्थान', scope: 'MSW प्रसंस्करण और सैनिटरी लैंडफ़िल: डिज़ाइन, निर्माण और 30 वर्ष संचालन' },
+  ],
+  mr: [
+    { client: 'पिंपरी चिंचवड महानगरपालिका', location: 'मोशी कचरा डेपो, महाराष्ट्र', scope: 'जुन्या कचऱ्याचे बायो-मायनिंग', note: '7,02,900 m³ पूर्ण' },
+    { client: 'भिवंडी निजामपूर महानगरपालिका', location: 'महाराष्ट्र', scope: 'जुन्या कचऱ्याचे बायो-मायनिंग' },
+    { client: 'दक्षिण दिल्ली महानगरपालिका (रीकार्ट इनोव्हेशन्ससाठी)', location: 'भलस्वा कचरा डेपो, दिल्ली', scope: 'दोन बायो-मायनिंग प्लांट' },
+    {
+      client: 'तेलंगणा राज्य, क्लस्टर 6',
+      location: '14 नगरपालिका, तेलंगणा',
+      scope: 'बायो-मायनिंग आणि 10 वर्षांचे ताज्या कचऱ्याचे व्यवस्थापन',
+      scale: '5 लाख टन',
+      count: { value: 5, suffix: ' लाख टन' },
+    },
+    { client: 'जैसलमेर नगर परिषद', location: 'राजस्थान', scope: 'MSW प्रक्रिया व सॅनिटरी लँडफिल: डिझाइन, बांधकाम व 30 वर्षे संचालन' },
+    { client: 'दौसा नगर परिषद', location: 'राजस्थान', scope: 'MSW प्रक्रिया व सॅनिटरी लँडफिल: डिझाइन, बांधकाम व 30 वर्षे संचालन' },
+  ],
+};

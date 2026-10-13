@@ -1,72 +1,81 @@
 ---
+// Client logos as two endless rows scrolling in opposite directions (paused on hover).
 import { Image } from 'astro:assets';
 import { clients } from '../data/clients';
+
+const half = Math.ceil(clients.length / 2);
+const rows = [clients.slice(0, half), clients.slice(half)];
 ---
 
-<ul class="clients" aria-label="Clients">
+<div class="clients" aria-label="Clients">
   {
-    clients.map((c) => (
-      <li>
-        <Image src={c.logo} alt={c.name} height={64} densities={[1, 2]} loading="lazy" />
-      </li>
+    rows.map((row, r) => (
+      <div class:list={['marquee', { 'marquee--reverse': r === 1 }]} style={`--marquee-duration: ${42 + r * 6}s`}>
+        <ul class="marquee__track">
+          {[0, 1].map((copy) =>
+            row.map((c) => (
+              <li class:list={['clients__item', { marquee__dup: copy === 1 }]} aria-hidden={copy === 1 ? 'true' : undefined}>
+                <Image src={c.logo} alt={copy === 1 ? '' : c.name} height={100} densities={[1, 2]} loading="lazy" />
+              </li>
+            )),
+          )}
+        </ul>
+      </div>
     ))
   }
-</ul>
+</div>
 
 <style>
   .clients {
     display: grid;
-    grid-template-columns: repeat(6, minmax(0, 1fr));
-    list-style: none;
-    border-top: 1px solid var(--line);
-    border-left: 1px solid var(--line);
-    background: var(--white);
+    gap: 18px;
   }
 
-  .clients li {
+  /* Spacing as a right margin (not gap) so the two copies tile seamlessly at -50%. */
+  .marquee__track {
+    list-style: none;
+    padding-block: 6px;
+  }
+
+  .clients__item {
     display: grid;
     place-items: center;
-    aspect-ratio: 3 / 2;
-    padding: 18px;
-    border-right: 1px solid var(--line);
-    border-bottom: 1px solid var(--line);
+    flex: none;
+    width: 220px;
+    height: 120px;
+    margin-right: 18px;
+    padding: 8px 14px;
+    border-radius: var(--radius-lg);
+    background: var(--white);
+    border: 1px solid var(--line);
+    transition:
+      transform 0.35s var(--ease-out),
+      box-shadow 0.35s var(--ease-out),
+      border-color 0.35s var(--ease-out);
   }
 
-  .clients img {
-    max-height: 64px;
+  .clients__item:hover {
+    transform: translateY(-4px) scale(1.04);
+    border-color: var(--saffron);
+    box-shadow: var(--shadow-md);
+  }
+
+  .clients__item img {
+    max-height: 100px;
     width: auto;
     max-width: 100%;
     object-fit: contain;
-    filter: grayscale(1) contrast(1.05);
-    opacity: 0.72;
-    mix-blend-mode: multiply;
-    transition:
-      filter 0.4s var(--ease),
-      opacity 0.4s var(--ease);
   }
 
-  .clients li:hover img {
-    filter: none;
-    opacity: 1;
-  }
-
-  @media (max-width: 900px) {
-    .clients {
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-    }
-  }
-
-  @media (max-width: 560px) {
-    .clients {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+  @media (max-width: 600px) {
+    .clients__item {
+      width: 160px;
+      height: 92px;
+      padding: 12px 14px;
     }
 
-    .clients li {
-      padding: 10px;
-    }
-
-    .clients img {
-      max-height: 44px;
+    .clients__item img {
+      max-height: 72px;
     }
   }
 </style>

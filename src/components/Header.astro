@@ -3,24 +3,25 @@ import { Image } from 'astro:assets';
 import logo from '../assets/brand/logo-horizontal.png';
 import { site, telHref } from '../data/site';
 import { products } from '../data/products';
-import { services, consultancy } from '../data/services';
+import { services } from '../data/services';
+import { consultancyCopy } from '../i18n/content';
 import { languages, localName, localePath, t, type Lang } from '../i18n/ui';
 
 interface Props {
   lang: Lang;
   alternates?: Partial<Record<Lang, string>>;
-  tone?: 'light' | 'dark';
 }
 
 const { lang, alternates } = Astro.props;
 const path = Astro.url.pathname.replace(/\/$/, '') || '/';
 
 const home = localePath(lang, '/');
+const aboutHref = localePath(lang, '/about-us');
 const links = [
-  { key: 'nav.projects', href: '/projects' },
-  { key: 'nav.about', href: localePath(lang, '/about-us') },
-  { key: 'nav.insights', href: '/waste-management-blogs' },
-  { key: 'nav.contact', href: localePath(lang, '/contact-us') },
+  { key: 'nav.about', href: aboutHref, current: path.endsWith('/about-us') },
+  { key: 'nav.projects', href: `${aboutHref}#projects`, current: false },
+  { key: 'nav.insights', href: '/waste-management-blogs', current: path === '/waste-management-blogs' },
+  { key: 'nav.contact', href: localePath(lang, '/contact-us'), current: path.endsWith('/contact-us') },
 ] as const;
 
 const productSlugs = new Set(products.map((p) => `/${p.slug}`));
@@ -28,16 +29,21 @@ const serviceSlugs = new Set(services.map((s) => `/${s.slug}`));
 const isCurrent = (href: string) => (href.replace(/\/$/, '') || '/') === path;
 const inMachinery = path === '/product' || productSlugs.has(path);
 const inServices = path.endsWith('/services') || serviceSlugs.has(path);
+const servicesHref = localePath(lang, '/services');
 
 const langHref = (code: Lang) => alternates?.[code] ?? localePath(code, '/');
+const chevron =
+  '<svg width="12" height="12" viewBox="0 0 10 10" aria-hidden="true"><path d="M1 3.5l4 3.5 4-3.5" fill="none" stroke="currentColor" stroke-width="1.5"></path></svg>';
 ---
 
 <div class="topbar on-dark">
   <div class="container topbar__inner">
-    <p class="topbar__creds">{t(lang, 'top.credentials')}</p>
+    <p class="topbar__creds">
+      <span class="topbar__dot" aria-hidden="true"></span>{t(lang, 'top.credentials')}
+    </p>
     <div class="topbar__right">
       <a class="topbar__phone" href={telHref(site.phones[0])}>
-        <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"
+        <svg width="15" height="15" viewBox="0 0 24 24" aria-hidden="true"
           ><path
             fill="currentColor"
             d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z"
@@ -66,45 +72,39 @@ const langHref = (code: Lang) => alternates?.[code] ?? localePath(code, '/');
 <header class="site-header" data-header>
   <div class="container bar">
     <a class="brand" href={home} aria-label={`${site.name}, home`}>
-      <Image src={logo} alt="" height={46} densities={[1, 2]} loading="eager" />
+      <Image src={logo} alt="" height={64} densities={[1, 2]} loading="eager" />
     </a>
 
     <nav class="nav" aria-label="Main">
       <ul class="nav__list">
-        <li>
+        <li class="nav__item" data-mega-item="mega-machinery">
+          <a class="nav__link" href="/product" aria-current={inMachinery ? 'page' : undefined}>{t(lang, 'nav.machinery')}</a>
           <button
-            class="nav__link nav__trigger"
+            class="nav__toggle"
             type="button"
             aria-expanded="false"
             aria-controls="mega-machinery"
+            aria-label={t(lang, 'nav.showMachinery')}
             data-mega-trigger
-            aria-current={inMachinery ? 'true' : undefined}
-          >
-            {t(lang, 'nav.machinery')}
-            <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"
-              ><path d="M1 3.5l4 3.5 4-3.5" fill="none" stroke="currentColor" stroke-width="1.4"></path></svg
-            >
-          </button>
+            set:html={chevron}
+          />
         </li>
-        <li>
+        <li class="nav__item" data-mega-item="mega-services">
+          <a class="nav__link" href={servicesHref} aria-current={inServices ? 'page' : undefined}>{t(lang, 'nav.services')}</a>
           <button
-            class="nav__link nav__trigger"
+            class="nav__toggle"
             type="button"
             aria-expanded="false"
             aria-controls="mega-services"
+            aria-label={t(lang, 'nav.showServices')}
             data-mega-trigger
-            aria-current={inServices ? 'true' : undefined}
-          >
-            {t(lang, 'nav.services')}
-            <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"
-              ><path d="M1 3.5l4 3.5 4-3.5" fill="none" stroke="currentColor" stroke-width="1.4"></path></svg
-            >
-          </button>
+            set:html={chevron}
+          />
         </li>
         {
           links.map((l) => (
-            <li>
-              <a class="nav__link" href={l.href} aria-current={isCurrent(l.href) ? 'page' : undefined}>
+            <li class="nav__item">
+              <a class="nav__link" href={l.href} aria-current={l.current ? 'page' : undefined}>
                 {t(lang, l.key)}
               </a>
             </li>
@@ -115,7 +115,7 @@ const langHref = (code: Lang) => alternates?.[code] ?? localePath(code, '/');
 
     <div class="bar__actions">
       <a class="btn bar__quote" href={localePath(lang, '/contact-us') + '#enquiry'}>
-        {t(lang, 'cta.quote')}
+        {t(lang, 'cta.quote')} <span class="arrow">→</span>
       </a>
       <button class="menu-btn" type="button" aria-expanded="false" aria-controls="mobile-nav" data-menu-toggle>
         <span class="menu-btn__label" data-open-label={t(lang, 'nav.menu')} data-close-label={t(lang, 'nav.close')}
@@ -138,8 +138,13 @@ const langHref = (code: Lang) => alternates?.[code] ?? localePath(code, '/');
           products.map((p) => (
             <li>
               <a class="mega__item" href={`/${p.slug}`} aria-current={isCurrent(`/${p.slug}`) ? 'page' : undefined}>
-                <span class="mega__name">{localName(lang, p.slug, p.name)}</span>
-                <span class="mega__meta">{p.range}</span>
+                <span class="mega__thumb">
+                  <Image src={p.images[0].src} alt="" width={112} height={84} loading="lazy" />
+                </span>
+                <span class="mega__label">
+                  <span class="mega__name">{localName(lang, p.slug, p.name)}</span>
+                  <span class="mega__meta">{p.range}</span>
+                </span>
               </a>
             </li>
           ))
@@ -153,32 +158,31 @@ const langHref = (code: Lang) => alternates?.[code] ?? localePath(code, '/');
       <div class="mega__intro">
         <p class="eyebrow">{t(lang, 'nav.services')}</p>
         <p class="mega__text">{t(lang, 'nav.servicesIntro')}</p>
-        <a class="link-arrow" href={localePath(lang, '/services')}
-          >{t(lang, 'nav.allServices')} <span class="arrow">→</span></a
-        >
+        <a class="link-arrow" href={servicesHref}>{t(lang, 'nav.allServices')} <span class="arrow">→</span></a>
       </div>
       <ul class="mega__grid mega__grid--two">
         {
           services.map((s) => (
             <li>
               <a class="mega__item" href={`/${s.slug}`} aria-current={isCurrent(`/${s.slug}`) ? 'page' : undefined}>
-                <span class="mega__name">{localName(lang, s.slug, s.name)}</span>
-                {lang === 'en' && <span class="mega__desc">{s.short}</span>}
-                <span class="mega__meta">{s.range}</span>
+                <span class="mega__thumb">
+                  <Image src={s.images[0].src} alt="" width={112} height={84} loading="lazy" />
+                </span>
+                <span class="mega__label">
+                  <span class="mega__name">{localName(lang, s.slug, s.name)}</span>
+                  <span class="mega__meta">{s.range}</span>
+                </span>
               </a>
             </li>
           ))
         }
-        {
-          lang === 'en' && (
-            <li>
-              <a class="mega__item" href="/services#consultancy">
-                <span class="mega__name">{consultancy.name}</span>
-                <span class="mega__desc">Planning, DPRs and implementation support.</span>
-              </a>
-            </li>
-          )
-        }
+        <li>
+          <a class="mega__item mega__item--plain" href={`${servicesHref}#consultancy`}>
+            <span class="mega__label">
+              <span class="mega__name">{consultancyCopy[lang].name}</span>
+            </span>
+          </a>
+        </li>
       </ul>
     </div>
   </div>
@@ -190,6 +194,7 @@ const langHref = (code: Lang) => alternates?.[code] ?? localePath(code, '/');
           <details>
             <summary>{t(lang, 'nav.machinery')}</summary>
             <ul>
+              <li><a class="mobile-nav__all" href="/product">{t(lang, 'nav.allMachinery')} →</a></li>
               {
                 products.map((p) => (
                   <li>
@@ -197,7 +202,6 @@ const langHref = (code: Lang) => alternates?.[code] ?? localePath(code, '/');
                   </li>
                 ))
               }
-              <li><a class="mobile-nav__all" href="/product">{t(lang, 'nav.allMachinery')} →</a></li>
             </ul>
           </details>
         </li>
@@ -205,6 +209,7 @@ const langHref = (code: Lang) => alternates?.[code] ?? localePath(code, '/');
           <details>
             <summary>{t(lang, 'nav.services')}</summary>
             <ul>
+              <li><a class="mobile-nav__all" href={servicesHref}>{t(lang, 'nav.allServices')} →</a></li>
               {
                 services.map((s) => (
                   <li>
@@ -212,9 +217,6 @@ const langHref = (code: Lang) => alternates?.[code] ?? localePath(code, '/');
                   </li>
                 ))
               }
-              <li>
-                <a class="mobile-nav__all" href={localePath(lang, '/services')}>{t(lang, 'nav.allServices')} →</a>
-              </li>
             </ul>
           </details>
         </li>
@@ -233,15 +235,6 @@ const langHref = (code: Lang) => alternates?.[code] ?? localePath(code, '/');
         <div class="mobile-nav__phones">
           {site.phones.map((p) => <a href={telHref(p)}>{p}</a>)}
         </div>
-        <nav class="lang lang--mobile" aria-label={t(lang, 'lang.label')}>
-          {
-            (Object.keys(languages) as Lang[]).map((code) => (
-              <a href={langHref(code)} lang={languages[code].htmlLang} aria-current={code === lang ? 'true' : undefined}>
-                {languages[code].label}
-              </a>
-            ))
-          }
-        </nav>
       </div>
     </div>
   </div>
@@ -251,52 +244,64 @@ const langHref = (code: Lang) => alternates?.[code] ?? localePath(code, '/');
   const header = document.querySelector<HTMLElement>('[data-header]');
   if (header) {
     const triggers = [...header.querySelectorAll<HTMLButtonElement>('[data-mega-trigger]')];
+    const items = [...header.querySelectorAll<HTMLElement>('[data-mega-item]')];
     const panels = [...header.querySelectorAll<HTMLElement>('[data-mega]')];
     let closeTimer: number | undefined;
 
-    const closeAll = (except?: HTMLButtonElement) => {
-      triggers.forEach((t) => {
-        if (t === except) return;
-        t.setAttribute('aria-expanded', 'false');
-        const panel = document.getElementById(t.getAttribute('aria-controls')!);
-        if (panel) panel.hidden = true;
-      });
-      header.classList.toggle('has-mega', !!except);
+    const panelFor = (id: string) => document.getElementById(id);
+    const triggerFor = (id: string) => triggers.find((t) => t.getAttribute('aria-controls') === id);
+
+    const closeAll = () => {
+      window.clearTimeout(closeTimer);
+      triggers.forEach((t) => t.setAttribute('aria-expanded', 'false'));
+      panels.forEach((p) => (p.hidden = true));
+      items.forEach((i) => i.classList.remove('is-open'));
+      header.classList.remove('has-mega');
     };
 
-    const open = (trigger: HTMLButtonElement) => {
+    const open = (id: string) => {
       window.clearTimeout(closeTimer);
-      closeAll(trigger);
-      trigger.setAttribute('aria-expanded', 'true');
-      const panel = document.getElementById(trigger.getAttribute('aria-controls')!);
+      if (triggerFor(id)?.getAttribute('aria-expanded') === 'true') return;
+      closeAll();
+      triggerFor(id)?.setAttribute('aria-expanded', 'true');
+      const panel = panelFor(id);
       if (panel) panel.hidden = false;
+      items.find((i) => i.dataset.megaItem === id)?.classList.add('is-open');
+      header.classList.add('has-mega');
+    };
+
+    const scheduleClose = () => {
+      window.clearTimeout(closeTimer);
+      closeTimer = window.setTimeout(closeAll, 200);
     };
 
     const fine = window.matchMedia('(hover: hover) and (pointer: fine)');
+
+    // The label is a link to the page; hovering shows the menu, and the arrow button opens it by keyboard or touch.
     let hoverOpenedAt = 0;
+    items.forEach((item) => {
+      const id = item.dataset.megaItem!;
+      item.addEventListener('mouseenter', () => {
+        if (!fine.matches) return;
+        if (triggerFor(id)?.getAttribute('aria-expanded') !== 'true') hoverOpenedAt = Date.now();
+        open(id);
+      });
+      item.addEventListener('mouseleave', () => fine.matches && scheduleClose());
+    });
 
     triggers.forEach((trigger) => {
       trigger.addEventListener('click', () => {
+        const id = trigger.getAttribute('aria-controls')!;
         const isOpen = trigger.getAttribute('aria-expanded') === 'true';
-        // A click that follows a hover-open should keep the menu open, not toggle it shut.
+        // A click straight after a hover-open keeps the menu open rather than toggling it shut.
         if (isOpen && Date.now() - hoverOpenedAt > 700) closeAll();
-        else open(trigger);
-      });
-      trigger.addEventListener('mouseenter', () => {
-        if (!fine.matches || trigger.getAttribute('aria-expanded') === 'true') return;
-        open(trigger);
-        hoverOpenedAt = Date.now();
-      });
-      trigger.addEventListener('mouseleave', () => {
-        if (fine.matches) closeTimer = window.setTimeout(() => closeAll(), 180);
+        else open(id);
       });
     });
 
     panels.forEach((panel) => {
       panel.addEventListener('mouseenter', () => window.clearTimeout(closeTimer));
-      panel.addEventListener('mouseleave', () => {
-        if (fine.matches) closeTimer = window.setTimeout(() => closeAll(), 180);
-      });
+      panel.addEventListener('mouseleave', () => fine.matches && scheduleClose());
     });
 
     document.addEventListener('keydown', (e) => {
@@ -335,7 +340,7 @@ const langHref = (code: Lang) => alternates?.[code] ?? localePath(code, '/');
       if (e.matches) setMobile(false);
     });
 
-    // Hairline shadow once the page scrolls
+    // Shadow once the page scrolls
     const onScroll = () => header.classList.toggle('is-scrolled', window.scrollY > 8);
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
@@ -346,7 +351,7 @@ const langHref = (code: Lang) => alternates?.[code] ?? localePath(code, '/');
   .topbar {
     background: var(--ink);
     color: var(--muted-on-dark);
-    font-size: 13px;
+    font-size: 14px;
   }
 
   .topbar__inner {
@@ -354,11 +359,22 @@ const langHref = (code: Lang) => alternates?.[code] ?? localePath(code, '/');
     align-items: center;
     justify-content: space-between;
     gap: 16px;
-    min-height: 38px;
+    min-height: var(--top-h);
   }
 
   .topbar__creds {
+    display: flex;
+    align-items: center;
+    gap: 10px;
     letter-spacing: 0.02em;
+  }
+
+  .topbar__dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--lime);
+    box-shadow: 0 0 0 4px rgba(195, 211, 44, 0.2);
   }
 
   .topbar__right {
@@ -373,32 +389,42 @@ const langHref = (code: Lang) => alternates?.[code] ?? localePath(code, '/');
     gap: 8px;
     color: var(--paper);
     text-decoration: none;
+    font-weight: 600;
     font-variant-numeric: tabular-nums;
   }
 
   .topbar__phone:hover {
-    color: var(--lime);
+    color: var(--saffron-2);
   }
 
   .lang {
     display: flex;
-    gap: 2px;
+    gap: 4px;
+    padding: 3px;
+    border-radius: 999px;
+    background: rgba(246, 243, 236, 0.08);
   }
 
   .lang a {
-    padding: 4px 8px;
-    color: var(--muted-on-dark);
+    padding: 4px 14px;
+    border-radius: 999px;
+    color: #d5dce7;
+    font-size: 15px;
+    font-weight: 600;
     text-decoration: none;
-    border-radius: var(--radius);
+    transition:
+      background-color 0.2s var(--ease),
+      color 0.2s var(--ease);
   }
 
   .lang a:hover {
     color: var(--paper);
+    background: rgba(246, 243, 236, 0.12);
   }
 
   .lang a[aria-current] {
     color: var(--ink);
-    background: var(--paper);
+    background: var(--saffron);
   }
 
   @media (max-width: 760px) {
@@ -406,14 +432,15 @@ const langHref = (code: Lang) => alternates?.[code] ?? localePath(code, '/');
       display: none;
     }
 
-    .topbar__inner {
-      justify-content: space-between;
-    }
-
     .topbar__right {
       width: 100%;
       justify-content: space-between;
       gap: 12px;
+    }
+
+    .lang a {
+      padding: 3px 10px;
+      font-size: 14px;
     }
   }
 
@@ -427,16 +454,18 @@ const langHref = (code: Lang) => alternates?.[code] ?? localePath(code, '/');
     border-bottom: 1px solid transparent;
     transition:
       border-color 0.3s var(--ease),
+      box-shadow 0.3s var(--ease),
       background-color 0.3s var(--ease);
   }
 
-  .site-header.is-scrolled,
-  .site-header.has-mega {
+  .site-header.is-scrolled {
     border-bottom-color: var(--line);
+    box-shadow: 0 10px 30px -24px rgba(8, 25, 60, 0.6);
   }
 
   .site-header.has-mega {
     background: var(--paper);
+    border-bottom-color: var(--line);
   }
 
   .bar {
@@ -453,55 +482,83 @@ const langHref = (code: Lang) => alternates?.[code] ?? localePath(code, '/');
   }
 
   .brand img {
-    height: 46px;
+    height: 64px;
     width: auto;
   }
 
   .nav__list {
     display: flex;
     align-items: center;
-    gap: 4px;
+    gap: 2px;
     list-style: none;
+  }
+
+  .nav__item {
+    position: relative;
+    display: flex;
+    align-items: center;
   }
 
   .nav__link {
     position: relative;
     display: inline-flex;
     align-items: center;
-    gap: 8px;
-    padding: 10px 14px;
-    border: 0;
-    background: none;
+    padding: 12px 12px;
     color: var(--ink);
-    font: 500 15px/1 var(--sans);
+    font: 550 16.5px/1 var(--sans);
     text-decoration: none;
-    cursor: pointer;
+    transition: color 0.2s var(--ease);
+  }
+
+  .nav__item:has(.nav__toggle) .nav__link {
+    padding-right: 4px;
   }
 
   .nav__link::after {
     content: '';
     position: absolute;
-    left: 14px;
-    right: 14px;
-    bottom: 2px;
-    height: 1px;
-    background: var(--ink);
+    left: 12px;
+    right: 12px;
+    bottom: 4px;
+    height: 2px;
+    background: var(--saffron);
     transform: scaleX(0);
     transform-origin: left;
     transition: transform 0.35s var(--ease);
   }
 
+  .nav__item:has(.nav__toggle) .nav__link::after {
+    right: 4px;
+  }
+
+  .nav__link:hover,
+  .nav__item.is-open .nav__link {
+    color: var(--navy);
+  }
+
   .nav__link:hover::after,
   .nav__link[aria-current]::after,
-  .nav__trigger[aria-expanded='true']::after {
+  .nav__item.is-open .nav__link::after {
     transform: scaleX(1);
   }
 
-  .nav__trigger svg {
+  .nav__toggle {
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 36px;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--ink);
+    cursor: pointer;
+  }
+
+  .nav__toggle :global(svg) {
     transition: transform 0.3s var(--ease);
   }
 
-  .nav__trigger[aria-expanded='true'] svg {
+  .nav__toggle[aria-expanded='true'] :global(svg) {
     transform: rotate(180deg);
   }
 
@@ -512,26 +569,26 @@ const langHref = (code: Lang) => alternates?.[code] ?? localePath(code, '/');
   }
 
   .bar__quote {
-    min-height: 46px;
-    padding: 12px 20px;
+    min-height: 50px;
+    padding: 12px 22px;
   }
 
   .menu-btn {
     display: none;
     align-items: center;
     gap: 12px;
-    min-height: 46px;
+    min-height: 48px;
     padding: 0 4px 0 12px;
     border: 0;
     background: none;
     color: var(--ink);
-    font: 600 15px/1 var(--sans);
+    font: 650 17px/1 var(--sans);
     cursor: pointer;
   }
 
   .menu-btn__icon {
     position: relative;
-    width: 22px;
+    width: 24px;
     height: 12px;
   }
 
@@ -539,7 +596,7 @@ const langHref = (code: Lang) => alternates?.[code] ?? localePath(code, '/');
     position: absolute;
     left: 0;
     width: 100%;
-    height: 1.5px;
+    height: 2px;
     background: currentColor;
     transition:
       transform 0.3s var(--ease),
@@ -571,15 +628,23 @@ const langHref = (code: Lang) => alternates?.[code] ?? localePath(code, '/');
     right: 0;
     top: 100%;
     background: var(--paper);
-    border-bottom: 1px solid var(--line);
-    box-shadow: 0 30px 60px -30px rgba(12, 22, 38, 0.25);
+    border-bottom: 3px solid var(--saffron);
+    box-shadow: 0 40px 80px -40px rgba(11, 21, 37, 0.45);
+    animation: mega-in 0.35s var(--ease-out);
+  }
+
+  @keyframes mega-in {
+    from {
+      opacity: 0;
+      transform: translateY(-8px);
+    }
   }
 
   .mega__inner {
     display: grid;
-    grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
-    gap: 56px;
-    padding-block: 44px 52px;
+    grid-template-columns: minmax(0, 3.4fr) minmax(0, 8.6fr);
+    gap: 48px;
+    padding-block: 40px 48px;
   }
 
   .mega__intro {
@@ -591,61 +656,87 @@ const langHref = (code: Lang) => alternates?.[code] ?? localePath(code, '/');
 
   .mega__text {
     font-family: var(--serif);
-    font-size: 1.6rem;
+    font-size: 1.75rem;
     line-height: 1.2;
     color: var(--ink);
-    max-width: 16em;
   }
 
   .mega__grid {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
     list-style: none;
-    border-top: 1px solid var(--line);
   }
 
   .mega__grid--two {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .mega__grid li {
-    border-bottom: 1px solid var(--line);
-  }
-
   .mega__item {
     display: flex;
-    flex-direction: column;
-    gap: 6px;
+    align-items: center;
+    gap: 14px;
     height: 100%;
-    padding: 18px 18px 18px 0;
+    padding: 10px;
+    border-radius: 10px;
     text-decoration: none;
     color: var(--ink);
-    transition: color 0.2s var(--ease);
+    transition:
+      background-color 0.25s var(--ease),
+      transform 0.25s var(--ease);
+  }
+
+  .mega__item--plain {
+    padding-left: 18px;
+    border: 1px dashed var(--line-strong);
+  }
+
+  .mega__thumb {
+    flex: none;
+    width: 72px;
+    height: 54px;
+    border-radius: 6px;
+    overflow: hidden;
+    background: var(--paper-2);
+  }
+
+  .mega__thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s var(--ease);
+  }
+
+  .mega__label {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
   }
 
   .mega__name {
-    font-weight: 600;
-    font-size: 15px;
+    font-weight: 650;
+    font-size: 16px;
     line-height: 1.3;
   }
 
-  .mega__desc {
-    font-size: 14px;
-    color: var(--muted);
-    line-height: 1.5;
-  }
-
   .mega__meta {
-    font-size: 13px;
+    font-size: 14px;
     color: var(--muted);
     font-variant-numeric: tabular-nums;
   }
 
-  .mega__item:hover .mega__name,
-  .mega__item[aria-current] .mega__name {
+  .mega__item:hover,
+  .mega__item[aria-current] {
+    background: var(--white);
+    transform: translateX(4px);
+  }
+
+  .mega__item:hover .mega__name {
     color: var(--navy);
-    text-decoration: underline;
-    text-underline-offset: 0.25em;
+  }
+
+  .mega__item:hover .mega__thumb img {
+    transform: scale(1.1);
   }
 
   /* Mobile navigation */
@@ -681,7 +772,7 @@ const langHref = (code: Lang) => alternates?.[code] ?? localePath(code, '/');
     justify-content: space-between;
     padding: 18px 0;
     font-family: var(--serif);
-    font-size: 1.9rem;
+    font-size: 2rem;
     line-height: 1.1;
     color: var(--ink);
     text-decoration: none;
@@ -696,8 +787,9 @@ const langHref = (code: Lang) => alternates?.[code] ?? localePath(code, '/');
   .mobile-nav__list summary::after {
     content: '+';
     font-family: var(--sans);
-    font-size: 1.4rem;
+    font-size: 1.5rem;
     font-weight: 300;
+    color: var(--saffron-ink);
   }
 
   .mobile-nav__list details[open] summary::after {
@@ -714,11 +806,11 @@ const langHref = (code: Lang) => alternates?.[code] ?? localePath(code, '/');
     padding: 9px 0;
     color: var(--text);
     text-decoration: none;
-    font-size: 16px;
+    font-size: 17px;
   }
 
   .mobile-nav__all {
-    font-weight: 600;
+    font-weight: 650;
     color: var(--navy) !important;
   }
 
@@ -737,36 +829,25 @@ const langHref = (code: Lang) => alternates?.[code] ?? localePath(code, '/');
 
   .mobile-nav__phones a {
     color: var(--ink);
+    font-size: 18px;
     text-decoration: none;
     font-variant-numeric: tabular-nums;
   }
 
-  .lang--mobile a {
-    color: var(--muted);
-    border: 1px solid var(--line);
-    padding: 6px 12px;
-  }
-
-  .lang--mobile a[aria-current] {
-    background: var(--ink);
-    color: var(--paper);
-    border-color: var(--ink);
-  }
-
-  @media (max-width: 1180px) {
+  @media (max-width: 1240px) {
     .nav__link {
-      padding-inline: 10px;
+      padding-inline: 9px;
+      font-size: 16px;
     }
 
-    .nav__link::after {
-      left: 10px;
-      right: 10px;
+    .brand img {
+      height: 56px;
     }
   }
 
   @media (max-width: 1079px) {
     :global(:root) {
-      --header-h: 72px;
+      --header-h: 76px;
     }
 
     .nav,
@@ -779,17 +860,17 @@ const langHref = (code: Lang) => alternates?.[code] ?? localePath(code, '/');
     }
 
     .brand img {
-      height: 40px;
+      height: 52px;
     }
   }
 
-  @media (max-width: 520px) {
+  @media (max-width: 560px) {
     .bar__quote {
       display: none;
     }
 
     .brand img {
-      height: 36px;
+      height: 44px;
     }
   }
 

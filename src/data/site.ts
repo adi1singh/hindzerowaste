@@ -47,10 +47,10 @@ export const telHref = (phone: string) => `tel:${phone.replace(/[^+\d]/g, '')}`;
 
 // Headline figures, as stated in the company brochure and profile.
 export const figures = [
-  { value: '87+', label: 'Bio-mining projects executed across India' },
-  { value: '300+', label: 'Baling machines supplied and commissioned' },
-  { value: '400+', label: 'Clients across India and South Africa' },
-  { value: '2017', label: 'Founded in Kolhapur, Maharashtra' },
+  { value: '87+', count: 87, suffix: '+', label: 'Bio-mining projects executed across India' },
+  { value: '300+', count: 300, suffix: '+', label: 'Baling machines supplied and commissioned' },
+  { value: '400+', count: 400, suffix: '+', label: 'Clients across India and South Africa' },
+  { value: '2017', count: 2017, from: 2000, suffix: '', label: 'Founded in Kolhapur, Maharashtra' },
 ] as const;
 
 export const credentials = ['ISO 9001:2015 certified', 'GeM registered OEM', 'Compliant with SWM Rules 2016'] as const;

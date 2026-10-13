@@ -1,0 +1,24 @@
+---
+// A number that counts up from zero when it scrolls into view (see Base.astro).
+// The final value is rendered on the server, so it reads correctly without JavaScript.
+interface Props {
+  value: number;
+  from?: number;
+  prefix?: string;
+  suffix?: string;
+  format?: string;
+  class?: string;
+}
+
+const { value, from, prefix = '', suffix = '', format, class: className } = Astro.props;
+const text = `${prefix}${format ? value.toLocaleString(format) : value}${suffix}`;
+---
+
+<span
+  class:list={['tabular', className]}
+  data-count={value}
+  data-from={from}
+  data-prefix={prefix}
+  data-suffix={suffix}
+  data-format={format}>{text}</span
+>

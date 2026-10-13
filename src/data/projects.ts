@@ -1,11 +1,20 @@
 // Project record, transcribed from the company profile (PDF on the current site).
 // Volumes are as stated there; see CONTENT-REVIEW.md before launch.
 
+export interface CountSpec {
+  value: number;
+  prefix?: string;
+  suffix?: string;
+  format?: string;
+}
+
 export interface Project {
   client: string;
   location: string;
   scope: string;
   scale: string;
+  /** The scale as a number, so it can count up on screen. */
+  count: CountSpec;
   status: 'Completed' | 'Ongoing' | 'Commissioned';
   note?: string;
 }
@@ -16,6 +25,7 @@ export const featuredProjects: Project[] = [
     location: 'Moshi dumping ground, Maharashtra',
     scope: 'Bio-mining of legacy waste',
     scale: '8,00,000 m³',
+    count: { value: 800000, format: 'en-IN', suffix: ' m³' },
     status: 'Ongoing',
     note: '7,02,900 m³ completed',
   },
@@ -24,6 +34,7 @@ export const featuredProjects: Project[] = [
     location: 'Maharashtra',
     scope: 'Bio-mining of legacy waste',
     scale: '1,39,000 m³',
+    count: { value: 139000, format: 'en-IN', suffix: ' m³' },
     status: 'Completed',
   },
   {
@@ -31,6 +42,7 @@ export const featuredProjects: Project[] = [
     location: 'Bhalaswa dumping ground, Delhi',
     scope: 'Two bio-mining plants',
     scale: '2 × 300 TPD',
+    count: { value: 300, prefix: '2 × ', suffix: ' TPD' },
     status: 'Commissioned',
   },
   {
@@ -38,6 +50,7 @@ export const featuredProjects: Project[] = [
     location: '14 municipalities, Telangana',
     scope: 'Bio-mining and ten years of fresh waste management',
     scale: '5 lakh tonnes',
+    count: { value: 5, suffix: ' lakh tonnes' },
     status: 'Ongoing',
   },
   {
@@ -45,6 +58,7 @@ export const featuredProjects: Project[] = [
     location: 'Rajasthan',
     scope: 'Design, construction and 30-year O&M of MSW processing and sanitary landfill',
     scale: '25 TPD',
+    count: { value: 25, suffix: ' TPD' },
     status: 'Ongoing',
   },
   {
@@ -52,6 +66,7 @@ export const featuredProjects: Project[] = [
     location: 'Rajasthan',
     scope: 'Design, construction and 30-year O&M of MSW processing and sanitary landfill',
     scale: '50 TPD',
+    count: { value: 50, suffix: ' TPD' },
     status: 'Ongoing',
   },
 ];

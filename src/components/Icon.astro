@@ -1,0 +1,35 @@
+---
+// Line icons for services and process steps (24×24, stroke = currentColor).
+interface Props {
+  name: 'biomining' | 'msw' | 'mrf' | 'rdf' | 'design' | 'factory' | 'commission' | 'operate' | 'consult';
+  size?: number;
+}
+
+const { name, size = 28 } = Astro.props;
+
+const paths: Record<Props['name'], string> = {
+  biomining:
+    '<path d="M2 20h20"/><path d="M4 20l5-8 4 5 3-3 4 6"/><path d="M14 4l3 3-6 6"/><path d="M17 7l2-2"/><circle cx="8" cy="8" r="1"/>',
+  msw: '<path d="M3 21V10l6 4V10l6 4V6l6 4v11z"/><path d="M7 17h2M13 17h2M17 17h1"/>',
+  mrf: '<path d="M7 4l-3 5h5"/><path d="M4 9a8 8 0 0 1 13-4"/><path d="M20 13l-2 6-5-2"/><path d="M18 19A8 8 0 0 1 5 16"/><path d="M14 4l5 1-1 5"/>',
+  rdf: '<path d="M12 22c4 0 7-3 7-7 0-4-3-6-4-10-2 2-2 4-2 4s-2-2-1-6C7 6 5 10 5 15c0 4 3 7 7 7z"/><path d="M12 22c-2 0-3-1.5-3-3.5S11 15 12 13c1 2 3 3.5 3 5.5S14 22 12 22z"/>',
+  design: '<path d="M3 21l3-1 12-12-2-2L4 18z"/><path d="M14 6l2 2"/><path d="M3 3h7v7H3z"/><path d="M14 14h7v7h-7z"/>',
+  factory: '<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1"/>',
+  commission: '<path d="M4 21V8l8-5 8 5v13"/><path d="M9 21v-6h6v6"/><path d="M9 11h6"/>',
+  operate: '<path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 6-7"/><path d="M17 7h3v3"/>',
+  consult: '<path d="M4 5h16v10H8l-4 4z"/><path d="M8 9h8M8 12h5"/>',
+};
+---
+
+<svg
+  width={size}
+  height={size}
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="1.6"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  aria-hidden="true"
+  set:html={paths[name]}
+/>

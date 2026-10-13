@@ -39,7 +39,7 @@ const c = copy[lang];
 const href = localePath(lang, '/contact-us') + (subject ? `?subject=${encodeURIComponent(subject)}` : '') + '#enquiry';
 ---
 
-<section class="cta bg-navy on-dark">
+<section class="cta bg-navy-deep on-dark">
   <div class="container cta__inner">
     <div>
       <p class="eyebrow">{c.eyebrow}</p>
@@ -48,7 +48,7 @@ const href = localePath(lang, '/contact-us') + (subject ? `?subject=${encodeURIC
     <div class="cta__side">
       <p class="cta__text">{text ?? c.text}</p>
       <div class="btn-row">
-        <a class="btn btn--light" href={href}>{c.quote} <span class="arrow">→</span></a>
+        <a class="btn btn--accent" href={href}>{c.quote} <span class="arrow">→</span></a>
       </div>
       <p class="cta__phones">
         <span>{c.or}</span>
@@ -83,7 +83,7 @@ const href = localePath(lang, '/contact-us') + (subject ? `?subject=${encodeURIC
 
   .cta__text {
     color: #d4dcea;
-    font-size: 1.1rem;
+    font-size: 1.15rem;
     line-height: 1.6;
   }
 
@@ -91,7 +91,7 @@ const href = localePath(lang, '/contact-us') + (subject ? `?subject=${encodeURIC
     display: flex;
     flex-wrap: wrap;
     gap: 6px 18px;
-    font-size: 14px;
+    font-size: 16px;
     color: #b8c4da;
   }
 

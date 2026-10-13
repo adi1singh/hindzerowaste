@@ -1,20 +1,32 @@
 ---
-import { Image } from 'astro:assets';
+import { Image, getImage } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
 import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import ProductCard from '../components/ProductCard.astro';
 import ClientWall from '../components/ClientWall.astro';
 import CtaBand from '../components/CtaBand.astro';
+import Count from '../components/Count.astro';
+import Icon from '../components/Icon.astro';
 import { products } from '../data/products';
 import { services } from '../data/services';
-import { featuredProjects } from '../data/projects';
-import { figures, footprint, site } from '../data/site';
+import { featuredProjects, type Project } from '../data/projects';
+import { figures, site } from '../data/site';
 import { localName, localePath, t, type Lang } from '../i18n/ui';
-import { approachSteps, consultancyCopy, serviceShorts } from '../i18n/content';
+import {
+  approachSteps,
+  categoryName,
+  consultancyCopy,
+  featuredProjectsLocal,
+  serviceShorts,
+  statusLabels,
+} from '../i18n/content';
 
-import heroImage from '../assets/photos/hero-plant-shed.jpg';
-import approachImage from '../assets/photos/biomining-plant-tall.jpg';
+import slideBio from '../assets/photos/biomining-trommel-site.jpg';
+import slidePlant from '../assets/photos/hero-plant-shed.jpg';
+import slideMrf from '../assets/photos/mrf-sorting-floor.jpg';
+import slideDig from '../assets/photos/biomining-excavator.jpg';
+import pune from '../assets/photos/pune-city.jpg';
 import bioImg from '../assets/photos/biomining-trommel-site.jpg';
 import mswImg from '../assets/photos/plant-line-wide.jpg';
 import mrfImg from '../assets/photos/mrf-sorting-floor.jpg';
@@ -25,31 +37,57 @@ interface Props {
 }
 
 const { lang } = Astro.props;
+
 const serviceImages: Record<string, ImageMetadata> = {
   'bio-mining-and-legacy-waste-management': bioImg,
   'msw-processing-plant': mswImg,
   'material-recovery-facility-mrf-plant': mrfImg,
   'rdf-afr-plant': rdfImg,
 };
+const serviceIcons = {
+  'bio-mining-and-legacy-waste-management': 'biomining',
+  'msw-processing-plant': 'msw',
+  'material-recovery-facility-mrf-plant': 'mrf',
+  'rdf-afr-plant': 'rdf',
+} as const;
+const stepIcons = ['design', 'factory', 'commission', 'operate'] as const;
+
+const slides = [
+  { src: slideBio, alt: 'Hind Zero Waste trommel and conveyor line at a legacy dumpsite' },
+  { src: slidePlant, alt: 'Segregation and RDF line inside a pre-engineered steel shed' },
+  { src: slideMrf, alt: 'Material recovery facility with sorting platform and bagged recyclables' },
+  { src: slideDig, alt: 'Excavator feeding legacy waste to a screening conveyor' },
+];
 
 const copy = {
   en: {
     title: `${site.name} | Waste Processing Machinery & Turnkey Plants`,
     description:
       'Hind Zero Waste designs, manufactures and commissions bio-mining, MSW, MRF and RDF/AFR plants and waste-processing machinery. 87+ bio-mining projects across India. ISO 9001:2015.',
-    heroEyebrow: 'Waste-processing machinery & turnkey plants',
-    heroTitle: 'Engineering a <em>zero-waste</em> India.',
+    heroWords: [['Engineering'], ['a'], ['zero-waste', true], ['India.']] as [string, boolean?][],
+    heroSub: 'Waste-processing machinery & turnkey plants',
     heroLead:
       'Since 2017 we have designed, manufactured and commissioned the machinery and plants that clear legacy dumpsites, process municipal solid waste, and turn refuse into fuel and resources.',
-    heroCaption: 'A segregation and RDF line by Hind Zero Waste, installed in a pre-engineered steel shed.',
+    slides: [
+      'Bio-mining trommel line at a legacy dumpsite',
+      'Segregation and RDF line in a PEB shed',
+      'Material recovery facility in operation',
+      'Excavation and screening on a bio-mining site',
+    ],
+    scroll: 'Scroll',
     figures: figures.map((f) => f.label),
+    projEyebrow: 'Selected projects',
+    projTitle: 'Trusted by municipal bodies <em>across India</em>.',
+    projIntro: 'Bio-mining, MSW and MRF projects in 12 states, from Punjab to Telangana.',
+    projAll: 'View the full project record',
     philEyebrow: 'Our philosophy',
-    philTitle: 'Rethink. Reduce. Reuse. <em>Recover.</em>',
+    philWords: ['Rethink.', 'Reduce.', 'Reuse.', 'Recover.'],
     philParas: [
       'Founded in 2017 as Hind Agro and Chemicals in Kolhapur, we have grown into Hind Zero Waste Management Pvt. Ltd., a trusted partner in integrated solid waste management across India.',
       'We go beyond disposal. Our systems are designed for resource recovery and waste-to-energy, helping municipal bodies, industries and public–private enterprises reduce landfill dependency, lower carbon emissions and move towards a circular economy.',
     ],
     philLink: 'Our story',
+    philCaption: 'Pune, Maharashtra. Cleaner, greener cities start with how we treat waste.',
     svcEyebrow: 'What we do',
     svcTitle: 'Turnkey plants, from survey to <em>operation</em>.',
     svcIntro:
@@ -57,175 +95,228 @@ const copy = {
     machEyebrow: 'Machinery',
     machTitle: 'Engineered in-house, for <em>24×7</em> duty.',
     machIntro:
-      'Every machine is designed and fabricated by our own team for efficiency, durability and long service life, so waste-management and RDF plants run smoothly nationwide.',
+      'Every machine is designed and fabricated by our own team for efficiency, durability and long service life.',
     machAll: 'View all machinery',
-    projEyebrow: 'Selected projects',
-    projTitle: 'Trusted by municipal bodies <em>across India</em>.',
-    projIntro: `Bio-mining, MSW and MRF projects in ${footprint.slice(0, 7).join(', ')} and beyond.`,
-    projAll: 'View the project record',
-    projects: featuredProjects,
-    status: { Completed: 'Completed', Ongoing: 'Ongoing', Commissioned: 'Commissioned' },
+    filterAll: 'All machines',
     apprEyebrow: 'How we work',
     apprTitle: 'One partner, from drawing board to <em>daily operation</em>.',
+    apprIntro: 'One team is accountable from the first site survey to everyday operation of the plant.',
     clientsEyebrow: 'Clients',
-    clientsTitle: 'In good <em>company</em>.',
+    clientsTitle: 'Our clients and <em>partners</em>',
     clientsIntro:
-      'Municipal corporations, industry leaders and institutions rely on our machinery and plants. We are an ISO 9001:2015 certified, GeM registered OEM.',
+      'Municipal corporations, manufacturers, universities and dairies across India rely on our machinery and plants.',
     insEyebrow: 'Insights',
     insTitle: 'Notes from the <em>field</em>.',
     insAll: 'All articles',
-    read: 'Read article',
+    minRead: 'min read',
   },
   hi: {
     title: 'हिंद ज़ीरो वेस्ट मैनेजमेंट | कचरा प्रसंस्करण मशीनरी और टर्नकी प्लांट',
     description:
       'हिंद ज़ीरो वेस्ट बायो-माइनिंग, MSW, MRF और RDF/AFR प्लांट तथा कचरा प्रसंस्करण मशीनरी का डिज़ाइन, निर्माण और कमीशनिंग करता है। भारत भर में 87+ बायो-माइनिंग परियोजनाएँ।',
-    heroEyebrow: 'कचरा प्रसंस्करण मशीनरी और टर्नकी प्लांट',
-    heroTitle: 'शून्य-कचरा भारत का <em>निर्माण</em>।',
+    heroWords: [['शून्य-कचरा'], ['भारत'], ['का'], ['निर्माण।', true]] as [string, boolean?][],
+    heroSub: 'कचरा प्रसंस्करण मशीनरी और टर्नकी प्लांट',
     heroLead:
       '2017 से हम पुराने कचरा डंपसाइट साफ़ करने, नगरपालिका ठोस कचरे के प्रसंस्करण और कचरे को ईंधन व संसाधनों में बदलने वाली मशीनरी और प्लांट का डिज़ाइन, निर्माण और कमीशनिंग कर रहे हैं।',
-    heroCaption: 'हिंद ज़ीरो वेस्ट द्वारा स्टील शेड में स्थापित पृथक्करण और RDF लाइन।',
+    slides: [
+      'पुराने डंपसाइट पर बायो-माइनिंग ट्रॉमेल लाइन',
+      'PEB शेड में पृथक्करण और RDF लाइन',
+      'संचालन में मटेरियल रिकवरी फ़ैसिलिटी',
+      'बायो-माइनिंग साइट पर खुदाई और स्क्रीनिंग',
+    ],
+    scroll: 'नीचे देखें',
     figures: [
       'भारत भर में बायो-माइनिंग परियोजनाएँ',
       'बेलिंग मशीनें आपूर्ति और कमीशन की गईं',
       'भारत और दक्षिण अफ़्रीका में ग्राहक',
       'कोल्हापुर, महाराष्ट्र में स्थापना',
     ],
+    projEyebrow: 'प्रमुख परियोजनाएँ',
+    projTitle: 'देश भर के नगर निकायों का <em>भरोसा</em>।',
+    projIntro: '12 राज्यों में बायो-माइनिंग, MSW और MRF परियोजनाएँ, पंजाब से तेलंगाना तक।',
+    projAll: 'सभी परियोजनाएँ देखें',
     philEyebrow: 'हमारा दर्शन',
-    philTitle: 'पुनर्विचार। कमी। पुन: उपयोग। <em>पुनर्प्राप्ति।</em>',
+    philWords: ['पुनर्विचार।', 'कमी।', 'पुन: उपयोग।', 'पुनर्प्राप्ति।'],
     philParas: [
       '2017 में कोल्हापुर में हिंद एग्रो एंड केमिकल्स के रूप में स्थापित, आज हम हिंद ज़ीरो वेस्ट मैनेजमेंट प्रा. लि. हैं, जो पूरे भारत में एकीकृत ठोस कचरा प्रबंधन का विश्वसनीय साझेदार है।',
       'हम केवल निपटान तक सीमित नहीं हैं। हमारी प्रणालियाँ संसाधन पुनर्प्राप्ति और कचरे से ऊर्जा के लिए बनाई जाती हैं, जिससे नगर निकाय, उद्योग और सार्वजनिक-निजी उद्यम लैंडफ़िल पर निर्भरता घटाते हैं, कार्बन उत्सर्जन कम करते हैं और चक्रीय अर्थव्यवस्था की ओर बढ़ते हैं।',
     ],
     philLink: 'हमारी कहानी',
+    philCaption: 'पुणे, महाराष्ट्र। स्वच्छ और हरित शहरों की शुरुआत कचरे के सही प्रबंधन से होती है।',
     svcEyebrow: 'हमारी सेवाएँ',
     svcTitle: 'सर्वेक्षण से <em>संचालन</em> तक, टर्नकी प्लांट।',
     svcIntro: 'इंजीनियरिंग, मशीनरी, स्थापना, कमीशनिंग और दीर्घकालीन संचालन व रखरखाव, पूरी प्रणाली की ज़िम्मेदारी हमारी।',
     machEyebrow: 'मशीनरी',
     machTitle: '24×7 काम के लिए, <em>अपने कारखाने</em> में निर्मित।',
-    machIntro:
-      'हर मशीन हमारी अपनी टीम द्वारा दक्षता, टिकाऊपन और लंबी सेवा-अवधि के लिए डिज़ाइन और निर्मित की जाती है, ताकि देश भर के कचरा प्रबंधन और RDF प्लांट सुचारु रूप से चलें।',
+    machIntro: 'हर मशीन हमारी अपनी टीम द्वारा दक्षता, टिकाऊपन और लंबी सेवा-अवधि के लिए डिज़ाइन और निर्मित की जाती है।',
     machAll: 'सभी मशीनें देखें',
-    projEyebrow: 'प्रमुख परियोजनाएँ',
-    projTitle: 'देश भर के नगर निकायों का <em>भरोसा</em>।',
-    projIntro: 'महाराष्ट्र, राजस्थान, तेलंगाना, दिल्ली, उत्तर प्रदेश, हिमाचल प्रदेश, पंजाब और अन्य राज्यों में बायो-माइनिंग, MSW और MRF परियोजनाएँ।',
-    projAll: 'सभी परियोजनाएँ देखें',
-    projects: [
-      { ...featuredProjects[0], client: 'पिंपरी चिंचवड महानगरपालिका', location: 'मोशी डंपिंग ग्राउंड, महाराष्ट्र', scope: 'पुराने कचरे का बायो-माइनिंग', note: '7,02,900 m³ पूर्ण' },
-      { ...featuredProjects[1], client: 'भिवंडी निज़ामपुर महानगरपालिका', location: 'महाराष्ट्र', scope: 'पुराने कचरे का बायो-माइनिंग' },
-      { ...featuredProjects[2], client: 'दक्षिण दिल्ली नगर निगम (रीकार्ट इनोवेशन्स के लिए)', location: 'भलस्वा डंपिंग ग्राउंड, दिल्ली', scope: 'दो बायो-माइनिंग प्लांट' },
-      { ...featuredProjects[3], client: 'तेलंगाना राज्य, क्लस्टर 6', location: '14 नगरपालिकाएँ, तेलंगाना', scope: 'बायो-माइनिंग और 10 वर्ष का ताज़ा कचरा प्रबंधन', scale: '5 लाख टन' },
-      { ...featuredProjects[4], client: 'जैसलमेर नगर परिषद', location: 'राजस्थान', scope: 'MSW प्रसंस्करण और सैनिटरी लैंडफ़िल: डिज़ाइन, निर्माण और 30 वर्ष संचालन' },
-      { ...featuredProjects[5], client: 'दौसा नगर परिषद', location: 'राजस्थान', scope: 'MSW प्रसंस्करण और सैनिटरी लैंडफ़िल: डिज़ाइन, निर्माण और 30 वर्ष संचालन' },
-    ],
-    status: { Completed: 'पूर्ण', Ongoing: 'जारी', Commissioned: 'कमीशन किया गया' },
+    filterAll: 'सभी मशीनें',
     apprEyebrow: 'हमारी कार्यप्रणाली',
     apprTitle: 'डिज़ाइन से <em>दैनिक संचालन</em> तक, एक ही साझेदार।',
+    apprIntro: 'पहले साइट सर्वेक्षण से लेकर प्लांट के रोज़मर्रा के संचालन तक, एक ही टीम ज़िम्मेदार।',
     clientsEyebrow: 'ग्राहक',
-    clientsTitle: 'भरोसेमंद <em>साथ</em>।',
-    clientsIntro:
-      'नगर निगम, अग्रणी उद्योग और संस्थान हमारी मशीनरी और प्लांट पर भरोसा करते हैं। हम ISO 9001:2015 प्रमाणित और GeM पंजीकृत OEM हैं।',
+    clientsTitle: 'हमारे ग्राहक और <em>साझेदार</em>',
+    clientsIntro: 'देश भर के नगर निगम, निर्माता, विश्वविद्यालय और डेयरियाँ हमारी मशीनरी और प्लांट पर भरोसा करते हैं।',
     insEyebrow: '',
     insTitle: '',
     insAll: '',
-    read: '',
+    minRead: '',
   },
   mr: {
     title: 'हिंद झिरो वेस्ट मॅनेजमेंट | कचरा प्रक्रिया यंत्रसामग्री व टर्नकी प्लांट',
     description:
       'हिंद झिरो वेस्ट बायो-मायनिंग, MSW, MRF आणि RDF/AFR प्लांट तसेच कचरा प्रक्रिया यंत्रसामग्रीचे डिझाइन, निर्मिती व कमिशनिंग करते. भारतभर 87+ बायो-मायनिंग प्रकल्प.',
-    heroEyebrow: 'कचरा प्रक्रिया यंत्रसामग्री आणि टर्नकी प्लांट',
-    heroTitle: 'शून्य-कचरा भारताची <em>उभारणी</em>.',
+    heroWords: [['शून्य-कचरा'], ['भारताची'], ['उभारणी.', true]] as [string, boolean?][],
+    heroSub: 'कचरा प्रक्रिया यंत्रसामग्री आणि टर्नकी प्लांट',
     heroLead:
       '2017 पासून आम्ही जुने कचरा डेपो साफ करणारी, नागरी घनकचऱ्यावर प्रक्रिया करणारी आणि कचऱ्याचे इंधन व संसाधनांमध्ये रूपांतर करणारी यंत्रसामग्री आणि प्लांट डिझाइन, निर्मिती व कार्यान्वित करत आहोत.',
-    heroCaption: 'हिंद झिरो वेस्टने स्टील शेडमध्ये उभारलेली विलगीकरण व RDF लाइन.',
+    slides: [
+      'जुन्या कचरा डेपोवर बायो-मायनिंग ट्रॉमेल लाइन',
+      'PEB शेडमधील विलगीकरण व RDF लाइन',
+      'कार्यरत मटेरियल रिकव्हरी फॅसिलिटी',
+      'बायो-मायनिंग साइटवर उत्खनन व स्क्रीनिंग',
+    ],
+    scroll: 'खाली पाहा',
     figures: [
       'भारतभर बायो-मायनिंग प्रकल्प',
       'बेलिंग मशीन पुरवल्या व कार्यान्वित केल्या',
       'भारत व दक्षिण आफ्रिकेतील ग्राहक',
       'कोल्हापूर, महाराष्ट्र येथे स्थापना',
     ],
+    projEyebrow: 'निवडक प्रकल्प',
+    projTitle: 'देशभरातील नागरी संस्थांचा <em>विश्वास</em>.',
+    projIntro: '12 राज्यांमध्ये बायो-मायनिंग, MSW व MRF प्रकल्प, पंजाबपासून तेलंगणापर्यंत.',
+    projAll: 'सर्व प्रकल्प पाहा',
     philEyebrow: 'आमचे तत्त्वज्ञान',
-    philTitle: 'पुनर्विचार. कपात. पुनर्वापर. <em>पुनर्प्राप्ती.</em>',
+    philWords: ['पुनर्विचार.', 'कपात.', 'पुनर्वापर.', 'पुनर्प्राप्ती.'],
     philParas: [
       '2017 मध्ये कोल्हापूर येथे हिंद ॲग्रो अँड केमिकल्स म्हणून स्थापन झालेली आमची कंपनी आज हिंद झिरो वेस्ट मॅनेजमेंट प्रा. लि. म्हणून संपूर्ण भारतात एकात्मिक घनकचरा व्यवस्थापनातील विश्वासार्ह भागीदार आहे.',
       'आम्ही केवळ विल्हेवाटीपुरते मर्यादित नाही. आमच्या प्रणाली संसाधन पुनर्प्राप्ती आणि कचऱ्यापासून ऊर्जा यासाठी तयार केल्या जातात, ज्यामुळे नागरी संस्था, उद्योग आणि सार्वजनिक-खाजगी उपक्रम लँडफिलवरील अवलंबित्व कमी करतात, कार्बन उत्सर्जन घटवतात आणि चक्राकार अर्थव्यवस्थेकडे वाटचाल करतात.',
     ],
     philLink: 'आमची वाटचाल',
+    philCaption: 'पुणे, महाराष्ट्र. स्वच्छ व हरित शहरांची सुरुवात कचऱ्याच्या योग्य व्यवस्थापनापासून होते.',
     svcEyebrow: 'आमच्या सेवा',
     svcTitle: 'सर्वेक्षणापासून <em>संचालनापर्यंत</em>, टर्नकी प्लांट.',
     svcIntro: 'अभियांत्रिकी, यंत्रसामग्री, उभारणी, कमिशनिंग आणि दीर्घकालीन संचालन व देखभाल, संपूर्ण प्रणालीची जबाबदारी आमची.',
     machEyebrow: 'यंत्रसामग्री',
     machTitle: '24×7 कामासाठी, <em>आमच्याच कारखान्यात</em> निर्मित.',
-    machIntro:
-      'प्रत्येक यंत्र आमच्या टीमकडून कार्यक्षमता, टिकाऊपणा आणि दीर्घ आयुष्यासाठी डिझाइन व तयार केले जाते, जेणेकरून देशभरातील कचरा व्यवस्थापन व RDF प्लांट सुरळीत चालतात.',
+    machIntro: 'प्रत्येक यंत्र आमच्या टीमकडून कार्यक्षमता, टिकाऊपणा आणि दीर्घ आयुष्यासाठी डिझाइन व तयार केले जाते.',
     machAll: 'सर्व यंत्रे पाहा',
-    projEyebrow: 'निवडक प्रकल्प',
-    projTitle: 'देशभरातील नागरी संस्थांचा <em>विश्वास</em>.',
-    projIntro: 'महाराष्ट्र, राजस्थान, तेलंगणा, दिल्ली, उत्तर प्रदेश, हिमाचल प्रदेश, पंजाब आणि इतर राज्यांमध्ये बायो-मायनिंग, MSW व MRF प्रकल्प.',
-    projAll: 'सर्व प्रकल्प पाहा',
-    projects: [
-      { ...featuredProjects[0], client: 'पिंपरी चिंचवड महानगरपालिका', location: 'मोशी कचरा डेपो, महाराष्ट्र', scope: 'जुन्या कचऱ्याचे बायो-मायनिंग', note: '7,02,900 m³ पूर्ण' },
-      { ...featuredProjects[1], client: 'भिवंडी निजामपूर महानगरपालिका', location: 'महाराष्ट्र', scope: 'जुन्या कचऱ्याचे बायो-मायनिंग' },
-      { ...featuredProjects[2], client: 'दक्षिण दिल्ली महानगरपालिका (रीकार्ट इनोव्हेशन्ससाठी)', location: 'भलस्वा कचरा डेपो, दिल्ली', scope: 'दोन बायो-मायनिंग प्लांट' },
-      { ...featuredProjects[3], client: 'तेलंगणा राज्य, क्लस्टर 6', location: '14 नगरपालिका, तेलंगणा', scope: 'बायो-मायनिंग आणि 10 वर्षांचे ताज्या कचऱ्याचे व्यवस्थापन', scale: '5 लाख टन' },
-      { ...featuredProjects[4], client: 'जैसलमेर नगर परिषद', location: 'राजस्थान', scope: 'MSW प्रक्रिया व सॅनिटरी लँडफिल: डिझाइन, बांधकाम व 30 वर्षे संचालन' },
-      { ...featuredProjects[5], client: 'दौसा नगर परिषद', location: 'राजस्थान', scope: 'MSW प्रक्रिया व सॅनिटरी लँडफिल: डिझाइन, बांधकाम व 30 वर्षे संचालन' },
-    ],
-    status: { Completed: 'पूर्ण', Ongoing: 'सुरू', Commissioned: 'कार्यान्वित' },
+    filterAll: 'सर्व यंत्रे',
     apprEyebrow: 'आमची कार्यपद्धती',
     apprTitle: 'डिझाइनपासून <em>दैनंदिन संचालनापर्यंत</em>, एकच भागीदार.',
+    apprIntro: 'पहिल्या साइट सर्वेक्षणापासून प्लांटच्या दैनंदिन संचालनापर्यंत, एकच टीम जबाबदार.',
     clientsEyebrow: 'ग्राहक',
-    clientsTitle: 'विश्वासार्ह <em>सोबत</em>.',
-    clientsIntro:
-      'महानगरपालिका, आघाडीचे उद्योग आणि संस्था आमच्या यंत्रसामग्री व प्लांटवर विश्वास ठेवतात. आम्ही ISO 9001:2015 प्रमाणित आणि GeM नोंदणीकृत OEM आहोत.',
+    clientsTitle: 'आमचे ग्राहक व <em>भागीदार</em>',
+    clientsIntro: 'देशभरातील महानगरपालिका, उत्पादक, विद्यापीठे आणि डेअरी आमच्या यंत्रसामग्री व प्लांटवर विश्वास ठेवतात.',
     insEyebrow: '',
     insTitle: '',
     insAll: '',
-    read: '',
+    minRead: '',
   },
 }[lang];
 
-const posts = lang === 'en' ? (await getCollection('blog')).sort((a, b) => a.data.order - b.data.order).slice(0, 3) : [];
+const projects: Project[] =
+  lang === 'en'
+    ? featuredProjects
+    : featuredProjects.map((p, i) => ({ ...p, ...(featuredProjectsLocal[lang][i] as Partial<Project>) }));
+
+const categories = [...new Set(products.map((p) => p.category))];
+const catKey = (c: string) => c.toLowerCase().replace(/[^a-z]+/g, '-');
+
+const puneBg = await getImage({ src: pune, width: 1600, format: 'webp' });
+
+const posts =
+  lang === 'en'
+    ? (await getCollection('blog'))
+        .sort((a, b) => a.data.order - b.data.order)
+        .slice(0, 3)
+        .map((p) => ({ post: p, minutes: Math.max(2, Math.round((p.body ?? '').split(/\s+/).length / 200)) }))
+    : [];
 const alternates = { en: '/', hi: '/hi/', mr: '/mr/' };
+const aboutHref = localePath(lang, '/about-us');
 ---
 
 <Base title={copy.title} description={copy.description} lang={lang} alternates={alternates}>
-  <!-- Hero -->
-  <section class="hero">
-    <div class="container">
-      <div class="hero__top">
-        <div>
-          <p class="eyebrow">{copy.heroEyebrow}</p>
-          <h1 class="display hero__title" set:html={copy.heroTitle} />
-        </div>
-        <div class="hero__aside">
-          <p class="lead">{copy.heroLead}</p>
-          <div class="btn-row">
-            <a class="btn" href={localePath(lang, '/contact-us') + '#enquiry'}>{t(lang, 'cta.quote')} <span class="arrow">→</span></a>
-            <a class="link-arrow" href="/product">{t(lang, 'cta.explore')} <span class="arrow">→</span></a>
+  <!-- Hero: a complete first screen with a rotating photo backdrop -->
+  <section class="hero on-dark" data-hero>
+    <div class="hero__slides">
+      {
+        slides.map((s, i) => (
+          <div class:list={['hero__slide', { 'is-active': i === 0 }]} data-slide={i}>
+            <Image
+              src={s.src}
+              alt={i === 0 ? s.alt : ''}
+              widths={[800, 1200, 1600]}
+              sizes="100vw"
+              loading={i === 0 ? 'eager' : 'lazy'}
+              fetchpriority={i === 0 ? 'high' : 'low'}
+            />
           </div>
+        ))
+      }
+    </div>
+    <div class="hero__shade" aria-hidden="true"></div>
+
+    <div class="container hero__inner">
+      <div class="hero__content">
+        <h1 class="display hero__title rise">
+          {
+            copy.heroWords.map(([word, em], i) => (
+              <>
+                <span style={`--i:${i}`}>{em ? <em>{word}</em> : word}</span>{' '}
+              </>
+            ))
+          }
+        </h1>
+        <p class="eyebrow hero__sub" data-reveal style="--d: 4">{copy.heroSub}</p>
+        <p class="hero__lead" data-reveal style="--d: 5">{copy.heroLead}</p>
+        <div class="btn-row" data-reveal style="--d: 6">
+          <a class="btn btn--accent" href={localePath(lang, '/contact-us') + '#enquiry'}>{t(lang, 'cta.quote')} <span class="arrow">→</span></a>
+          <a class="btn btn--ghost" href="/product">{t(lang, 'cta.explore')} <span class="arrow">→</span></a>
         </div>
       </div>
-      <figure class="hero__figure">
-        <div class="frame hero__frame">
-          <Image
-            src={heroImage}
-            alt="Conveyors, separators and a shredder line inside a large steel processing shed"
-            widths={[640, 960, 1280, 1600]}
-            sizes="(min-width: 1320px) 1240px, 94vw"
-            loading="eager"
-            fetchpriority="high"
-          />
-        </div>
-        <figcaption class="caption">{copy.heroCaption}</figcaption>
-      </figure>
-      <dl class="figures">
+
+      <div class="hero__foot">
+        <ol class="hero__dots">
+          {
+            copy.slides.map((caption, i) => (
+              <li>
+                <button
+                  type="button"
+                  class:list={['hero__dot', { 'is-active': i === 0 }]}
+                  data-goto={i}
+                  aria-label={caption}
+                  aria-pressed={i === 0 ? 'true' : 'false'}
+                >
+                  <span class="hero__bar" />
+                  <span class="hero__cap">
+                    <span class="tabular">{String(i + 1).padStart(2, '0')}</span> {caption}
+                  </span>
+                </button>
+              </li>
+            ))
+          }
+        </ol>
+        <a class="hero__scroll" href="#numbers">
+          <span>{copy.scroll}</span>
+          <span class="hero__mouse" aria-hidden="true"><span></span></span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Figures -->
+  <section class="numbers bg-white" id="numbers">
+    <div class="container">
+      <dl class="numbers__grid">
         {
           figures.map((f, i) => (
-            <div class="figures__item">
-              <dt class="figures__value tabular">{f.value}</dt>
-              <dd class="figures__label">{copy.figures[i]}</dd>
+            <div class="numbers__item" data-reveal style={`--d:${i}`}>
+              <dt class="numbers__value">
+                <Count value={f.count} suffix={f.suffix} from={'from' in f ? f.from : undefined} />
+              </dt>
+              <dd class="numbers__label">{copy.figures[i]}</dd>
             </div>
           ))
         }
@@ -233,22 +324,68 @@ const alternates = { en: '/', hi: '/hi/', mr: '/mr/' };
     </div>
   </section>
 
-  <!-- Philosophy -->
-  <section class="section bg-white">
-    <div class="container phil" data-reveal>
-      <div>
+  <!-- Projects -->
+  <section class="section bg-ink on-dark projects">
+    <div class="container">
+      <div class="section-head section-head--center" data-reveal>
+        <p class="eyebrow">{copy.projEyebrow}</p>
+        <h2 class="h2" set:html={copy.projTitle} />
+        <p class="muted projects__intro">{copy.projIntro}</p>
+      </div>
+      <ul class="pgrid">
+        {
+          projects.map((p, i) => (
+            <li class="pgrid__card" data-reveal style={`--d:${i % 3}`}>
+              <p class="pgrid__num">
+                <Count value={p.count.value} prefix={p.count.prefix} suffix={p.count.suffix} format={p.count.format} />
+              </p>
+              <p class="pgrid__client">{p.client}</p>
+              <p class="pgrid__loc">{p.location}</p>
+              <p class="pgrid__scope">
+                {p.scope}
+                {p.note && <span> · {p.note}</span>}
+              </p>
+              <span class:list={['pgrid__status', `is-${p.status.toLowerCase()}`]}>{statusLabels[lang][p.status]}</span>
+            </li>
+          ))
+        }
+      </ul>
+      <div class="projects__foot" data-reveal>
+        <a class="btn btn--accent" href={`${aboutHref}#projects`}>{copy.projAll} <span class="arrow">→</span></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Philosophy: the words stay in view and fill with the city as you scroll -->
+  <section class="section bg-paper phil" data-phil style={`--pune: url(${puneBg.src})`}>
+    <div class="container phil__grid">
+      <div class="phil__sticky">
         <p class="eyebrow">{copy.philEyebrow}</p>
-        <h2 class="h1 phil__title" set:html={copy.philTitle} />
+        <h2 class="phil__words">
+          {
+            copy.philWords.map((w, i) => (
+              <span class:list={['phil__word', { 'is-on': i === 0 }]} data-word={i} data-text={w}>
+                {w}
+              </span>
+            ))
+          }
+        </h2>
       </div>
       <div class="phil__body">
-        {copy.philParas.map((p, i) => <p class={i === 0 ? 'lead' : 'muted'}>{p}</p>)}
-        <a class="link-arrow" href={localePath(lang, '/about-us')}>{copy.philLink} <span class="arrow">→</span></a>
+        {copy.philParas.map((p, i) => <p class={i === 0 ? 'phil__lead' : 'muted'} data-reveal>{p}</p>)}
+        <a class="link-arrow" href={aboutHref} data-reveal>{copy.philLink} <span class="arrow">→</span></a>
+        <figure class="phil__figure" data-reveal="zoom">
+          <div class="frame phil__frame">
+            <Image src={pune} alt="Pune city skyline with green tree cover" widths={[600, 900, 1200]} sizes="(min-width: 900px) 46vw, 92vw" loading="lazy" />
+          </div>
+          <figcaption class="caption">{copy.philCaption}</figcaption>
+        </figure>
       </div>
     </div>
   </section>
 
   <!-- Services -->
-  <section class="section">
+  <section class="section bg-sky">
     <div class="container">
       <div class="section-head section-head--split" data-reveal>
         <div>
@@ -257,19 +394,22 @@ const alternates = { en: '/', hi: '/hi/', mr: '/mr/' };
         </div>
         <p class="muted">{copy.svcIntro}</p>
       </div>
-      <ol class="svc" data-reveal>
+      <ol class="svc">
         {
           services.map((s, i) => (
-            <li>
+            <li data-reveal style={`--d:${i}`}>
               <a class="svc__row" href={`/${s.slug}`}>
                 <span class="svc__num tabular">{String(i + 1).padStart(2, '0')}</span>
+                <span class="svc__icon">
+                  <Icon name={serviceIcons[s.slug as keyof typeof serviceIcons]} size={30} />
+                </span>
                 <span class="svc__main">
                   <span class="svc__name">{localName(lang, s.slug, s.name)}</span>
                   <span class="svc__short">{serviceShorts[lang][s.slug]}</span>
                 </span>
                 <span class="svc__range tabular">{s.range}</span>
-                <span class="svc__thumb frame" aria-hidden="true">
-                  <Image src={serviceImages[s.slug]} alt="" width={240} height={170} loading="lazy" />
+                <span class="svc__thumb" aria-hidden="true">
+                  <Image src={serviceImages[s.slug]} alt="" width={280} height={190} loading="lazy" />
                 </span>
                 <span class="svc__arrow" aria-hidden="true">→</span>
               </a>
@@ -277,14 +417,15 @@ const alternates = { en: '/', hi: '/hi/', mr: '/mr/' };
           ))
         }
       </ol>
-      <p class="svc__note">
-        <strong>{consultancyCopy[lang].name}.</strong> {consultancyCopy[lang].text}
+      <p class="svc__note" data-reveal>
+        <span class="svc__note-icon"><Icon name="consult" size={22} /></span>
+        <span><strong>{consultancyCopy[lang].name}.</strong> {consultancyCopy[lang].text}</span>
       </p>
     </div>
   </section>
 
   <!-- Machinery -->
-  <section class="section bg-paper-2">
+  <section class="section bg-navy-deep on-dark mach">
     <div class="container">
       <div class="section-head section-head--split" data-reveal>
         <div>
@@ -296,10 +437,20 @@ const alternates = { en: '/', hi: '/hi/', mr: '/mr/' };
           <a class="link-arrow" href="/product">{copy.machAll} <span class="arrow">→</span></a>
         </div>
       </div>
-      <ul class="mach-grid">
+      <div class="filters" role="group" aria-label={copy.machEyebrow} data-filters data-reveal>
+        <button type="button" class="filters__btn" aria-pressed="true" data-filter="all">{copy.filterAll} <span>{products.length}</span></button>
+        {
+          categories.map((c) => (
+            <button type="button" class="filters__btn" aria-pressed="false" data-filter={catKey(c)}>
+              {categoryName(lang, c)} <span>{products.filter((p) => p.category === c).length}</span>
+            </button>
+          ))
+        }
+      </div>
+      <ul class="mach-grid" data-filter-grid>
         {
           products.map((p, i) => (
-            <li data-reveal>
+            <li data-cat={catKey(p.category)} data-reveal style={`--d:${i % 3}`}>
               <ProductCard product={p} lang={lang} index={i} />
             </li>
           ))
@@ -308,96 +459,54 @@ const alternates = { en: '/', hi: '/hi/', mr: '/mr/' };
     </div>
   </section>
 
-  <!-- Projects -->
-  <section class="section bg-ink on-dark">
+  <!-- Approach -->
+  <section class="section bg-sage">
     <div class="container">
-      <div class="section-head section-head--split" data-reveal>
-        <div>
-          <p class="eyebrow">{copy.projEyebrow}</p>
-          <h2 class="h2" set:html={copy.projTitle} />
-        </div>
-        <p class="muted">{copy.projIntro}</p>
+      <div class="section-head section-head--center" data-reveal>
+        <p class="eyebrow">{copy.apprEyebrow}</p>
+        <h2 class="h2" set:html={copy.apprTitle} />
+        <p class="muted">{copy.apprIntro}</p>
       </div>
-      <ul class="proj" data-reveal>
+      <ol class="steps" data-reveal>
         {
-          copy.projects.map((p) => (
-            <li class="proj__row">
-              <p class="proj__scale tabular">{p.scale}</p>
-              <div class="proj__client">
-                <p class="proj__name">{p.client}</p>
-                <p class="muted">{p.location}</p>
-              </div>
-              <p class="proj__scope">
-                {p.scope}
-                {p.note && <span class="muted"> · {p.note}</span>}
-              </p>
-              <p class:list={['proj__status', `is-${p.status.toLowerCase()}`]}>{copy.status[p.status]}</p>
+          approachSteps[lang].map(([title, text], i) => (
+            <li class="steps__item" data-reveal style={`--d:${i + 1}`}>
+              <span class="steps__dot">
+                <Icon name={stepIcons[i]} size={28} />
+              </span>
+              <span class="steps__num tabular">{String(i + 1).padStart(2, '0')}</span>
+              <h3 class="h4">{title}</h3>
+              <p class="muted">{text}</p>
             </li>
           ))
         }
-      </ul>
-      <div class="proj__foot">
-        <a class="link-arrow" href="/projects">{copy.projAll} <span class="arrow">→</span></a>
-      </div>
-    </div>
-  </section>
-
-  <!-- Approach -->
-  <section class="section bg-white">
-    <div class="container appr">
-      <div class="appr__media" data-reveal>
-        <div class="frame appr__frame">
-          <Image
-            src={approachImage}
-            alt="Hind Zero Waste trommel and conveyor line working at a legacy waste site"
-            widths={[480, 720]}
-            sizes="(min-width: 900px) 40vw, 92vw"
-            loading="lazy"
-          />
-        </div>
-      </div>
-      <div>
-        <div data-reveal>
-          <p class="eyebrow">{copy.apprEyebrow}</p>
-          <h2 class="h2 appr__title" set:html={copy.apprTitle} />
-        </div>
-        <ol class="appr__steps">
-          {
-            approachSteps[lang].map(([title, text], i) => (
-              <li data-reveal>
-                <span class="appr__num tabular">{String(i + 1).padStart(2, '0')}</span>
-                <div>
-                  <h3 class="h4">{title}</h3>
-                  <p class="muted">{text}</p>
-                </div>
-              </li>
-            ))
-          }
-        </ol>
-      </div>
+      </ol>
     </div>
   </section>
 
   <!-- Clients -->
-  <section class="section">
+  <section class="section bg-white clients-sec">
     <div class="container">
-      <div class="section-head section-head--split" data-reveal>
-        <div>
-          <p class="eyebrow">{copy.clientsEyebrow}</p>
-          <h2 class="h2" set:html={copy.clientsTitle} />
-        </div>
+      <div class="section-head section-head--center" data-reveal>
+        <p class="eyebrow">{copy.clientsEyebrow}</p>
+        <h2 class="h2" set:html={copy.clientsTitle} />
         <p class="muted">{copy.clientsIntro}</p>
+        <p class="clients-sec__creds">
+          <span class="chip">ISO 9001:2015</span>
+          <span class="chip">GeM OEM</span>
+          <span class="chip">SWM Rules 2016</span>
+        </p>
       </div>
-      <div data-reveal>
-        <ClientWall />
-      </div>
+    </div>
+    <div data-reveal>
+      <ClientWall />
     </div>
   </section>
 
   <!-- Insights -->
   {
     posts.length > 0 && (
-      <section class="section bg-white">
+      <section class="section bg-paper">
         <div class="container">
           <div class="section-head section-head--split" data-reveal>
             <div>
@@ -411,15 +520,21 @@ const alternates = { en: '/', hi: '/hi/', mr: '/mr/' };
             </div>
           </div>
           <ul class="ins">
-            {posts.map((post) => (
-              <li data-reveal>
+            {posts.map(({ post, minutes }, i) => (
+              <li data-reveal style={`--d:${i}`}>
                 <a class="ins__card" href={`/${post.id}`}>
-                  <p class="ins__topic">{post.data.topic}</p>
-                  <h3 class="ins__title">{post.data.title}</h3>
-                  <p class="muted ins__excerpt">{post.data.description}</p>
-                  <span class="ins__more">
-                    {copy.read} <span class="arrow">→</span>
-                  </span>
+                  <div class="ins__media">
+                    <Image src={post.data.cover} alt={post.data.coverAlt} widths={[480, 720]} sizes="(min-width: 900px) 30vw, 92vw" loading="lazy" />
+                    <span class="ins__topic">{post.data.topic}</span>
+                  </div>
+                  <div class="ins__body">
+                    <h3 class="ins__title">{post.data.title}</h3>
+                    <p class="muted ins__excerpt">{post.data.description}</p>
+                    <p class="ins__meta">
+                      <span>{minutes} {copy.minRead}</span>
+                      <span class="ins__go" aria-hidden="true">→</span>
+                    </p>
+                  </div>
                 </a>
               </li>
             ))}
@@ -432,83 +547,527 @@ const alternates = { en: '/', hi: '/hi/', mr: '/mr/' };
   <CtaBand lang={lang} />
 </Base>
 
-<style>
-  /* Hero */
-  .hero {
-    padding-top: clamp(40px, 6vw, 88px);
-    padding-bottom: clamp(56px, 7vw, 96px);
+<script>
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Hero slideshow
+  const hero = document.querySelector<HTMLElement>('[data-hero]');
+  if (hero) {
+    const slides = [...hero.querySelectorAll<HTMLElement>('[data-slide]')];
+    const dots = [...hero.querySelectorAll<HTMLButtonElement>('[data-goto]')];
+    let current = 0;
+    let timer: number | undefined;
+    const show = (n: number) => {
+      current = (n + slides.length) % slides.length;
+      slides.forEach((s, i) => s.classList.toggle('is-active', i === current));
+      dots.forEach((d, i) => {
+        d.classList.toggle('is-active', i === current);
+        d.setAttribute('aria-pressed', String(i === current));
+      });
+      // Restart the progress bar animation on the active dot.
+      const bar = dots[current]?.querySelector<HTMLElement>('.hero__bar');
+      if (bar) {
+        bar.style.animation = 'none';
+        void bar.offsetWidth;
+        bar.style.animation = '';
+      }
+    };
+    const play = () => {
+      if (reduce) return;
+      window.clearInterval(timer);
+      timer = window.setInterval(() => show(current + 1), 6500);
+    };
+    dots.forEach((d) =>
+      d.addEventListener('click', () => {
+        show(Number(d.dataset.goto));
+        play();
+      }),
+    );
+    document.addEventListener('visibilitychange', () => (document.hidden ? window.clearInterval(timer) : play()));
+    if (reduce) hero.classList.add('is-still');
+    play();
   }
 
-  .hero__top {
-    display: grid;
-    grid-template-columns: minmax(0, 7.5fr) minmax(0, 4.5fr);
-    gap: 32px 64px;
-    align-items: end;
+  // Philosophy: light up one word at a time as the section scrolls past.
+  const phil = document.querySelector<HTMLElement>('[data-phil]');
+  if (phil) {
+    const words = [...phil.querySelectorAll<HTMLElement>('[data-word]')];
+    const update = () => {
+      const rect = phil.getBoundingClientRect();
+      const range = Math.max(1, rect.height - window.innerHeight * 0.6);
+      const progress = Math.min(1, Math.max(0, (window.innerHeight * 0.35 - rect.top) / range));
+      const active = Math.min(words.length - 1, Math.floor(progress * words.length));
+      words.forEach((w, i) => w.classList.toggle('is-on', i <= active));
+    };
+    if (reduce || window.matchMedia('(max-width: 899px)').matches) {
+      words.forEach((w) => w.classList.add('is-on'));
+    } else {
+      update();
+      window.addEventListener('scroll', () => requestAnimationFrame(update), { passive: true });
+    }
+  }
+
+  // Machinery filters
+  const filters = document.querySelector<HTMLElement>('[data-filters]');
+  const grid = document.querySelector<HTMLElement>('[data-filter-grid]');
+  if (filters && grid) {
+    const buttons = [...filters.querySelectorAll<HTMLButtonElement>('[data-filter]')];
+    const cards = [...grid.querySelectorAll<HTMLElement>('[data-cat]')];
+    buttons.forEach((btn) =>
+      btn.addEventListener('click', () => {
+        const key = btn.dataset.filter;
+        buttons.forEach((b) => b.setAttribute('aria-pressed', String(b === btn)));
+        cards.forEach((card) => {
+          const show = key === 'all' || card.dataset.cat === key;
+          card.hidden = !show;
+          if (show) {
+            card.classList.remove('is-entering');
+            void card.offsetWidth;
+            card.classList.add('is-entering');
+          }
+        });
+      }),
+    );
+  }
+</script>
+
+<style>
+  /* ---------- Hero ---------- */
+  .hero {
+    position: relative;
+    display: flex;
+    min-height: calc(100svh - var(--chrome));
+    min-height: max(620px, calc(100svh - var(--chrome)));
+    overflow: hidden;
+    background: var(--ink);
+    isolation: isolate;
+  }
+
+  .hero__slides,
+  .hero__slide,
+  .hero__shade {
+    position: absolute;
+    inset: 0;
+  }
+
+  .hero__slides {
+    z-index: -2;
+  }
+
+  .hero__slide {
+    opacity: 0;
+    transition: opacity 1.4s var(--ease);
+  }
+
+  .hero__slide.is-active {
+    opacity: 1;
+  }
+
+  .hero__slide :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: scale(1.12);
+  }
+
+  .hero__slide.is-active :global(img) {
+    animation: kenburns 9s var(--ease) forwards;
+  }
+
+  .hero.is-still .hero__slide :global(img) {
+    animation: none;
+    transform: none;
+  }
+
+  @keyframes kenburns {
+    from {
+      transform: scale(1.14) translate3d(1.5%, 1%, 0);
+    }
+    to {
+      transform: scale(1.02) translate3d(0, 0, 0);
+    }
+  }
+
+  .hero__shade {
+    z-index: -1;
+    background:
+      linear-gradient(90deg, rgba(8, 16, 30, 0.92) 0%, rgba(8, 16, 30, 0.72) 38%, rgba(8, 16, 30, 0.25) 75%, rgba(8, 16, 30, 0.15) 100%),
+      linear-gradient(0deg, rgba(8, 16, 30, 0.85) 0%, rgba(8, 16, 30, 0) 34%);
+  }
+
+  .hero__inner {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 40px;
+    padding-block: clamp(48px, 9vh, 110px) 32px;
+  }
+
+  .hero__content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 26px;
+    max-width: 760px;
   }
 
   .hero__title {
-    margin-top: 24px;
+    color: var(--white);
+    font-size: clamp(3.4rem, 7.8vw, 7.4rem);
   }
 
-  .hero__aside {
+  .hero__title :global(em) {
+    color: var(--saffron-2);
+  }
+
+  .hero__sub {
+    font-size: 15px;
+    color: var(--lime);
+  }
+
+  .hero__lead {
+    max-width: 34em;
+    font-size: 17px;
+    font-weight: 350;
+    line-height: 1.7;
+    letter-spacing: 0.005em;
+    color: #d6deea;
+  }
+
+  .hero__foot {
     display: flex;
-    flex-direction: column;
+    align-items: flex-end;
+    justify-content: space-between;
     gap: 32px;
-    padding-bottom: 12px;
   }
 
-  .hero__figure {
-    margin: clamp(40px, 6vw, 72px) 0 0;
-  }
-
-  .hero__frame {
-    aspect-ratio: 16 / 7;
-  }
-
-  .hero__frame img {
-    object-position: 50% 62%;
-  }
-
-  .figures {
+  .hero__dots {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    margin: clamp(40px, 6vw, 72px) 0 0;
-    border-top: 1px solid var(--line-strong);
+    gap: 16px;
+    list-style: none;
+    flex: 1;
+    max-width: 900px;
   }
 
-  .figures__item {
-    padding: 28px 24px 0 0;
+  .hero__dot {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: rgba(246, 243, 236, 0.6);
+    font: 500 14px/1.4 var(--sans);
+    text-align: left;
+    cursor: pointer;
+    transition: color 0.3s var(--ease);
   }
 
-  .figures__item + .figures__item {
-    padding-left: 24px;
+  .hero__dot:hover,
+  .hero__dot.is-active {
+    color: var(--paper);
+  }
+
+  .hero__bar {
+    position: relative;
+    display: block;
+    height: 3px;
+    background: rgba(246, 243, 236, 0.25);
+    overflow: hidden;
+  }
+
+  .hero__bar::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--saffron);
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+
+  .hero__dot.is-active .hero__bar::after {
+    animation: progress 6.5s linear forwards;
+  }
+
+  .hero.is-still .hero__dot.is-active .hero__bar::after {
+    animation: none;
+    transform: scaleX(1);
+  }
+
+  @keyframes progress {
+    to {
+      transform: scaleX(1);
+    }
+  }
+
+  .hero__cap .tabular {
+    color: var(--saffron-2);
+    font-weight: 700;
+    margin-right: 4px;
+  }
+
+  .hero__scroll {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    color: var(--paper);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    text-decoration: none;
+  }
+
+  .hero__mouse {
+    position: relative;
+    width: 26px;
+    height: 40px;
+    border: 2px solid rgba(246, 243, 236, 0.7);
+    border-radius: 14px;
+  }
+
+  .hero__mouse span {
+    position: absolute;
+    left: 50%;
+    top: 7px;
+    width: 4px;
+    height: 8px;
+    margin-left: -2px;
+    border-radius: 2px;
+    background: var(--saffron);
+    animation: wheel 1.8s var(--ease) infinite;
+  }
+
+  @keyframes wheel {
+    0% {
+      opacity: 0;
+      transform: translateY(0);
+    }
+    30% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+      transform: translateY(14px);
+    }
+  }
+
+  /* ---------- Figures ---------- */
+  .numbers {
+    padding-block: clamp(48px, 6vw, 80px);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .numbers__grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    margin: 0;
+  }
+
+  .numbers__item {
+    position: relative;
+    padding: 6px 28px;
+  }
+
+  .numbers__item + .numbers__item {
     border-left: 1px solid var(--line);
   }
 
-  .figures__value {
-    font-family: var(--serif);
-    font-size: clamp(2.8rem, 5vw, 4.4rem);
-    line-height: 1;
-    color: var(--ink);
+  .numbers__value {
+    font: 800 clamp(3rem, 5.6vw, 5.2rem) / 1 var(--sans);
+    letter-spacing: -0.04em;
+    background: linear-gradient(120deg, var(--navy) 0%, var(--navy-2) 60%, var(--green-2) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
   }
 
-  .figures__label {
-    margin: 12px 0 0;
-    font-size: 14px;
+  .numbers__label {
+    margin: 14px 0 0;
+    font-size: 16px;
     line-height: 1.5;
     color: var(--muted);
     max-width: 16em;
   }
 
-  /* Philosophy */
-  .phil {
-    display: grid;
-    grid-template-columns: minmax(0, 6fr) minmax(0, 6fr);
-    gap: 40px 80px;
+  /* ---------- Projects ---------- */
+  .projects {
+    position: relative;
+    overflow: hidden;
   }
 
-  .phil__title {
-    margin-top: 20px;
+  .projects::before {
+    content: '';
+    position: absolute;
+    inset: -20% -10% auto auto;
+    width: 60vw;
+    height: 60vw;
+    background: radial-gradient(circle, rgba(11, 75, 176, 0.35), transparent 60%);
+    pointer-events: none;
+  }
+
+  .projects .container {
+    position: relative;
+  }
+
+  .projects__intro {
+    font-size: 17px;
+  }
+
+  .pgrid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
+    list-style: none;
+  }
+
+  .pgrid__card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 30px 28px 28px;
+    border-radius: var(--radius-lg);
+    background: rgba(246, 243, 236, 0.04);
+    border: 1px solid var(--line-on-dark);
+    transition:
+      transform 0.45s var(--ease-out),
+      background-color 0.45s var(--ease-out),
+      border-color 0.45s var(--ease-out),
+      box-shadow 0.45s var(--ease-out);
+  }
+
+  .pgrid__card:hover {
+    transform: translateY(-8px) scale(1.015);
+    background: rgba(246, 243, 236, 0.08);
+    border-color: var(--saffron);
+    box-shadow: 0 30px 60px -30px rgba(0, 0, 0, 0.7);
+  }
+
+  .pgrid__num {
+    font: 800 clamp(2.2rem, 3.4vw, 3.1rem) / 1.05 var(--sans);
+    letter-spacing: -0.03em;
+    color: var(--saffron-2);
+    margin-bottom: 10px;
+  }
+
+  .pgrid__client {
+    font-size: 18px;
+    font-weight: 650;
+    color: var(--paper);
+    line-height: 1.35;
+  }
+
+  .pgrid__loc {
+    font-size: 15px;
+    color: var(--muted-on-dark);
+  }
+
+  .pgrid__scope {
+    margin-top: 6px;
+    font-size: 15px;
+    color: #c5cfdd;
+  }
+
+  .pgrid__status {
+    align-self: flex-start;
+    margin-top: auto;
+    padding: 5px 12px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 650;
+    letter-spacing: 0.04em;
+    background: rgba(132, 187, 57, 0.18);
+    color: #b6e07f;
+  }
+
+  .pgrid__status.is-ongoing {
+    background: rgba(243, 154, 47, 0.18);
+    color: var(--saffron-2);
+  }
+
+  .pgrid__card .pgrid__status {
+    margin-top: 14px;
+  }
+
+  .projects__foot {
+    display: flex;
+    justify-content: center;
+    margin-top: 48px;
+  }
+
+  /* ---------- Philosophy ---------- */
+  .phil__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 6fr) minmax(0, 5fr);
+    gap: 48px 80px;
+    align-items: start;
+  }
+
+  .phil__sticky {
+    position: sticky;
+    top: calc(var(--header-h) + 40px);
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+  }
+
+  .phil__words {
+    display: flex;
+    flex-direction: column;
+    font: 850 clamp(3.4rem, 7.6vw, 7.6rem) / 0.98 var(--sans);
+    letter-spacing: -0.045em;
+    text-transform: uppercase;
+  }
+
+  :lang(hi) .phil__words,
+  :lang(mr) .phil__words {
+    font-size: clamp(2.8rem, 6vw, 5.6rem);
+    line-height: 1.25;
+    letter-spacing: 0;
+  }
+
+  .phil__word {
+    position: relative;
+    display: block;
+    width: fit-content;
+    color: transparent;
+    -webkit-text-stroke: 1.5px rgba(11, 21, 37, 0.32);
+  }
+
+  /* The filled version sits on top and fades in, showing the city through the letters. */
+  .phil__word::after {
+    content: attr(data-text);
+    position: absolute;
+    inset: 0;
+    -webkit-text-stroke: 0;
+    background:
+      linear-gradient(180deg, rgba(8, 57, 132, 0.1), rgba(8, 57, 132, 0.4)),
+      var(--pune) center 78% / 140% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    opacity: 0;
+    transform: translateY(12px);
+    transition:
+      opacity 0.7s var(--ease-out),
+      transform 0.7s var(--ease-out);
+  }
+
+  .phil__word:last-child::after {
+    background:
+      linear-gradient(180deg, rgba(243, 154, 47, 0.25), rgba(166, 90, 0, 0.55)),
+      var(--pune) center 78% / 140% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+  }
+
+  .phil__word.is-on::after {
+    opacity: 1;
+    transform: none;
   }
 
   .phil__body {
@@ -516,33 +1075,69 @@ const alternates = { en: '/', hi: '/hi/', mr: '/mr/' };
     flex-direction: column;
     align-items: flex-start;
     gap: 22px;
-    padding-top: 40px;
+    padding-top: 52px;
   }
 
-  /* Services */
+  .phil__lead {
+    font-family: var(--serif);
+    font-size: clamp(1.5rem, 2.2vw, 1.9rem);
+    line-height: 1.35;
+    color: var(--ink);
+  }
+
+  .phil__figure {
+    width: 100%;
+    margin: 28px 0 0;
+  }
+
+  .phil__frame {
+    aspect-ratio: 4 / 5;
+    border-radius: var(--radius-lg);
+  }
+
+  /* ---------- Services ---------- */
   .svc {
+    display: grid;
+    gap: 14px;
     list-style: none;
-    border-top: 1px solid var(--line-strong);
-  }
-
-  .svc li {
-    border-bottom: 1px solid var(--line);
   }
 
   .svc__row {
     display: grid;
-    grid-template-columns: 64px minmax(0, 1fr) 160px 120px 32px;
+    grid-template-columns: 56px 60px minmax(0, 1fr) auto 150px 48px;
     gap: 24px;
     align-items: center;
-    padding: 28px 0;
+    padding: 20px 26px 20px 28px;
+    border-radius: var(--radius-lg);
+    background: var(--white);
     color: inherit;
     text-decoration: none;
+    box-shadow: 0 1px 0 rgba(8, 57, 132, 0.08);
+    transition:
+      transform 0.45s var(--ease-out),
+      background-color 0.45s var(--ease-out),
+      box-shadow 0.45s var(--ease-out);
   }
 
   .svc__num {
-    font-family: var(--serif);
-    font-size: 1.5rem;
-    color: var(--muted);
+    font: 800 1.6rem/1 var(--sans);
+    letter-spacing: -0.03em;
+    color: var(--navy);
+    transition: color 0.3s var(--ease);
+  }
+
+  .svc__icon {
+    display: grid;
+    place-items: center;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: var(--sky);
+    color: var(--navy);
+    transition:
+      background-color 0.3s var(--ease),
+      color 0.3s var(--ease),
+      transform 0.45s var(--ease-out);
   }
 
   .svc__main {
@@ -553,62 +1148,129 @@ const alternates = { en: '/', hi: '/hi/', mr: '/mr/' };
 
   .svc__name {
     font-family: var(--serif);
-    font-size: clamp(1.7rem, 2.8vw, 2.4rem);
-    line-height: 1.08;
+    font-size: clamp(1.9rem, 2.9vw, 2.6rem);
+    line-height: 1.05;
     color: var(--ink);
-    transition: color 0.25s var(--ease);
+    transition: color 0.3s var(--ease);
   }
 
   .svc__short {
     color: var(--muted);
-    font-size: 15px;
+    font-size: 16px;
+    transition: color 0.3s var(--ease);
   }
 
   .svc__range {
-    font-size: 13px;
-    font-weight: 600;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--ink);
+    padding: 6px 14px;
+    border-radius: 999px;
+    background: var(--sky);
+    color: var(--navy);
+    font-size: 14px;
+    font-weight: 700;
+    white-space: nowrap;
+    transition:
+      background-color 0.3s var(--ease),
+      color 0.3s var(--ease);
   }
 
   .svc__thumb {
-    width: 120px;
-    aspect-ratio: 12 / 8.5;
-    opacity: 0.85;
-    transition: opacity 0.4s var(--ease);
+    width: 150px;
+    aspect-ratio: 3 / 2;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .svc__thumb :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.8s var(--ease-out);
   }
 
   .svc__arrow {
-    font-size: 1.3rem;
-    transition: transform 0.3s var(--ease);
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: 1px solid var(--line-strong);
+    font-size: 20px;
+    transition:
+      transform 0.35s var(--ease),
+      background-color 0.3s var(--ease),
+      border-color 0.3s var(--ease),
+      color 0.3s var(--ease);
+  }
+
+  .svc__row:hover {
+    transform: scale(1.025);
+    background: var(--navy);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .svc__row:hover .svc__num {
+    color: var(--saffron-2);
+  }
+
+  .svc__row:hover .svc__icon {
+    background: var(--saffron);
+    color: var(--ink);
+    transform: rotate(-8deg) scale(1.08);
   }
 
   .svc__row:hover .svc__name {
-    color: var(--navy);
+    color: var(--white);
   }
 
-  .svc__row:hover .svc__thumb {
-    opacity: 1;
+  .svc__row:hover .svc__short {
+    color: #cdd8ea;
+  }
+
+  .svc__row:hover .svc__range {
+    background: rgba(246, 243, 236, 0.14);
+    color: var(--paper);
+  }
+
+  .svc__row:hover .svc__thumb :global(img) {
+    transform: scale(1.12);
   }
 
   .svc__row:hover .svc__arrow {
     transform: translateX(6px);
+    background: var(--saffron);
+    border-color: var(--saffron);
+    color: var(--ink);
   }
 
   .svc__note {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
     margin-top: 28px;
-    max-width: 52em;
+    padding: 22px 26px;
+    border-radius: var(--radius-lg);
+    border: 1px dashed rgba(8, 57, 132, 0.35);
     color: var(--muted);
-    font-size: 15px;
+    font-size: 16px;
+  }
+
+  .svc__note-icon {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--white);
+    color: var(--navy);
   }
 
   .svc__note strong {
     color: var(--ink);
-    font-weight: 600;
+    font-weight: 650;
   }
 
-  /* Machinery */
+  /* ---------- Machinery ---------- */
   .mach__side {
     display: flex;
     flex-direction: column;
@@ -616,287 +1278,393 @@ const alternates = { en: '/', hi: '/hi/', mr: '/mr/' };
     gap: 20px;
   }
 
+  .filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 36px;
+  }
+
+  .filters__btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 18px;
+    border-radius: 999px;
+    border: 1px solid rgba(246, 243, 236, 0.28);
+    background: transparent;
+    color: var(--paper);
+    font: 600 15px/1 var(--sans);
+    cursor: pointer;
+    transition:
+      background-color 0.25s var(--ease),
+      color 0.25s var(--ease),
+      border-color 0.25s var(--ease),
+      transform 0.25s var(--ease);
+  }
+
+  .filters__btn span {
+    display: grid;
+    place-items: center;
+    min-width: 24px;
+    height: 24px;
+    padding: 0 6px;
+    border-radius: 999px;
+    background: rgba(246, 243, 236, 0.14);
+    font-size: 13px;
+  }
+
+  .filters__btn:hover {
+    border-color: var(--saffron);
+    transform: translateY(-2px);
+  }
+
+  .filters__btn[aria-pressed='true'] {
+    background: var(--saffron);
+    border-color: var(--saffron);
+    color: var(--ink);
+  }
+
+  .filters__btn[aria-pressed='true'] span {
+    background: rgba(11, 21, 37, 0.15);
+  }
+
   .mach-grid {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 56px 32px;
+    gap: 28px;
     list-style: none;
   }
 
-  /* Projects */
-  .proj {
-    list-style: none;
-    border-top: 1px solid var(--line-on-dark);
+  .mach-grid li[hidden] {
+    display: none;
   }
 
-  .proj__row {
+  .mach-grid li.is-entering {
+    animation: card-in 0.6s var(--ease-out);
+  }
+
+  @keyframes card-in {
+    from {
+      opacity: 0;
+      transform: translateY(24px) scale(0.97);
+    }
+  }
+
+  /* ---------- Approach ---------- */
+  .steps {
+    position: relative;
     display: grid;
-    grid-template-columns: minmax(0, 2.4fr) minmax(0, 3.6fr) minmax(0, 4fr) minmax(0, 1.4fr);
-    gap: 16px 32px;
-    align-items: baseline;
-    padding: 28px 0;
-    border-bottom: 1px solid var(--line-on-dark);
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 22px;
+    list-style: none;
   }
 
-  .proj__scale {
-    font-family: var(--serif);
-    font-size: clamp(1.8rem, 2.6vw, 2.3rem);
-    line-height: 1.05;
-    color: var(--paper);
-  }
-
-  .proj__name {
-    color: var(--paper);
-    font-weight: 600;
-  }
-
-  .proj__client .muted {
-    font-size: 14px;
-  }
-
-  .proj__scope {
-    color: #cdd5e2;
-    font-size: 15px;
-  }
-
-  .proj__status {
-    justify-self: end;
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--muted-on-dark);
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .proj__status::before {
+  /* A connecting line that draws itself across the four steps. */
+  .steps::before {
     content: '';
-    width: 7px;
-    height: 7px;
-    background: var(--muted-on-dark);
+    position: absolute;
+    top: 64px;
+    left: 12%;
+    right: 12%;
+    height: 2px;
+    background: linear-gradient(90deg, var(--navy), var(--green-2), var(--saffron));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 1.8s var(--ease-out) 0.3s;
   }
 
-  .proj__status.is-ongoing::before {
-    background: var(--lime);
+  :global(.js) .steps.is-visible::before,
+  :global(html:not(.js)) .steps::before {
+    transform: scaleX(1);
   }
 
-  .proj__status.is-completed::before,
-  .proj__status.is-commissioned::before {
-    background: var(--green);
+  .steps__item {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 30px 24px 32px;
+    border-radius: var(--radius-lg);
+    background: rgba(255, 255, 255, 0.55);
+    text-align: center;
+    transition:
+      transform 0.45s var(--ease-out),
+      background-color 0.45s var(--ease-out),
+      box-shadow 0.45s var(--ease-out);
   }
 
-  .proj__foot {
-    margin-top: 40px;
-  }
-
-  /* Approach */
-  .appr {
+  .steps__dot {
+    position: relative;
+    z-index: 1;
     display: grid;
-    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
-    gap: 48px 88px;
-    align-items: start;
+    place-items: center;
+    width: 68px;
+    height: 68px;
+    border-radius: 50%;
+    background: var(--navy);
+    color: var(--white);
+    box-shadow: 0 0 0 8px var(--sage);
+    transition:
+      background-color 0.35s var(--ease),
+      color 0.35s var(--ease),
+      transform 0.45s var(--ease-out);
   }
 
-  .appr__frame {
-    aspect-ratio: 4 / 5;
-  }
-
-  .appr__media {
-    position: sticky;
-    top: calc(var(--header-h) + 32px);
-  }
-
-  .appr__title {
-    margin-top: 20px;
-  }
-
-  .appr__steps {
-    list-style: none;
-    margin-top: 48px;
-    border-top: 1px solid var(--line-strong);
-  }
-
-  .appr__steps li {
-    display: grid;
-    grid-template-columns: 72px minmax(0, 1fr);
-    gap: 20px;
-    padding: 28px 0;
-    border-bottom: 1px solid var(--line);
-  }
-
-  .appr__steps .muted {
+  .steps__num {
     margin-top: 8px;
+    font: 800 15px/1 var(--sans);
+    letter-spacing: 0.1em;
+    color: var(--green-ink);
   }
 
-  .appr__num {
-    font-family: var(--serif);
-    font-size: 2rem;
-    line-height: 1;
-    color: var(--navy);
+  .steps__item:hover {
+    transform: translateY(-8px);
+    background: var(--white);
+    box-shadow: var(--shadow-lg);
   }
 
-  /* Insights */
+  .steps__item:hover .steps__dot {
+    background: var(--saffron);
+    color: var(--ink);
+    transform: scale(1.08);
+  }
+
+  /* ---------- Clients ---------- */
+  .clients-sec {
+    overflow: hidden;
+  }
+
+  .clients-sec__creds {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 6px;
+  }
+
+  /* ---------- Insights ---------- */
   .ins {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 32px;
+    gap: 28px;
     list-style: none;
   }
 
   .ins__card {
     display: flex;
     flex-direction: column;
-    gap: 14px;
     height: 100%;
-    padding: 32px 0 0;
-    border-top: 1px solid var(--line-strong);
+    overflow: hidden;
+    border-radius: var(--radius-lg);
+    background: var(--white);
     color: inherit;
     text-decoration: none;
+    transition:
+      transform 0.5s var(--ease-out),
+      box-shadow 0.5s var(--ease-out);
+  }
+
+  .ins__media {
+    position: relative;
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+  }
+
+  .ins__media :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 1s var(--ease-out);
   }
 
   .ins__topic {
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--green-ink);
+    position: absolute;
+    left: 16px;
+    top: 16px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: var(--saffron);
+    color: var(--ink);
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .ins__body {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    flex: 1;
+    padding: 24px 26px 26px;
   }
 
   .ins__title {
     font-family: var(--serif);
-    font-size: clamp(1.6rem, 2.2vw, 1.9rem);
-    line-height: 1.12;
+    font-size: clamp(1.7rem, 2.3vw, 2rem);
+    line-height: 1.1;
     color: var(--ink);
-    transition: color 0.25s var(--ease);
+    transition: color 0.3s var(--ease);
   }
 
   .ins__excerpt {
-    font-size: 15px;
+    font-size: 16px;
   }
 
-  .ins__more {
+  .ins__meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     margin-top: auto;
-    padding-top: 8px;
-    font-weight: 600;
+    padding-top: 10px;
     font-size: 14px;
+    font-weight: 600;
+    color: var(--muted);
+  }
+
+  .ins__go {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid var(--line-strong);
+    transition:
+      background-color 0.3s var(--ease),
+      transform 0.3s var(--ease);
+  }
+
+  .ins__card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .ins__card:hover :global(img) {
+    transform: scale(1.08);
   }
 
   .ins__card:hover .ins__title {
     color: var(--navy);
   }
 
-  @media (max-width: 1080px) {
+  .ins__card:hover .ins__go {
+    background: var(--saffron);
+    border-color: var(--saffron);
+    transform: translateX(4px);
+  }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width: 1100px) {
     .svc__row {
-      grid-template-columns: 52px minmax(0, 1fr) 140px 28px;
+      grid-template-columns: 44px 52px minmax(0, 1fr) auto 44px;
     }
 
     .svc__thumb {
       display: none;
     }
 
-    .mach-grid {
+    .mach-grid,
+    .pgrid {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
-    .proj__row {
-      grid-template-columns: minmax(0, 2fr) minmax(0, 3fr) minmax(0, 1.2fr);
+    .steps {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
-    .proj__scope {
-      grid-column: 2 / 3;
-    }
-
-    .proj__status {
-      grid-row: 1;
-      grid-column: 3;
+    .steps::before {
+      display: none;
     }
   }
 
-  @media (max-width: 900px) {
-    .hero__top,
-    .phil,
-    .appr {
+  @media (max-width: 899px) {
+    .phil__grid {
       grid-template-columns: minmax(0, 1fr);
+    }
+
+    .phil__sticky {
+      position: static;
     }
 
     .phil__body {
       padding-top: 0;
     }
 
-    .appr__media {
-      position: static;
-    }
-
-    .appr__frame {
+    .phil__frame {
       aspect-ratio: 16 / 10;
     }
 
-    .figures {
+    .numbers__grid {
       grid-template-columns: repeat(2, minmax(0, 1fr));
+      row-gap: 32px;
     }
 
-    .figures__item + .figures__item:nth-child(3) {
-      padding-left: 0;
+    .numbers__item + .numbers__item:nth-child(3) {
       border-left: 0;
-    }
-
-    .figures__item:nth-child(n + 3) {
-      margin-top: 8px;
-      border-top: 1px solid var(--line);
     }
 
     .ins {
       grid-template-columns: minmax(0, 1fr);
     }
+
+    .hero__dots {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .hero__cap {
+      display: none;
+    }
+
+    .hero__scroll {
+      display: none;
+    }
   }
 
   @media (max-width: 680px) {
-    .hero__frame {
-      aspect-ratio: 4 / 3;
+    .hero__content {
+      gap: 20px;
+    }
+
+    .numbers__item {
+      padding: 4px 16px;
     }
 
     .svc__row {
-      grid-template-columns: 40px minmax(0, 1fr) 24px;
-      gap: 16px;
+      grid-template-columns: 52px minmax(0, 1fr) 40px;
+      gap: 14px 16px;
+      padding: 18px;
+    }
+
+    .svc__num {
+      display: none;
+    }
+
+    .svc__icon {
+      width: 52px;
+      height: 52px;
     }
 
     .svc__range {
       grid-column: 2;
       grid-row: 2;
+      justify-self: start;
     }
 
     .svc__arrow {
       grid-column: 3;
       grid-row: 1;
+      width: 40px;
+      height: 40px;
     }
 
-    .mach-grid {
+    .svc__row:hover {
+      transform: scale(1.01);
+    }
+
+    .mach-grid,
+    .pgrid,
+    .steps {
       grid-template-columns: minmax(0, 1fr);
-      gap: 48px;
-    }
-
-    .proj__row {
-      grid-template-columns: minmax(0, 1fr) auto;
-    }
-
-    .proj__scale {
-      grid-column: 1;
-    }
-
-    .proj__status {
-      grid-column: 2;
-      grid-row: 1;
-    }
-
-    .proj__client,
-    .proj__scope {
-      grid-column: 1 / -1;
-    }
-
-    .appr__steps li {
-      grid-template-columns: 52px minmax(0, 1fr);
     }
   }
 </style>

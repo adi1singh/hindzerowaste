@@ -15,7 +15,7 @@ const year = new Date().getFullYear();
 
 const company = [
   { key: 'nav.about', href: localePath(lang, '/about-us') },
-  { key: 'nav.projects', href: '/projects' },
+  { key: 'nav.projects', href: localePath(lang, '/about-us') + '#projects' },
   { key: 'nav.insights', href: '/waste-management-blogs' },
   { key: 'nav.contact', href: localePath(lang, '/contact-us') },
 ] as const;
@@ -122,7 +122,8 @@ const company = [
 <style>
   .footer {
     padding-top: clamp(64px, 8vw, 104px);
-    font-size: 15px;
+    font-size: 16px;
+    border-top: 4px solid var(--saffron);
   }
 
   .footer a {
@@ -131,7 +132,7 @@ const company = [
   }
 
   .footer a:hover {
-    color: var(--paper);
+    color: var(--saffron-2);
     text-decoration: underline;
     text-underline-offset: 0.25em;
   }
@@ -168,7 +169,7 @@ const company = [
 
   .footer__title {
     margin-bottom: 18px;
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 600;
     letter-spacing: 0.16em;
     text-transform: uppercase;
@@ -214,7 +215,7 @@ const company = [
     padding-block: 28px 36px;
     border-top: 1px solid var(--line-on-dark);
     color: var(--muted-on-dark);
-    font-size: 13px;
+    font-size: 14px;
   }
 
   .footer__bottom p {
