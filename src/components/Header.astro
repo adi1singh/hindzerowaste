@@ -387,6 +387,7 @@ const chevron =
     display: inline-flex;
     align-items: center;
     gap: 8px;
+    white-space: nowrap;
     color: var(--paper);
     text-decoration: none;
     font-weight: 600;
@@ -441,6 +442,22 @@ const chevron =
     .lang a {
       padding: 3px 10px;
       font-size: 14px;
+    }
+  }
+
+  @media (max-width: 400px) {
+    .topbar__phone {
+      font-size: 13px;
+      gap: 6px;
+    }
+
+    .lang {
+      gap: 0;
+    }
+
+    .lang a {
+      padding: 3px 8px;
+      font-size: 13px;
     }
   }
 

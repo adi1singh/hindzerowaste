@@ -4,8 +4,8 @@ seoTitle: 'Heavy Duty Shredder Machine for MSW, RDF & Industrial Waste'
 description: 'How a heavy-duty twin-shaft shredder works, where it fits in MSW, RDF and bio-mining plants, and what to evaluate when selecting one.'
 topic: 'Size reduction'
 order: 3
-cover: '../../assets/photos/shredder-rotor.jpg'
-coverAlt: 'Shredder rotor fitted with hardened alloy-steel cutters'
+cover: '../../assets/photos/shredder-blades.jpg'
+coverAlt: 'Twin-shaft shredder cutting chamber with hardened alloy-steel cutters'
 related: ['industrial-shredder-machine', 'rdf-afr-plant', 'air-density-separator']
 ---
 

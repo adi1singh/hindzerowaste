@@ -2,52 +2,99 @@
 import { Image } from 'astro:assets';
 import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
-import PageHero from '../components/PageHero.astro';
+import IndexHero from '../components/IndexHero.astro';
 import CtaBand from '../components/CtaBand.astro';
 
-const posts = (await getCollection('blog')).sort((a, b) => a.data.order - b.data.order);
-const [lead, ...rest] = posts;
+const posts = (await getCollection('blog'))
+  .sort((a, b) => a.data.order - b.data.order)
+  .map((p) => ({ post: p, minutes: Math.max(2, Math.round((p.body ?? '').split(/\s+/).length / 200)) }));
+const [featured, ...rest] = posts;
+const topics = [...new Set(posts.map(({ post }) => post.data.topic))];
+const topicKey = (t: string) => t.toLowerCase().replace(/[^a-z]+/g, '-');
+const totalMinutes = posts.reduce((n, p) => n + p.minutes, 0);
 ---
 
 <Base
   title="Waste Management Insights | Bio-mining, MSW, MRF & Recycling"
   description="Practical guides on bio-mining, waste segregation plants, MSW processing, shredders and balers from the engineers at Hind Zero Waste Management."
 >
-  <PageHero
+  <IndexHero
     eyebrow="Insights"
     title="Notes from the <em>field</em>."
     lead="Practical guides on bio-mining, segregation, processing plants and machinery, written by the people who build them."
     crumbs={[{ label: 'Home', href: '/' }, { label: 'Insights' }]}
-  />
+    images={posts.slice(0, 3).map(({ post }) => ({ src: post.data.cover, alt: post.data.coverAlt }))}
+    stats={[
+      { value: posts.length, label: 'In-depth guides' },
+      { value: topics.length, label: 'Topics' },
+      { value: totalMinutes, label: 'Minutes of reading' },
+    ]}
+  >
+    <a class="btn btn--accent" href="#articles">Start reading <span class="arrow">↓</span></a>
+  </IndexHero>
 
-  <section class="section--tight">
+  <section class="section bg-paper" id="articles">
     <div class="container">
       {
-        lead && (
-          <a class="lead-post" href={`/${lead.id}`}>
-            <div class="frame lead-post__media">
-              <Image src={lead.data.cover} alt={lead.data.coverAlt} widths={[640, 960, 1280]} sizes="(min-width: 1000px) 720px, 92vw" loading="eager" />
+        featured && (
+          <a class="feature" href={`/${featured.post.id}`} data-reveal>
+            <div class="feature__media">
+              <Image
+                src={featured.post.data.cover}
+                alt={featured.post.data.coverAlt}
+                widths={[640, 960, 1280]}
+                sizes="(min-width: 1000px) 700px, 92vw"
+                loading="lazy"
+              />
+              <span class="feature__flag">Featured guide</span>
             </div>
-            <div class="lead-post__body">
-              <p class="topic">{lead.data.topic}</p>
-              <h2 class="h2 lead-post__title">{lead.data.title}</h2>
-              <p class="muted">{lead.data.description}</p>
-              <span class="link-arrow">Read article <span class="arrow">→</span></span>
+            <div class="feature__body">
+              <p class="topic">{featured.post.data.topic}</p>
+              <h2 class="h2 feature__title">{featured.post.data.title}</h2>
+              <p class="lead">{featured.post.data.description}</p>
+              <p class="feature__meta">
+                <span>{featured.minutes} min read</span>
+                <span class="btn">
+                  Read the guide <span class="arrow">→</span>
+                </span>
+              </p>
             </div>
           </a>
         )
       }
-      <ul class="posts">
+
+      <div class="filters" role="group" aria-label="Filter articles by topic" data-topic-filters data-reveal>
+        <button type="button" aria-pressed="true" data-topic="all">
+          All topics <span>{rest.length}</span>
+        </button>
         {
-          rest.map((p) => (
-            <li data-reveal>
-              <a href={`/${p.id}`}>
-                <div class="frame posts__media">
-                  <Image src={p.data.cover} alt={p.data.coverAlt} widths={[480, 720]} sizes="(min-width: 1000px) 400px, 92vw" loading="lazy" />
+          topics
+            .filter((t) => rest.some(({ post }) => post.data.topic === t))
+            .map((t) => (
+              <button type="button" aria-pressed="false" data-topic={topicKey(t)}>
+                {t} <span>{rest.filter(({ post }) => post.data.topic === t).length}</span>
+              </button>
+            ))
+        }
+      </div>
+
+      <ul class="posts" data-topic-grid>
+        {
+          rest.map(({ post, minutes }, i) => (
+            <li data-topic={topicKey(post.data.topic)} data-reveal style={`--d:${i % 2}`}>
+              <a class="post" href={`/${post.id}`}>
+                <div class="post__media">
+                  <Image src={post.data.cover} alt={post.data.coverAlt} widths={[480, 720, 960]} sizes="(min-width: 900px) 45vw, 92vw" loading="lazy" />
+                  <span class="post__topic">{post.data.topic}</span>
                 </div>
-                <p class="topic">{p.data.topic}</p>
-                <h3 class="posts__title">{p.data.title}</h3>
-                <p class="muted posts__desc">{p.data.description}</p>
+                <div class="post__body">
+                  <h3 class="post__title">{post.data.title}</h3>
+                  <p class="muted post__desc">{post.data.description}</p>
+                  <p class="post__meta">
+                    <span>{minutes} min read</span>
+                    <span class="post__go" aria-hidden="true">→</span>
+                  </p>
+                </div>
               </a>
             </li>
           ))
@@ -59,77 +106,314 @@ const [lead, ...rest] = posts;
   <CtaBand />
 </Base>
 
+<script>
+  const bar = document.querySelector<HTMLElement>('[data-topic-filters]');
+  const grid = document.querySelector<HTMLElement>('[data-topic-grid]');
+  if (bar && grid) {
+    const buttons = [...bar.querySelectorAll<HTMLButtonElement>('[data-topic]')];
+    const items = [...grid.querySelectorAll<HTMLElement>('[data-topic]')];
+    buttons.forEach((btn) =>
+      btn.addEventListener('click', () => {
+        buttons.forEach((b) => b.setAttribute('aria-pressed', String(b === btn)));
+        items.forEach((item) => {
+          const show = btn.dataset.topic === 'all' || item.dataset.topic === btn.dataset.topic;
+          item.hidden = !show;
+          if (show) {
+            item.classList.remove('is-entering');
+            void item.offsetWidth;
+            item.classList.add('is-entering');
+          }
+        });
+      }),
+    );
+  }
+</script>
+
 <style>
-  .lead-post {
-    display: grid;
-    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
-    gap: 32px 56px;
-    align-items: center;
-    padding-bottom: clamp(56px, 7vw, 88px);
-    border-bottom: 1px solid var(--line-strong);
-    text-decoration: none;
-    color: inherit;
-  }
-
-  .lead-post__media {
-    aspect-ratio: 4 / 3;
-  }
-
-  .lead-post__body {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 18px;
-  }
-
-  .lead-post:hover .lead-post__title,
-  .posts a:hover .posts__title {
-    color: var(--navy);
-  }
-
   .topic {
-    font-size: 12px;
-    font-weight: 600;
+    font-size: 13px;
+    font-weight: 700;
     letter-spacing: 0.14em;
     text-transform: uppercase;
     color: var(--green-ink);
   }
 
+  .feature {
+    display: grid;
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    overflow: hidden;
+    border-radius: 20px;
+    background: var(--white);
+    color: inherit;
+    text-decoration: none;
+    box-shadow: var(--shadow-md);
+    transition:
+      transform 0.5s var(--ease-out),
+      box-shadow 0.5s var(--ease-out);
+  }
+
+  .feature:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .feature__media {
+    position: relative;
+    min-height: 420px;
+    overflow: hidden;
+  }
+
+  .feature__media :global(img) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 1.4s var(--ease-out);
+  }
+
+  .feature:hover .feature__media :global(img) {
+    transform: scale(1.06);
+  }
+
+  .feature__flag {
+    position: absolute;
+    left: 20px;
+    top: 20px;
+    padding: 7px 14px;
+    border-radius: 999px;
+    background: var(--saffron);
+    color: var(--ink);
+    font-size: 14px;
+    font-weight: 700;
+  }
+
+  .feature__body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 18px;
+    padding: clamp(28px, 4vw, 52px);
+  }
+
+  .feature__title {
+    transition: color 0.3s var(--ease);
+  }
+
+  .feature:hover .feature__title {
+    color: var(--navy);
+  }
+
+  .feature__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-top: 8px;
+    font-weight: 600;
+    color: var(--muted);
+  }
+
+  .filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: clamp(56px, 7vw, 88px) 0 32px;
+  }
+
+  .filters button {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 18px;
+    border-radius: 999px;
+    border: 1px solid var(--line-strong);
+    background: var(--white);
+    color: var(--ink);
+    font: 600 15px/1 var(--sans);
+    cursor: pointer;
+    transition:
+      background-color 0.25s var(--ease),
+      color 0.25s var(--ease),
+      border-color 0.25s var(--ease),
+      transform 0.25s var(--ease);
+  }
+
+  .filters button span {
+    display: grid;
+    place-items: center;
+    min-width: 24px;
+    height: 24px;
+    border-radius: 999px;
+    background: var(--sky);
+    color: var(--navy);
+    font-size: 13px;
+  }
+
+  .filters button:hover {
+    border-color: var(--navy);
+    transform: translateY(-2px);
+  }
+
+  .filters button[aria-pressed='true'] {
+    background: var(--navy);
+    border-color: var(--navy);
+    color: var(--white);
+  }
+
+  .filters button[aria-pressed='true'] span {
+    background: var(--saffron);
+    color: var(--ink);
+  }
+
   .posts {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 56px 40px;
+    gap: 28px;
     list-style: none;
-    padding-top: clamp(56px, 7vw, 88px);
   }
 
-  .posts a {
+  .posts li[hidden] {
+    display: none;
+  }
+
+  .posts li.is-entering {
+    animation: card-in 0.6s var(--ease-out);
+  }
+
+  @keyframes card-in {
+    from {
+      opacity: 0;
+      transform: translateY(24px) scale(0.97);
+    }
+  }
+
+  .post {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+    height: 100%;
+    overflow: hidden;
+    border-radius: var(--radius-lg);
+    background: var(--white);
+    color: inherit;
+    text-decoration: none;
+    transition:
+      transform 0.5s var(--ease-out),
+      box-shadow 0.5s var(--ease-out);
+  }
+
+  .post:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .post__media {
+    position: relative;
+    min-height: 260px;
+    overflow: hidden;
+  }
+
+  .post__media :global(img) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 1.2s var(--ease-out);
+  }
+
+  .post:hover .post__media :global(img) {
+    transform: scale(1.08);
+  }
+
+  .post__topic {
+    position: absolute;
+    left: 14px;
+    top: 14px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: rgba(11, 21, 37, 0.75);
+    backdrop-filter: blur(6px);
+    color: var(--paper);
+    font-size: 13px;
+    font-weight: 650;
+  }
+
+  .post__body {
     display: flex;
     flex-direction: column;
-    gap: 14px;
-    text-decoration: none;
-    color: inherit;
+    gap: 12px;
+    padding: 26px 26px 24px;
   }
 
-  .posts__media {
-    aspect-ratio: 16 / 10;
-    margin-bottom: 8px;
-  }
-
-  .posts__title {
+  .post__title {
     font-family: var(--serif);
-    font-size: clamp(1.7rem, 2.6vw, 2.2rem);
+    font-size: clamp(1.6rem, 2.2vw, 1.95rem);
     line-height: 1.1;
+    color: var(--ink);
+    transition: color 0.3s var(--ease);
   }
 
-  .posts__desc {
-    font-size: 15px;
+  .post:hover .post__title {
+    color: var(--navy);
+  }
+
+  .post__desc {
+    font-size: 16px;
+  }
+
+  .post__meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: auto;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--muted);
+  }
+
+  .post__go {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid var(--line-strong);
+    transition:
+      background-color 0.3s var(--ease),
+      transform 0.3s var(--ease);
+  }
+
+  .post:hover .post__go {
+    background: var(--saffron);
+    border-color: var(--saffron);
+    transform: translateX(4px);
+  }
+
+  @media (max-width: 1100px) {
+    .posts {
+      grid-template-columns: minmax(0, 1fr);
+    }
   }
 
   @media (max-width: 860px) {
-    .lead-post,
-    .posts {
+    .feature {
       grid-template-columns: minmax(0, 1fr);
+    }
+
+    .feature__media {
+      min-height: 260px;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .post {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .post__media {
+      min-height: 200px;
     }
   }
 </style>

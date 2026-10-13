@@ -70,6 +70,7 @@
 html {
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
+  overflow-x: clip;
   scroll-behavior: smooth;
   scroll-padding-top: calc(var(--header-h) + 16px);
 }
@@ -690,6 +691,14 @@ ol {
 
   .js [data-reveal='zoom'] {
     transform: scale(0.94);
+  }
+
+  /* Side-on reveals would widen the page on phones, so they rise instead. */
+  @media (max-width: 900px) {
+    .js [data-reveal='left'],
+    .js [data-reveal='right'] {
+      transform: translateY(44px);
+    }
   }
 
   .js [data-reveal].is-visible {

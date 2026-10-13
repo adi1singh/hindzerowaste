@@ -1,6 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
-import PageHero from '../components/PageHero.astro';
+import Icon from '../components/Icon.astro';
 import { site, telHref } from '../data/site';
 import { products } from '../data/products';
 import { services } from '../data/services';
@@ -48,6 +48,8 @@ const copy = {
     brochure: 'Brochure (PDF)',
     profile: 'Company profile (PDF)',
     subjectPrefix: 'Enquiry',
+    quick: ['Call us', 'Email us', 'Visit us'],
+    hours: 'Tell us about your project and our team will get back to you.',
   },
   hi: {
     title: 'संपर्क करें | कोटेशन माँगें',
@@ -84,6 +86,8 @@ const copy = {
     brochure: 'ब्रोशर (PDF)',
     profile: 'कंपनी प्रोफ़ाइल (PDF)',
     subjectPrefix: 'पूछताछ',
+    quick: ['कॉल करें', 'ईमेल करें', 'हमसे मिलें'],
+    hours: 'अपनी परियोजना के बारे में बताइए, हमारी टीम आपसे संपर्क करेगी।',
   },
   mr: {
     title: 'संपर्क | कोटेशन मागवा',
@@ -120,6 +124,8 @@ const copy = {
     brochure: 'ब्रोशर (PDF)',
     profile: 'कंपनी प्रोफाइल (PDF)',
     subjectPrefix: 'चौकशी',
+    quick: ['कॉल करा', 'ईमेल करा', 'भेट द्या'],
+    hours: 'तुमच्या प्रकल्पाबद्दल सांगा, आमची टीम तुमच्याशी संपर्क साधेल.',
   },
 }[lang];
 
@@ -138,17 +144,59 @@ const schema = [
 ---
 
 <Base title={copy.title} description={copy.description} lang={lang} alternates={alternates} schema={schema}>
-  <PageHero
-    eyebrow={copy.eyebrow}
-    title={copy.heroTitle}
-    lead={copy.lead}
-    crumbs={[{ label: copy.crumbs[0], href: home }, { label: copy.crumbs[1] }]}
-  />
+  <section class="chero on-dark">
+    <div class="container chero__inner">
+      <nav class="chero__crumbs" aria-label="Breadcrumb">
+        <ol>
+          <li><a href={home}>{copy.crumbs[0]}</a></li>
+          <li><span aria-current="page">{copy.crumbs[1]}</span></li>
+        </ol>
+      </nav>
+      <p class="eyebrow" data-reveal>{copy.eyebrow}</p>
+      <h1 class="h1 chero__title" data-reveal style="--d: 1" set:html={copy.heroTitle} />
+      <p class="lead chero__lead" data-reveal style="--d: 2">{copy.lead}</p>
+      <ul class="quick">
+        <li data-reveal style="--d: 3">
+          <a class="quick__tile" href={telHref(site.phones[0])}>
+            <span class="quick__icon" aria-hidden="true">
+              <svg width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z"></path></svg>
+            </span>
+            <span class="quick__label">{copy.quick[0]}</span>
+            <span class="quick__value tabular">{site.phones[0]}</span>
+          </a>
+        </li>
+        <li data-reveal style="--d: 4">
+          <a class="quick__tile" href={`mailto:${site.emails.sales}`}>
+            <span class="quick__icon" aria-hidden="true">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M3 7l9 6 9-6"></path></svg>
+            </span>
+            <span class="quick__label">{copy.quick[1]}</span>
+            <span class="quick__value">{site.emails.sales}</span>
+          </a>
+        </li>
+        <li data-reveal style="--d: 5">
+          <a class="quick__tile" href={site.mapUrl} target="_blank" rel="noopener">
+            <span class="quick__icon" aria-hidden="true">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"></path><circle cx="12" cy="9.5" r="2.5"></circle></svg>
+            </span>
+            <span class="quick__label">{copy.quick[2]}</span>
+            <span class="quick__value">Rajarampuri, {site.address.city}</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </section>
 
-  <section class="section--tight contact-wrap">
+  <section class="contact-wrap">
     <div class="container contact">
-      <div class="form-card" id="enquiry">
-        <h2 class="h3">{copy.formTitle}</h2>
+      <div class="form-card" id="enquiry" data-reveal>
+        <div class="form-card__head">
+          <span class="form-card__icon"><Icon name="consult" size={26} /></span>
+          <div>
+            <h2 class="h3">{copy.formTitle}</h2>
+            <p class="muted form-card__hours">{copy.hours}</p>
+          </div>
+        </div>
         <form
           class="form"
           data-enquiry
@@ -203,7 +251,7 @@ const schema = [
             <input id="f-website" name="website" type="text" tabindex="-1" autocomplete="off" />
           </div>
           <div class="form__foot field--full">
-            <button class="btn" type="submit">{copy.send} <span class="arrow">→</span></button>
+            <button class="btn btn--accent" type="submit">{copy.send} <span class="arrow">→</span></button>
             <p class="form__note">
               <span>* {copy.required}.</span>
               {!endpoint && <span> {copy.mailNote}</span>}
@@ -213,9 +261,12 @@ const schema = [
         </form>
       </div>
 
-      <aside class="details">
+      <aside class="details on-dark" data-reveal style="--d: 1">
         <div class="details__block">
-          <p class="details__label">{copy.call}</p>
+          <p class="details__label">
+            <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z"></path></svg>
+            {copy.call}
+          </p>
           <ul class="details__phones">
             {
               site.phones.map((p) => (
@@ -227,7 +278,10 @@ const schema = [
           </ul>
         </div>
         <div class="details__block">
-          <p class="details__label">{copy.emailLabel}</p>
+          <p class="details__label">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M3 7l9 6 9-6"></path></svg>
+            {copy.emailLabel}
+          </p>
           <ul class="details__mail">
             {
               Object.values(site.emails).map((e) => (
@@ -239,7 +293,10 @@ const schema = [
           </ul>
         </div>
         <div class="details__block">
-          <p class="details__label">{copy.office}</p>
+          <p class="details__label">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"></path><circle cx="12" cy="9.5" r="2.5"></circle></svg>
+            {copy.office}
+          </p>
           <address>
             <strong>{site.name}</strong>
             {site.address.lines.map((l) => <span>{l}</span>)}
@@ -249,7 +306,10 @@ const schema = [
           <a class="link-arrow" href={site.mapUrl} target="_blank" rel="noopener">{copy.map} <span class="arrow">↗</span></a>
         </div>
         <div class="details__block">
-          <p class="details__label">{copy.downloads}</p>
+          <p class="details__label">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"></path></svg>
+            {copy.downloads}
+          </p>
           <div class="details__downloads">
             <a class="link-arrow" href={site.downloads.brochure} target="_blank" rel="noopener">{copy.brochure} <span class="arrow">↗</span></a>
             <a class="link-arrow" href={site.downloads.profile} target="_blank" rel="noopener">{copy.profile} <span class="arrow">↗</span></a>
@@ -325,22 +385,174 @@ const schema = [
   }
 </script>
 
+
 <style>
+  /* Hero */
+  .chero {
+    position: relative;
+    overflow: hidden;
+    padding-block: clamp(40px, 6vw, 72px) clamp(150px, 16vw, 210px);
+    background: radial-gradient(120% 140% at 0% 0%, var(--navy) 0%, var(--navy-deep) 45%, var(--ink) 100%);
+    color: #dfe5ee;
+  }
+
+  .chero::after {
+    content: '';
+    position: absolute;
+    right: -10%;
+    top: -30%;
+    width: 50vw;
+    height: 50vw;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(243, 154, 47, 0.25), transparent 62%);
+    animation: drift 12s ease-in-out infinite alternate;
+    pointer-events: none;
+  }
+
+  @keyframes drift {
+    to {
+      transform: translate(-10%, 10%) scale(1.1);
+    }
+  }
+
+  .chero__inner {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+  }
+
+  .chero__crumbs ol {
+    display: flex;
+    gap: 6px;
+    list-style: none;
+    font-size: 14px;
+    opacity: 0.8;
+  }
+
+  .chero__crumbs li + li::before {
+    content: '/';
+    margin-right: 6px;
+    opacity: 0.6;
+  }
+
+  .chero__crumbs a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .chero__title {
+    color: var(--white);
+    max-width: 14em;
+  }
+
+  .chero__lead {
+    max-width: 36em;
+  }
+
+  .quick {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+    width: 100%;
+    margin-top: 20px;
+    list-style: none;
+  }
+
+  .quick__tile {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-rows: auto auto;
+    column-gap: 16px;
+    align-items: center;
+    padding: 20px 22px;
+    border-radius: var(--radius-lg);
+    background: rgba(246, 243, 236, 0.07);
+    border: 1px solid var(--line-on-dark);
+    color: var(--paper);
+    text-decoration: none;
+    transition:
+      transform 0.45s var(--ease-out),
+      background-color 0.35s var(--ease),
+      border-color 0.35s var(--ease);
+  }
+
+  .quick__icon {
+    grid-row: 1 / 3;
+    display: grid;
+    place-items: center;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: var(--saffron);
+    color: var(--ink);
+  }
+
+  .quick__label {
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--saffron-2);
+  }
+
+  .quick__value {
+    font-size: 18px;
+    font-weight: 650;
+    overflow-wrap: anywhere;
+  }
+
+  .quick__tile:hover {
+    transform: translateY(-6px);
+    background: rgba(246, 243, 236, 0.12);
+    border-color: var(--saffron);
+  }
+
+  /* Form and details */
   .contact-wrap {
-    padding-top: 0;
+    position: relative;
+    z-index: 2;
+    margin-top: calc(-1 * clamp(110px, 12vw, 160px));
+    padding-bottom: var(--section);
   }
 
   .contact {
     display: grid;
-    grid-template-columns: minmax(0, 7fr) minmax(0, 4fr);
-    gap: 48px 72px;
+    grid-template-columns: minmax(0, 7fr) minmax(0, 4.2fr);
+    gap: 28px;
     align-items: start;
   }
 
   .form-card {
     padding: clamp(28px, 4vw, 48px);
+    border-radius: 20px;
     background: var(--white);
-    border: 1px solid var(--line);
+    border-top: 5px solid var(--saffron);
+    box-shadow: 0 40px 90px -40px rgba(8, 25, 60, 0.55);
+  }
+
+  .form-card__head {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+  }
+
+  .form-card__icon {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    background: var(--sky);
+    color: var(--navy);
+  }
+
+  .form-card__hours {
+    margin-top: 4px;
+    font-size: 15px;
   }
 
   .form {
@@ -361,29 +573,29 @@ const schema = [
   }
 
   label {
-    font-size: 13px;
-    font-weight: 600;
-    letter-spacing: 0.02em;
+    font-size: 15px;
+    font-weight: 650;
     color: var(--ink);
   }
 
   label span {
-    color: var(--navy);
+    color: var(--saffron-ink);
   }
 
   input,
   select,
   textarea {
     width: 100%;
-    padding: 13px 14px;
-    border: 1px solid var(--line-strong);
-    border-radius: var(--radius);
-    background: var(--paper);
+    padding: 14px 16px;
+    border: 1.5px solid #d6dde8;
+    border-radius: 10px;
+    background: #f4f7fb;
     color: var(--ink);
-    font: 400 16px/1.4 var(--sans);
+    font: 400 17px/1.4 var(--sans);
     transition:
       border-color 0.2s var(--ease),
-      background-color 0.2s var(--ease);
+      background-color 0.2s var(--ease),
+      box-shadow 0.2s var(--ease);
   }
 
   textarea {
@@ -394,7 +606,7 @@ const schema = [
   input:hover,
   select:hover,
   textarea:hover {
-    border-color: var(--ink);
+    border-color: var(--navy-2);
   }
 
   input:focus,
@@ -403,7 +615,7 @@ const schema = [
     outline: none;
     border-color: var(--navy);
     background: var(--white);
-    box-shadow: 0 0 0 3px color-mix(in srgb, var(--navy) 16%, transparent);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--navy) 14%, transparent);
   }
 
   input:user-invalid,
@@ -430,13 +642,13 @@ const schema = [
   .form__note {
     flex: 1;
     min-width: 240px;
-    font-size: 13px;
+    font-size: 14px;
     color: var(--muted);
   }
 
   .form__status {
     grid-column: 1 / -1;
-    font-weight: 600;
+    font-weight: 650;
   }
 
   .form__status:empty {
@@ -454,15 +666,20 @@ const schema = [
   .details {
     display: flex;
     flex-direction: column;
+    padding: clamp(26px, 3vw, 36px);
+    border-radius: 20px;
+    background: var(--ink);
+    color: #dbe3ee;
+    box-shadow: 0 40px 90px -40px rgba(8, 25, 60, 0.55);
   }
 
   .details__block {
-    padding: 24px 0;
-    border-top: 1px solid var(--line-strong);
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     gap: 14px;
+    padding: 22px 0;
+    border-top: 1px solid var(--line-on-dark);
   }
 
   .details__block:first-child {
@@ -471,51 +688,61 @@ const schema = [
   }
 
   .details__label {
-    font: 600 12px/1 var(--sans);
-    letter-spacing: 0.16em;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font: 700 16px/1 var(--sans);
+    letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: var(--muted);
+    color: var(--saffron-2);
   }
 
   .details__phones {
     list-style: none;
     display: grid;
-    gap: 4px;
+    gap: 6px;
   }
 
   .details__phones a {
-    font-family: var(--serif);
-    font-size: clamp(1.7rem, 2.6vw, 2.1rem);
-    line-height: 1.2;
-    color: var(--ink);
+    font: 750 clamp(1.4rem, 2vw, 1.65rem) / 1.25 var(--sans);
+    letter-spacing: -0.01em;
+    color: var(--white);
     text-decoration: none;
     font-variant-numeric: tabular-nums;
+    transition: color 0.2s var(--ease);
   }
 
   .details__phones a:hover {
-    color: var(--navy);
+    color: var(--saffron-2);
   }
 
   .details__mail {
     list-style: none;
     display: grid;
-    gap: 6px;
+    gap: 8px;
   }
 
   .details__mail a {
-    color: var(--ink);
+    font-size: 18px;
+    color: var(--white);
+    text-underline-offset: 0.25em;
+  }
+
+  .details__mail a:hover {
+    color: var(--saffron-2);
   }
 
   address {
     font-style: normal;
     display: grid;
-    gap: 2px;
-    color: var(--text);
+    gap: 3px;
+    font-size: 17px;
+    color: #cfd8e6;
   }
 
   address strong {
-    font-weight: 600;
-    color: var(--ink);
+    font-weight: 650;
+    color: var(--white);
     margin-bottom: 4px;
   }
 
@@ -526,8 +753,14 @@ const schema = [
     gap: 12px;
   }
 
-  @media (max-width: 960px) {
+  @media (max-width: 1000px) {
     .contact {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  @media (max-width: 760px) {
+    .quick {
       grid-template-columns: minmax(0, 1fr);
     }
   }

@@ -9,9 +9,10 @@ Everything on the new site comes from the current hindzerowaste.com, the brochur
 - [ ] **Enquiry form.** It is not connected to a form service yet. Until it is, pressing Send opens the visitor's email app with the enquiry addressed to sales@. See "Enquiry form" in README.md.
 - [ ] **Headline figures** (from the brochure): 87+ bio-mining projects, 300+ baling machines supplied, and 400+ clients across India and South Africa. The company profile lists only 13 completed bio-mining projects, so the 87+ presumably includes machine supply. Confirm the figures and their wording.
 - [ ] **Certifications.** The site states only "ISO 9001:2015 certified" and "GeM registered OEM". The profile text says "ISO 9001, 14001, 45001". The certificate images in the profile show ISO 9001:2015, GMP and an IMS certificate, all issued to Hind Agro and Chemicals. Confirm which certifications are current, and send scans if they should appear on the site.
-- [ ] **Project record** (the `/projects` page and the home page). It is transcribed from the company profile:
+- [ ] **Project record** (the projects section of the About page, and the home page). It is transcribed from the company profile:
   - Confirm each status and volume. The Moshi figure (7,02,900 m³ of 8,00,000 m³ completed) may be out of date.
   - Bhalaswa is marked "Commissioned". Confirm.
+- [ ] **Derived figures on the About page.** "3,30,352 m³ cleared in completed bio-mining projects" is the sum of the 13 completed projects in the profile. "19+ plants installed" and "7 states and union territories" count the profile's list of installed bio-mining plants. "Projects in 12 states" counts the states named in the brochure and profile together.
 - [ ] **States** with plants or projects. The list combines the brochure (Maharashtra, Karnataka, Goa, Gujarat, Rajasthan, Andhra Pradesh, Telangana, Madhya Pradesh) and the profile (Himachal Pradesh, Punjab, Delhi, Uttar Pradesh).
 - [ ] **Hero photo** (`hero-plant-shed.jpg`, from the brochure). Its caption reads "A segregation and RDF line by Hind Zero Waste". Confirm it is their installation.
 - [ ] **Hindi and Marathi translations** are drafts and need a native speaker's review, especially the technical terms. They cover the home, services, about and contact pages, plus menus, footer and product names.

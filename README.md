@@ -12,16 +12,15 @@ Before launch, go through **[CONTENT-REVIEW.md](CONTENT-REVIEW.md)**: the facts,
 | --- | --- | --- |
 | Home | `/` | EN · HI · MR |
 | Services overview | `/services` | EN · HI · MR |
-| About | `/about-us` | EN · HI · MR |
+| About, including the project record | `/about-us` (projects at `/about-us#projects`) | EN · HI · MR |
 | Contact and enquiry form | `/contact-us` | EN · HI · MR |
 | Machinery overview | `/product` | EN |
 | 9 machines | e.g. `/rotary-trommel-machines` | EN |
 | 4 services | e.g. `/bio-mining-and-legacy-waste-management` | EN |
-| Projects | `/projects` | EN |
 | Insights and 5 articles | `/waste-management-blogs`, e.g. `/bio-mining-process` | EN |
 | Privacy, terms, 404 | `/privacy`, `/terms` | EN |
 
-Hindi pages live under `/hi/` and Marathi under `/mr/`. Every page has a language switch in the top bar.
+Hindi pages live under `/hi/` and Marathi under `/mr/`. Every page has a language switch in the top bar. `/projects` redirects to the project record on the About page.
 
 **Addresses match the current site** (for example `/hydraulic-baler-machine` and `/msw-processing-plant`), so Google rankings and shared links keep working after the switch. There are two new pages: `/disc-separator` and `/rdf-afr-plant`.
 
@@ -71,7 +70,10 @@ A "Request a quote" button on any machine or service page opens the form with th
 - **Palette:** ivory paper, deep ink and the navy of the logo. The logo's lime and green are reserved for small accents, such as the square markers that echo the four squares of the mark.
 - **Type:** Instrument Serif for headings and Inter for text. Devanagari uses Tiro Devanagari Hindi or Marathi for headings and Noto Sans Devanagari for text. All fonts are self-hosted, with no Google Fonts requests.
 - **Logo:** cut from the original artwork. `logo-horizontal.png` uses the same mark and lettering in a side-by-side arrangement for the header; the stacked original is used in the footer. A vector (SVG or AI) logo file from the client would make both even sharper.
+- **Motion:** a rotating photo slideshow in the home hero, figures that count up as they scroll into view, philosophy words that fill with a Pune skyline as you scroll, sections that rise into view, hover growth on rows and cards, and a scrolling client-logo marquee. All of it is switched off for visitors who ask their device for reduced motion.
+- **Navigation:** Machinery and Services in the menu link to their pages; their dropdowns open on hover, or from the small arrow button by keyboard or touch. The machinery and services pages list categories as numbered accordions with Expand all / Collapse all.
 - **Video:** product videos load from YouTube only when a visitor presses play.
+- **Photo credit:** the Pune city photo (`src/assets/photos/pune-city.jpg`) is by Baikare Sandip, from the [WordPress Photo Directory](https://wordpress.org/photos/photo/18465d1037/), released under CC0 (no attribution required).
 - **SEO:** sitemap (`/sitemap-index.xml`), structured data (Organization, Product, Service, FAQ, Article, Breadcrumb), share images and `hreflang` tags between language versions.
 
 ## Deploying
