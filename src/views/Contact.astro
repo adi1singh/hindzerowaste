@@ -1,7 +1,9 @@
 ---
 import Base from '../layouts/Base.astro';
 import Icon from '../components/Icon.astro';
-import { site, telHref } from '../data/site';
+import { Image } from 'astro:assets';
+import { figures, site, telHref } from '../data/site';
+import trustPhoto from '../assets/photos/biomining-trommel-site.jpg';
 import { products } from '../data/products';
 import { services } from '../data/services';
 import { localName, type Lang } from '../i18n/ui';
@@ -33,13 +35,11 @@ const copy = {
     servicesGroup: 'Turnkey plants',
     machineryGroup: 'Machinery',
     other: 'Other',
-    capacity: 'Approximate capacity (e.g. TPD)',
+    capacity: 'Capacity',
+    capacityHint: 'Tonnes per day, if known.',
     message: 'Message',
     messagePlaceholder: 'Waste type, quantity, site location, timeline…',
     send: 'Send enquiry',
-    mailNote: `Sending opens your email app with your enquiry ready to send to ${site.emails.sales}.`,
-    success: 'Thank you. Our team will be in touch shortly.',
-    error: `Something went wrong. Please call us or email ${site.emails.sales}.`,
     call: 'Call',
     emailLabel: 'Email',
     office: 'Office',
@@ -50,6 +50,20 @@ const copy = {
     subjectPrefix: 'Enquiry',
     quick: ['Call us', 'Email us', 'Visit us'],
     hours: 'Tell us about your project and our team will get back to you.',
+    sending: 'Sending…',
+    successTitle: 'Thank you. Your enquiry has been sent.',
+    successText: 'Our team will contact you using the details you provided.',
+    error: `Your enquiry could not be sent. Everything you entered is still here, so you can try again, or call ${site.phones[0]} or email ${site.emails.sales}.`,
+    summary: 'Please check the highlighted fields.',
+    errName: 'Please enter your name.',
+    errPhone: 'Please enter a phone number with at least 7 digits.',
+    errEmail: 'Please enter a valid email address, or leave this blank.',
+    errReq: 'Please choose a requirement.',
+    privacy: 'We use your details only to respond to your enquiry.',
+    privacyLink: 'Privacy Policy',
+    another: 'Send another enquiry',
+    trustAlt: 'Bio-mining trommel line processing legacy waste at a dumpsite',
+    whatsapp: 'WhatsApp',
   },
   hi: {
     title: 'संपर्क करें | कोटेशन माँगें',
@@ -71,13 +85,11 @@ const copy = {
     servicesGroup: 'टर्नकी प्लांट',
     machineryGroup: 'मशीनरी',
     other: 'अन्य',
-    capacity: 'अनुमानित क्षमता (जैसे TPD)',
+    capacity: 'क्षमता',
+    capacityHint: 'टन प्रति दिन, यदि ज्ञात हो।',
     message: 'संदेश',
     messagePlaceholder: 'कचरे का प्रकार, मात्रा, साइट का स्थान, समय-सीमा…',
     send: 'पूछताछ भेजें',
-    mailNote: `भेजने पर आपका ईमेल ऐप खुलेगा, जिसमें ${site.emails.sales} को भेजने के लिए आपकी पूछताछ तैयार होगी।`,
-    success: 'धन्यवाद। हमारी टीम जल्द ही आपसे संपर्क करेगी।',
-    error: `कुछ गड़बड़ हुई। कृपया हमें कॉल करें या ${site.emails.sales} पर ईमेल भेजें।`,
     call: 'कॉल करें',
     emailLabel: 'ईमेल',
     office: 'कार्यालय',
@@ -88,6 +100,20 @@ const copy = {
     subjectPrefix: 'पूछताछ',
     quick: ['कॉल करें', 'ईमेल करें', 'हमसे मिलें'],
     hours: 'अपनी परियोजना के बारे में बताइए, हमारी टीम आपसे संपर्क करेगी।',
+    sending: 'भेजा जा रहा है…',
+    successTitle: 'धन्यवाद। आपकी पूछताछ भेज दी गई है।',
+    successText: 'हमारी टीम आपके दिए गए विवरण पर आपसे संपर्क करेगी।',
+    error: `आपकी पूछताछ भेजी नहीं जा सकी। आपकी भरी हुई जानकारी सुरक्षित है, आप फिर से कोशिश कर सकते हैं, या ${site.phones[0]} पर कॉल करें या ${site.emails.sales} पर ईमेल करें।`,
+    summary: 'कृपया चिह्नित फ़ील्ड जाँचें।',
+    errName: 'कृपया अपना नाम लिखें।',
+    errPhone: 'कृपया कम से कम 7 अंकों का फ़ोन नंबर लिखें।',
+    errEmail: 'कृपया सही ईमेल पता लिखें, या इसे खाली छोड़ दें।',
+    errReq: 'कृपया एक आवश्यकता चुनें।',
+    privacy: 'आपकी जानकारी का उपयोग केवल आपकी पूछताछ का उत्तर देने के लिए किया जाता है।',
+    privacyLink: 'गोपनीयता नीति',
+    another: 'एक और पूछताछ भेजें',
+    trustAlt: 'डंपसाइट पर पुराने कचरे का प्रसंस्करण करती बायो-माइनिंग ट्रोमेल लाइन',
+    whatsapp: 'WhatsApp',
   },
   mr: {
     title: 'संपर्क | कोटेशन मागवा',
@@ -109,13 +135,11 @@ const copy = {
     servicesGroup: 'टर्नकी प्लांट',
     machineryGroup: 'यंत्रसामग्री',
     other: 'इतर',
-    capacity: 'अंदाजे क्षमता (उदा. TPD)',
+    capacity: 'क्षमता',
+    capacityHint: 'टन प्रतिदिन, माहीत असल्यास.',
     message: 'संदेश',
     messagePlaceholder: 'कचऱ्याचा प्रकार, प्रमाण, साइटचे ठिकाण, कालमर्यादा…',
     send: 'चौकशी पाठवा',
-    mailNote: `पाठवल्यावर तुमचे ईमेल ॲप उघडेल, ज्यामध्ये ${site.emails.sales} ला पाठवण्यासाठी तुमची चौकशी तयार असेल.`,
-    success: 'धन्यवाद. आमची टीम लवकरच तुमच्याशी संपर्क साधेल.',
-    error: `काहीतरी चूक झाली. कृपया आम्हाला कॉल करा किंवा ${site.emails.sales} वर ईमेल पाठवा.`,
     call: 'कॉल करा',
     emailLabel: 'ईमेल',
     office: 'कार्यालय',
@@ -126,12 +150,31 @@ const copy = {
     subjectPrefix: 'चौकशी',
     quick: ['कॉल करा', 'ईमेल करा', 'भेट द्या'],
     hours: 'तुमच्या प्रकल्पाबद्दल सांगा, आमची टीम तुमच्याशी संपर्क साधेल.',
+    sending: 'पाठवत आहे…',
+    successTitle: 'धन्यवाद. तुमची चौकशी पाठवली आहे.',
+    successText: 'तुम्ही दिलेल्या तपशिलांवर आमची टीम तुमच्याशी संपर्क साधेल.',
+    error: `तुमची चौकशी पाठवता आली नाही. तुम्ही भरलेली माहिती जशीच्या तशी आहे, पुन्हा प्रयत्न करा, किंवा ${site.phones[0]} वर कॉल करा किंवा ${site.emails.sales} वर ईमेल करा.`,
+    summary: 'कृपया चिन्हांकित फील्ड तपासा.',
+    errName: 'कृपया तुमचे नाव लिहा.',
+    errPhone: 'कृपया किमान 7 अंकांचा फोन नंबर लिहा.',
+    errEmail: 'कृपया योग्य ईमेल पत्ता लिहा, किंवा हे रिकामे ठेवा.',
+    errReq: 'कृपया एक गरज निवडा.',
+    privacy: 'तुमची माहिती फक्त तुमच्या चौकशीला उत्तर देण्यासाठी वापरली जाते.',
+    privacyLink: 'गोपनीयता धोरण',
+    another: 'आणखी एक चौकशी पाठवा',
+    trustAlt: 'डंपसाइटवर जुन्या कचऱ्यावर प्रक्रिया करणारी बायो-मायनिंग ट्रॉमेल लाइन',
+    whatsapp: 'WhatsApp',
   },
 }[lang];
 
 const home = lang === 'en' ? '/' : `/${lang}/`;
 const alternates = { en: '/contact-us', hi: '/hi/contact-us', mr: '/mr/contact-us' };
 const endpoint = site.enquiryEndpoint as string;
+const responseTime = site.responseTime[lang];
+const phoneLabels = site.phoneLabels;
+const whatsappHref = site.whatsapp ? `https://wa.me/${site.whatsapp.replace(/\D/g, '')}` : '';
+const projects = figures[0];
+const trustLabel = { en: figures[0].label, hi: 'भारत भर में बायो-माइनिंग परियोजनाएँ', mr: 'भारतभर बायो-मायनिंग प्रकल्प' }[lang];
 
 const schema = [
   {
@@ -195,43 +238,51 @@ const schema = [
           <div>
             <h2 class="h3">{copy.formTitle}</h2>
             <p class="muted form-card__hours">{copy.hours}</p>
+            {responseTime && <p class="form-card__reply">{responseTime}</p>}
           </div>
         </div>
         <form
           class="form"
           data-enquiry
           data-endpoint={endpoint}
-          data-to={site.emails.sales}
-          data-subject={copy.subjectPrefix}
+          data-lang={lang}
+          data-sending={copy.sending}
+          data-error={copy.error}
+          data-summary={copy.summary}
           novalidate
         >
+          <p class="form__summary" role="alert" data-summary-box hidden></p>
           <div class="field">
             <label for="f-name">{copy.name} <span aria-hidden="true">*</span></label>
-            <input id="f-name" name="name" type="text" autocomplete="name" required />
+            <input id="f-name" name="name" type="text" autocomplete="name" maxlength="120" required aria-describedby="e-name" />
+            <p class="field__error" id="e-name" data-error-for="name" data-msg={copy.errName}></p>
           </div>
           <div class="field">
             <label for="f-org">{copy.org}</label>
-            <input id="f-org" name="organisation" type="text" autocomplete="organization" />
+            <input id="f-org" name="organisation" type="text" autocomplete="organization" maxlength="160" />
           </div>
           <div class="field">
             <label for="f-phone">{copy.phone} <span aria-hidden="true">*</span></label>
-            <input id="f-phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" required />
+            <input id="f-phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" maxlength="40" required aria-describedby="e-phone" />
+            <p class="field__error" id="e-phone" data-error-for="phone" data-msg={copy.errPhone}></p>
           </div>
           <div class="field">
             <label for="f-email">{copy.email}</label>
-            <input id="f-email" name="email" type="email" autocomplete="email" />
+            <input id="f-email" name="email" type="email" autocomplete="email" maxlength="160" aria-describedby="e-email" />
+            <p class="field__error" id="e-email" data-error-for="email" data-msg={copy.errEmail}></p>
           </div>
           <div class="field">
             <label for="f-city">{copy.city}</label>
-            <input id="f-city" name="city" type="text" autocomplete="address-level2" />
+            <input id="f-city" name="city" type="text" autocomplete="address-level2" maxlength="120" />
           </div>
           <div class="field">
             <label for="f-capacity">{copy.capacity}</label>
-            <input id="f-capacity" name="capacity" type="text" />
+            <input id="f-capacity" name="capacity" type="text" inputmode="decimal" maxlength="80" aria-describedby="h-capacity" />
+            <p class="field__hint" id="h-capacity">{copy.capacityHint}</p>
           </div>
           <div class="field field--full">
             <label for="f-req">{copy.requirement} <span aria-hidden="true">*</span></label>
-            <select id="f-req" name="requirement" required>
+            <select id="f-req" name="requirement" required aria-describedby="e-req">
               <option value="">{copy.choose}</option>
               <optgroup label={copy.servicesGroup}>
                 {services.map((s) => <option value={s.name}>{localName(lang, s.slug, s.name)}</option>)}
@@ -241,27 +292,46 @@ const schema = [
               </optgroup>
               <option value="Other">{copy.other}</option>
             </select>
+            <p class="field__error" id="e-req" data-error-for="requirement" data-msg={copy.errReq}></p>
           </div>
           <div class="field field--full">
             <label for="f-msg">{copy.message}</label>
-            <textarea id="f-msg" name="message" rows="5" placeholder={copy.messagePlaceholder}></textarea>
+            <textarea id="f-msg" name="message" rows="5" maxlength="4000" placeholder={copy.messagePlaceholder}></textarea>
           </div>
           <div class="hp" aria-hidden="true">
             <label for="f-website">Website</label>
             <input id="f-website" name="website" type="text" tabindex="-1" autocomplete="off" />
           </div>
           <div class="form__foot field--full">
-            <button class="btn btn--accent" type="submit">{copy.send} <span class="arrow">→</span></button>
+            <button class="btn btn--accent form__submit" type="submit" data-submit>
+              <span class="form__spinner" aria-hidden="true"></span>
+              <span data-submit-label>{copy.send}</span> <span class="arrow" aria-hidden="true">→</span>
+            </button>
             <p class="form__note">
               <span>* {copy.required}.</span>
-              {!endpoint && <span> {copy.mailNote}</span>}
+              <span>{copy.privacy} <a href="/privacy">{copy.privacyLink}</a>.</span>
             </p>
           </div>
-          <p class="form__status" role="status" aria-live="polite" data-status data-success={copy.success} data-error={copy.error}></p>
+          <p class="form__status" role="status" aria-live="polite" data-status></p>
         </form>
+        <div class="form__done" data-done hidden tabindex="-1">
+          <span class="form__done-icon" aria-hidden="true">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>
+          </span>
+          <p class="h3">{copy.successTitle}</p>
+          <p class="muted">{copy.successText}</p>
+          <button type="button" class="link-arrow form__again" data-again>{copy.another} <span class="arrow">→</span></button>
+        </div>
       </div>
 
       <aside class="details on-dark" data-reveal style="--d: 1">
+        <figure class="trust">
+          <Image src={trustPhoto} alt={copy.trustAlt} widths={[400, 640, 900]} sizes="(min-width: 1000px) 420px, 92vw" loading="lazy" />
+          <figcaption>
+            <span class="trust__num tabular">{projects.value}</span>
+            <span class="trust__label">{trustLabel}</span>
+          </figcaption>
+        </figure>
         <div class="details__block">
           <p class="details__label">
             <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z"></path></svg>
@@ -269,13 +339,21 @@ const schema = [
           </p>
           <ul class="details__phones">
             {
-              site.phones.map((p) => (
+              site.phones.map((p, i) => (
                 <li>
+                  {phoneLabels[i] && <span class="details__phone-label">{phoneLabels[i]}</span>}
                   <a href={telHref(p)}>{p}</a>
                 </li>
               ))
             }
           </ul>
+          {
+            whatsappHref && (
+              <a class="details__wa" href={whatsappHref} target="_blank" rel="noopener">
+                {copy.whatsapp} <span class="arrow">↗</span>
+              </a>
+            )
+          }
         </div>
         <div class="details__block">
           <p class="details__label">
@@ -324,8 +402,14 @@ const schema = [
   const form = document.querySelector<HTMLFormElement>('[data-enquiry]');
   if (form) {
     const status = form.querySelector<HTMLElement>('[data-status]')!;
+    const summary = form.querySelector<HTMLElement>('[data-summary-box]')!;
+    const button = form.querySelector<HTMLButtonElement>('[data-submit]')!;
+    const buttonLabel = button.querySelector<HTMLElement>('[data-submit-label]')!;
+    const idleLabel = buttonLabel.textContent ?? '';
+    const done = document.querySelector<HTMLElement>('[data-done]')!;
     const select = form.querySelector<HTMLSelectElement>('select[name="requirement"]')!;
     const message = form.querySelector<HTMLTextAreaElement>('textarea[name="message"]')!;
+    let sending = false;
 
     // Pre-fill the requirement from ?subject= (set by "Request a quote" buttons on product pages).
     const subject = new URLSearchParams(window.location.search).get('subject');
@@ -335,52 +419,96 @@ const schema = [
       else if (!message.value) message.value = subject;
     }
 
+    const rules: Record<string, (v: string) => boolean> = {
+      name: (v) => v.length > 0,
+      phone: (v) => /^[+\d\s().-]+$/.test(v) && v.replace(/\D/g, '').length >= 7,
+      email: (v) => !v || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v),
+      requirement: (v) => v.length > 0,
+    };
+
+    const setFieldError = (name: string, invalid: boolean) => {
+      const el = form.elements.namedItem(name) as HTMLInputElement | null;
+      const msg = form.querySelector<HTMLElement>(`[data-error-for="${name}"]`);
+      if (!el || !msg) return;
+      el.setAttribute('aria-invalid', String(invalid));
+      msg.textContent = invalid ? (msg.dataset.msg ?? '') : '';
+    };
+
+    const validate = () => {
+      const bad = Object.keys(rules).filter((name) => {
+        const el = form.elements.namedItem(name) as HTMLInputElement;
+        const invalid = !rules[name](el.value.trim());
+        setFieldError(name, invalid);
+        return invalid;
+      });
+      return bad;
+    };
+
+    // Re-check a field as soon as the visitor fixes it.
+    Object.keys(rules).forEach((name) => {
+      const el = form.elements.namedItem(name) as HTMLInputElement;
+      const recheck = () => {
+        if (el.getAttribute('aria-invalid') === 'true') setFieldError(name, !rules[name](el.value.trim()));
+      };
+      el.addEventListener('input', recheck);
+      el.addEventListener('change', recheck);
+      el.addEventListener('blur', () => {
+        if (el.value.trim() || el.getAttribute('aria-invalid')) setFieldError(name, !rules[name](el.value.trim()));
+      });
+    });
+
+    const setSending = (on: boolean) => {
+      sending = on;
+      button.disabled = on;
+      button.setAttribute('aria-busy', String(on));
+      form.toggleAttribute('data-busy', on);
+      buttonLabel.textContent = on ? (form.dataset.sending ?? idleLabel) : idleLabel;
+    };
+
     form.addEventListener('submit', async (event) => {
       event.preventDefault();
+      if (sending) return; // no duplicate submissions
       status.textContent = '';
-      if (!form.checkValidity()) {
-        form.reportValidity();
+      delete status.dataset.state;
+
+      const bad = validate();
+      if (bad.length) {
+        summary.textContent = form.dataset.summary ?? '';
+        summary.hidden = false;
+        (form.elements.namedItem(bad[0]) as HTMLElement).focus();
         return;
       }
+      summary.hidden = true;
+
       const data = new FormData(form);
-      if (data.get('website')) return; // spam trap
-
-      const endpoint = form.dataset.endpoint;
-      if (endpoint) {
-        const button = form.querySelector<HTMLButtonElement>('button[type="submit"]')!;
-        button.disabled = true;
-        try {
-          const res = await fetch(endpoint, { method: 'POST', body: data, headers: { Accept: 'application/json' } });
-          if (!res.ok) throw new Error(String(res.status));
-          form.reset();
-          status.textContent = status.dataset.success ?? '';
-          status.dataset.state = 'success';
-        } catch {
-          status.textContent = status.dataset.error ?? '';
-          status.dataset.state = 'error';
-        } finally {
-          button.disabled = false;
-        }
-        return;
+      data.set('lang', form.dataset.lang ?? 'en');
+      setSending(true);
+      try {
+        const res = await fetch(form.dataset.endpoint ?? '', {
+          method: 'POST',
+          body: data,
+          headers: { Accept: 'application/json' },
+          signal: AbortSignal.timeout(20000),
+        });
+        const body = await res.json().catch(() => null);
+        if (!res.ok || !body?.ok) throw new Error(String(res.status));
+        form.reset();
+        form.hidden = true;
+        done.hidden = false;
+        done.focus();
+      } catch {
+        // Keep everything the visitor typed; only show the error.
+        status.textContent = form.dataset.error ?? '';
+        status.dataset.state = 'error';
+      } finally {
+        setSending(false);
       }
+    });
 
-      // No form service yet: open the visitor's email app with the enquiry filled in.
-      const labels: Record<string, string> = {
-        name: 'Name',
-        organisation: 'Organisation',
-        phone: 'Phone',
-        email: 'Email',
-        city: 'City / State',
-        requirement: 'Requirement',
-        capacity: 'Capacity',
-        message: 'Message',
-      };
-      const lines = Object.entries(labels)
-        .map(([key, label]) => [label, String(data.get(key) ?? '').trim()])
-        .filter(([, value]) => value)
-        .map(([label, value]) => `${label}: ${value}`);
-      const subjectLine = `${form.dataset.subject}: ${data.get('requirement')}${data.get('organisation') ? ` – ${data.get('organisation')}` : ''}`;
-      window.location.href = `mailto:${form.dataset.to}?subject=${encodeURIComponent(subjectLine)}&body=${encodeURIComponent(lines.join('\n'))}`;
+    done.querySelector('[data-again]')?.addEventListener('click', () => {
+      done.hidden = true;
+      form.hidden = false;
+      (form.elements.namedItem('name') as HTMLElement).focus();
     });
   }
 </script>
@@ -391,7 +519,7 @@ const schema = [
   .chero {
     position: relative;
     overflow: hidden;
-    padding-block: clamp(40px, 6vw, 72px) clamp(150px, 16vw, 210px);
+    padding-block: clamp(28px, 4vw, 52px) clamp(110px, 12vw, 160px);
     background: radial-gradient(120% 140% at 0% 0%, var(--navy) 0%, var(--navy-deep) 45%, var(--ink) 100%);
     color: #e8e0d6;
   }
@@ -421,7 +549,7 @@ const schema = [
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: 20px;
+    gap: 16px;
   }
 
   .chero__crumbs ol {
@@ -457,7 +585,7 @@ const schema = [
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 16px;
     width: 100%;
-    margin-top: 20px;
+    margin-top: 8px;
     list-style: none;
   }
 
@@ -514,7 +642,7 @@ const schema = [
   .contact-wrap {
     position: relative;
     z-index: 2;
-    margin-top: calc(-1 * clamp(110px, 12vw, 160px));
+    margin-top: calc(-1 * clamp(80px, 9vw, 120px));
     padding-bottom: var(--section);
   }
 
@@ -530,7 +658,9 @@ const schema = [
     border-radius: 20px;
     background: var(--white);
     border-top: 5px solid var(--saffron);
-    box-shadow: 0 40px 90px -40px rgba(29, 22, 18, 0.55);
+    box-shadow:
+      0 1px 2px rgba(29, 22, 18, 0.06),
+      0 16px 36px -24px rgba(29, 22, 18, 0.3);
   }
 
   .form-card__head {
@@ -555,11 +685,61 @@ const schema = [
     font-size: 15px;
   }
 
+  .form-card__reply {
+    margin-top: 6px;
+    font-size: 15px;
+    font-weight: 650;
+    color: var(--green-ink);
+  }
+
   .form {
+    position: relative;
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
     gap: 22px 24px;
-    margin-top: 32px;
+    margin-top: 28px;
+  }
+
+  .form[hidden] {
+    display: none;
+  }
+
+  .form__summary {
+    grid-column: 1 / -1;
+    padding: 12px 16px;
+    border-radius: 10px;
+    background: #fdecea;
+    color: #8a1c12;
+    font-weight: 650;
+  }
+
+  .form__summary[hidden] {
+    display: none;
+  }
+
+  .field__hint,
+  .field__error {
+    font-size: 14px;
+    line-height: 1.4;
+  }
+
+  .field__hint {
+    color: var(--muted);
+  }
+
+  .field__error {
+    color: #a3200f;
+    font-weight: 600;
+  }
+
+  .field__error:empty {
+    display: none;
+  }
+
+  [aria-invalid='true'] {
+    border-color: #b42318;
+    background: #fff8f6;
   }
 
   .field {
@@ -618,10 +798,6 @@ const schema = [
     box-shadow: 0 0 0 4px color-mix(in srgb, var(--navy) 14%, transparent);
   }
 
-  input:user-invalid,
-  select:user-invalid {
-    border-color: #b42318;
-  }
 
   .hp {
     position: absolute;
@@ -646,21 +822,196 @@ const schema = [
     color: var(--muted);
   }
 
+  .form__note a {
+    color: var(--ink);
+    font-weight: 600;
+    text-underline-offset: 0.2em;
+  }
+
+  .form__note span + span {
+    display: block;
+    margin-top: 4px;
+  }
+
+  .form__submit {
+    position: relative;
+  }
+
+  /* The default accent hover turns paper, which vanishes on the white card. */
+  .form__submit:hover:not([disabled]) {
+    --btn-bg: var(--navy);
+    --btn-fg: var(--white);
+    border-color: var(--navy);
+  }
+
+  .form__submit[disabled] {
+    cursor: progress;
+    opacity: 0.85;
+  }
+
+  .form__spinner {
+    display: none;
+    width: 18px;
+    height: 18px;
+    border: 2.5px solid currentColor;
+    border-right-color: transparent;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  .form[data-busy] .form__spinner {
+    display: inline-block;
+  }
+
+  .form[data-busy] .form__submit .arrow {
+    display: none;
+  }
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
   .form__status {
     grid-column: 1 / -1;
     font-weight: 650;
+  }
+
+  .form__status[data-state='error'] {
+    padding: 14px 16px;
+    border-radius: 10px;
+    background: #fdecea;
+  }
+
+  .form__done {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    margin-top: 28px;
+    padding: 28px;
+    border-radius: 14px;
+    background: var(--sage);
+  }
+
+  .form__done[hidden] {
+    display: none;
+  }
+
+  .form__done:focus {
+    outline: none;
+  }
+
+  .form__done:focus-visible {
+    outline: 3px solid var(--saffron);
+    outline-offset: 3px;
+  }
+
+  .form__done-icon {
+    display: grid;
+    place-items: center;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: var(--green-ink);
+    color: var(--white);
+  }
+
+  .form__again {
+    margin-top: 6px;
+    padding: 0;
+    border: 0;
+    background: none;
+    font: inherit;
+    cursor: pointer;
+  }
+
+  .contact a:focus-visible,
+  .contact button:focus-visible,
+  .quick__tile:focus-visible,
+  .chero__crumbs a:focus-visible {
+    outline: 3px solid var(--saffron);
+    outline-offset: 3px;
+    border-radius: 6px;
+  }
+
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible {
+    border-color: var(--saffron-ink);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--saffron) 30%, transparent);
+  }
+
+  /* Trust cue */
+  .trust {
+    position: relative;
+    overflow: hidden;
+    margin: 0 0 24px;
+    border-radius: 14px;
+    aspect-ratio: 16 / 9;
+  }
+
+  .trust :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .trust figcaption {
+    position: absolute;
+    inset: auto 0 0;
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    padding: 40px 18px 14px;
+    background: linear-gradient(0deg, rgba(20, 16, 14, 0.9), transparent);
+    color: var(--white);
+  }
+
+  .trust__num {
+    font: 400 2.6rem/1 var(--serif);
+    color: var(--saffron-2);
+  }
+
+  .trust__label {
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.3;
+  }
+
+  .details__phones li {
+    display: grid;
+    gap: 2px;
+  }
+
+  .details__phone-label {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted-on-dark);
+  }
+
+  .details__wa {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 44px;
+    padding: 0 18px;
+    border: 1px solid var(--line-on-dark);
+    border-radius: 999px;
+    color: var(--white);
+    font-weight: 650;
+    text-decoration: none;
   }
 
   .form__status:empty {
     display: none;
   }
 
-  .form__status[data-state='success'] {
-    color: var(--green-ink);
-  }
-
   .form__status[data-state='error'] {
-    color: #b42318;
+    color: #8a1c12;
   }
 
   .details {
@@ -670,7 +1021,7 @@ const schema = [
     border-radius: 20px;
     background: var(--ink);
     color: #e6ddd2;
-    box-shadow: 0 40px 90px -40px rgba(29, 22, 18, 0.55);
+    box-shadow: 0 16px 36px -24px rgba(29, 22, 18, 0.35);
   }
 
   .details__block {
@@ -759,15 +1110,65 @@ const schema = [
     }
   }
 
-  @media (max-width: 760px) {
-    .quick {
-      grid-template-columns: minmax(0, 1fr);
+  @media (max-width: 1000px) {
+    .trust {
+      aspect-ratio: auto;
+      height: clamp(160px, 34vw, 240px);
     }
   }
 
-  @media (max-width: 560px) {
+  @media (max-width: 900px) {
+    .quick {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 10px;
+    }
+
+    .quick__tile {
+      column-gap: 14px;
+      min-height: 64px;
+      padding: 12px 16px;
+    }
+
+    .quick__icon {
+      width: 42px;
+      height: 42px;
+    }
+
+    .quick__icon svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    .quick__label {
+      font-size: 13px;
+    }
+
+    .quick__value {
+      font-size: 17px;
+    }
+
+    .chero__lead {
+      font-size: 17px;
+    }
+  }
+
+  @media (max-width: 640px) {
     .form {
       grid-template-columns: minmax(0, 1fr);
+      gap: 18px;
+    }
+
+    .form-card {
+      padding: 24px 20px;
+    }
+
+    .form-card__head {
+      gap: 14px;
+    }
+
+    .form-card__icon {
+      width: 46px;
+      height: 46px;
     }
   }
 </style>

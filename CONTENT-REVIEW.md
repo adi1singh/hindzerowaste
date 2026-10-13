@@ -49,3 +49,11 @@ Model tables are shown on product pages as "indicative", as in the brochure. Eac
 - [ ] Several brochure photos are low resolution: shredder blades, suction vehicle, PEB shed exterior, inclined conveyor. Higher-resolution originals or a short photo shoot would lift the site further.
 - [ ] The Facebook page is still named "Hind Agro Chemicals".
 - [ ] The privacy and terms pages carry over the current site's template text, tidied. They mention cookies, though the new site sets none. A legal review is recommended.
+
+## Contact page: waiting on the business
+
+- **Enquiry email service**: Resend account, verified domain and the Vercel environment variables listed in README.md → Enquiry form. Until then the form shows its error state with phone and email.
+- **Reply time**: what reply time can we promise (e.g. "within one working day")? Set `responseTime` in `src/data/site.ts` in English, Hindi and Marathi.
+- **Phone numbers**: what is each of +91 96370 01919, +91 94051 70239 and +91 87999 26002 for (Sales, Service, General enquiries…)? Set `phoneLabels`.
+- **WhatsApp**: is there an actively monitored WhatsApp number? If yes, set `whatsapp`.
+- **Trust cue**: the contact page shows "87+ bio-mining projects executed across India" (from the brochure and company profile) with a trommel-line site photo. Confirm the figure is current.

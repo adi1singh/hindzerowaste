@@ -58,10 +58,20 @@ npm run check     # type-check
 
 ## Enquiry form
 
-The contact form posts to `enquiryEndpoint` in `src/data/site.ts`.
+The contact form (EN/HI/MR) posts to `/api/enquiry`, a Vercel Function in `api/enquiry.ts` that validates the enquiry and emails it to the business through [Resend](https://resend.com). The visitor sees a loading state, then either a confirmed success message or an error that keeps everything they typed and gives the phone number and sales email. Success is shown only when the email service accepts the message.
 
-- **While it is empty** (as now), pressing Send opens the visitor's email app with the enquiry filled in and addressed to `sales@hindzerowaste.com`. The form says so beneath the button.
-- **To receive enquiries directly**, create a form with a service such as [Formspree](https://formspree.io) or [Basin](https://usebasin.com). Paste its endpoint URL into `enquiryEndpoint`, e.g. `'https://formspree.io/f/abcd1234'`. The form then submits in place and shows a thank-you message. Fields sent: name, organisation, phone, email, city, capacity, requirement, message (plus a hidden `website` spam trap).
+**To switch it on** (until then every submission shows the error state, never a false success):
+
+1. Create a Resend account and verify the `hindzerowaste.com` domain (Resend shows the DNS records to add).
+2. In Vercel → Project → Settings → Environment Variables, add:
+   - `RESEND_API_KEY`: the Resend API key.
+   - `ENQUIRY_FROM`: a sender on the verified domain, e.g. `Hind Zero Waste website <website@hindzerowaste.com>`.
+   - `ENQUIRY_TO` (optional): comma-separated recipients; defaults to `sales@hindzerowaste.com`.
+3. Redeploy, then send a test enquiry from `/contact-us`.
+
+Fields sent: name, organisation, phone, email, city, capacity, requirement, message, page language, plus a hidden `website` spam trap. The visitor's email (if given) is set as reply-to.
+
+Optional details shown beside the form, each hidden while empty in `src/data/site.ts`: `responseTime` (confirmed reply time, per language), `phoneLabels` (what each number is for), `whatsapp` (only an actively monitored number).
 
 A "Request a quote" button on any machine or service page opens the form with that requirement pre-selected.
 

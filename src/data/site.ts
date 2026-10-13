@@ -9,6 +9,22 @@ export const site = {
   founded: 2017,
   formerName: 'Hind Agro and Chemicals',
   phones: ['+91 96370 01919', '+91 94051 70239', '+91 87999 26002'],
+  /**
+   * What each number above is for (e.g. 'Sales', 'Service', 'General enquiries'),
+   * in the same order. Leave '' until the business confirms; unlabelled numbers
+   * show without a label.
+   */
+  phoneLabels: ['', '', ''] as string[],
+  /**
+   * WhatsApp number, only if the business confirms it is actively monitored.
+   * Digits with country code, e.g. '919637001919'. '' hides the WhatsApp link.
+   */
+  whatsapp: '' as string,
+  /**
+   * Confirmed reply time shown beside the enquiry form, per language
+   * (e.g. en: 'We reply within one working day.'). '' hides it.
+   */
+  responseTime: { en: '', hi: '', mr: '' } as Record<'en' | 'hi' | 'mr', string>,
   emails: {
     sales: 'sales@hindzerowaste.com',
     info: 'info@hindzerowaste.com',
@@ -30,12 +46,11 @@ export const site = {
     { label: 'Facebook', href: 'https://facebook.com/p/Hind-Agro-Chemicals-100063770114850/' },
   ],
   /**
-   * Where the enquiry form posts. Leave empty until the email service is set up:
-   * the form then opens the visitor's email app with the enquiry addressed to
-   * emails.sales. Any form service that accepts a POST (Formspree, Web3Forms,
-   * Basin, or your own endpoint) works here. See README.md.
+   * Where the enquiry form posts. /api/enquiry is the Vercel Function in
+   * api/enquiry.ts, which emails the business once its environment variables
+   * are set (see README.md).
    */
-  enquiryEndpoint: '',
+  enquiryEndpoint: '/api/enquiry',
   // Copied from the current site so the links survive the move off Zyro.
   downloads: {
     brochure: '/downloads/hind-zero-waste-brochure.pdf',

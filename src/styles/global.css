@@ -461,7 +461,8 @@ ol {
 
 .btn--accent {
   --btn-bg: var(--saffron);
-  --btn-fg: var(--ink);
+  /* White on clay is 5:1; ink on clay is only 3.4:1. */
+  --btn-fg: var(--white);
 }
 
 .btn--accent:hover {
