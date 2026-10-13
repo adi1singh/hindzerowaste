@@ -654,7 +654,7 @@ const aboutHref = localePath(lang, '/about-us');
   .hero__shade {
     z-index: -1;
     background:
-      linear-gradient(90deg, rgba(8, 16, 30, 0.92) 0%, rgba(8, 16, 30, 0.72) 38%, rgba(8, 16, 30, 0.25) 75%, rgba(8, 16, 30, 0.15) 100%),
+      radial-gradient(ellipse 70% 65% at 50% 45%, rgba(8, 16, 30, 0.82) 0%, rgba(8, 16, 30, 0.6) 55%, rgba(8, 16, 30, 0.35) 100%),
       linear-gradient(0deg, rgba(8, 16, 30, 0.85) 0%, rgba(8, 16, 30, 0) 34%);
   }
 
@@ -669,9 +669,15 @@ const aboutHref = localePath(lang, '/about-us');
   .hero__content {
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
     gap: 26px;
-    max-width: 760px;
+    max-width: 980px;
+    margin-inline: auto;
+    text-align: center;
+  }
+
+  .hero__content .btn-row {
+    justify-content: center;
   }
 
   .hero__title {
@@ -685,6 +691,16 @@ const aboutHref = localePath(lang, '/about-us');
 
   .hero__sub {
     font-size: 15px;
+    text-wrap: balance;
+  }
+
+  @media (max-width: 600px) {
+    .hero__sub::before {
+      display: none;
+    }
+  }
+
+  .hero__sub {
     color: var(--lime);
   }
 
