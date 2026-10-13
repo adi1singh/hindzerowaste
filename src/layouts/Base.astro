@@ -61,14 +61,6 @@ const organization = {
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <script is:inline>
-      try {
-        var q = new URLSearchParams(location.search).get('theme');
-        if (q !== null) sessionStorage.setItem('theme', q);
-        var th = sessionStorage.getItem('theme');
-        if (th) document.documentElement.dataset.theme = th;
-      } catch (e) {}
-    </script>
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
@@ -98,7 +90,7 @@ const organization = {
     <link rel="icon" href="/icon-192.png" type="image/png" sizes="192x192" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/site.webmanifest" />
-    <meta name="theme-color" content="#0c1626" />
+    <meta name="theme-color" content="#1d1a18" />
     <link rel="sitemap" href="/sitemap-index.xml" />
 
     <script is:inline>

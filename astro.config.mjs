@@ -18,7 +18,6 @@ export default defineConfig({
   },
   integrations: [
     sitemap({
-      filter: (page) => !page.includes('/colour-preview'),
       i18n: {
         defaultLocale: 'en',
         locales: { en: 'en-IN', hi: 'hi-IN', mr: 'mr-IN' },

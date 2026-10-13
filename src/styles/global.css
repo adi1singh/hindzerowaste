@@ -1,6 +1,6 @@
 /*
  * Hind Zero Waste — design system.
- * Ivory paper, deep ink and the logo's navy and greens, with a warm saffron
+ * Warm paper, charcoal ink and the logo's greens, with a terracotta (clay)
  * accent for highlights and hover states. The square markers echo the four
  * squares of the logo mark.
  */
@@ -13,33 +13,33 @@
 @import '@fontsource/tiro-devanagari-marathi/400.css';
 
 :root {
-  --ink: #0b1525;
-  --ink-2: #13213a;
-  --ink-3: #1c2f50;
-  --navy: #083984;
-  --navy-2: #0b4bb0;
-  --navy-deep: #052a66;
+  --ink: #1d1a18;
+  --ink-2: #2a2523;
+  --ink-3: #3a332f;
+  --navy: #2e2a27;
+  --navy-2: #4a423c;
+  --navy-deep: #1a1716;
   --lime: #c3d32c;
   --green: #84bb39;
   --green-2: #5f9a2a;
   --green-ink: #3a6818;
-  --saffron: #f39a2f;
-  --saffron-2: #ffb85c;
-  --saffron-ink: #a65a00;
-  --paper: #f6f3ec;
-  --paper-2: #ede8dd;
+  --saffron: #c8643b;
+  --saffron-2: #e5895f;
+  --saffron-ink: #8f3f1d;
+  --paper: #f5efe6;
+  --paper-2: #ebe3d7;
   --sage: #e5edd8;
-  --sky: #e4ecf8;
+  --sky: #f1e5db;
   --white: #ffffff;
-  --shade: 8, 16, 30;
-  --text: #172133;
-  --muted: #4d5768;
-  --muted-on-dark: #b3bdcd;
-  --line: rgba(11, 21, 37, 0.12);
-  --line-strong: rgba(11, 21, 37, 0.24);
+  --shade: 28, 22, 18;
+  --text: #26211e;
+  --muted: #5e554e;
+  --muted-on-dark: #c9bdb1;
+  --line: rgba(29, 26, 24, 0.12);
+  --line-strong: rgba(29, 26, 24, 0.24);
   --line-on-dark: rgba(246, 243, 236, 0.16);
-  --shadow-lg: 0 30px 70px -30px rgba(8, 25, 60, 0.35);
-  --shadow-md: 0 18px 40px -22px rgba(8, 25, 60, 0.35);
+  --shadow-lg: 0 30px 70px -30px rgba(29, 22, 18, 0.35);
+  --shadow-md: 0 18px 40px -22px rgba(29, 22, 18, 0.35);
 
   --serif: 'Instrument Serif', 'Tiro Devanagari Hindi', Georgia, 'Times New Roman', serif;
   --sans: 'Inter Variable', 'Noto Sans Devanagari Variable', ui-sans-serif, system-ui, -apple-system,
@@ -56,47 +56,6 @@
   --header-h: 92px;
   /* Height of the top bar and header together, used to size first screens. */
   --chrome: calc(var(--top-h) + var(--header-h));
-}
-
-/* Colour previews, switched on with ?theme= (see /colour-preview). */
-html[data-theme='forest'] {
-  --ink: #0e1f17;
-  --ink-2: #15291f;
-  --ink-3: #1f3a2c;
-  --navy: #1d5a3a;
-  --navy-2: #27754c;
-  --navy-deep: #123f27;
-  --saffron: #c3d32c;
-  --saffron-2: #d4e35a;
-  --saffron-ink: #5a6a00;
-  --sky: #e2ede3;
-  --shade: 10, 26, 18;
-}
-
-html[data-theme='clay'] {
-  --ink: #1d1a18;
-  --ink-2: #2a2523;
-  --ink-3: #3a332f;
-  --navy: #2e2a27;
-  --navy-2: #4a423c;
-  --navy-deep: #1a1716;
-  --saffron: #c8643b;
-  --saffron-2: #e5895f;
-  --saffron-ink: #8f3f1d;
-  --sky: #f1e5db;
-  --paper: #f5efe6;
-  --shade: 28, 22, 18;
-}
-
-html[data-theme='ink'] {
-  --ink: #0b0b0b;
-  --ink-2: #161616;
-  --ink-3: #242424;
-  --navy: #141414;
-  --navy-2: #333333;
-  --navy-deep: #000000;
-  --sky: #f0ebe1;
-  --shade: 10, 10, 10;
 }
 
 :lang(mr) {
@@ -394,7 +353,7 @@ ol {
 
 .bg-ink {
   background: var(--ink);
-  color: #dfe5ee;
+  color: #e8e0d6;
 }
 
 .bg-navy {
@@ -489,7 +448,7 @@ ol {
   --btn-bg: var(--saffron);
   --btn-fg: var(--ink);
   transform: translateY(-2px);
-  box-shadow: 0 14px 30px -14px rgba(243, 154, 47, 0.8);
+  box-shadow: 0 14px 30px -14px rgba(200, 100, 59, 0.8);
 }
 
 .btn .arrow {
@@ -801,7 +760,7 @@ ol {
 .acc details {
   border-radius: var(--radius-lg);
   background: var(--white);
-  box-shadow: 0 1px 0 rgba(8, 57, 132, 0.08);
+  box-shadow: 0 1px 0 rgba(46, 42, 39, 0.08);
   transition:
     box-shadow 0.45s var(--ease-out),
     transform 0.45s var(--ease-out);
