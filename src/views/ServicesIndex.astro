@@ -5,7 +5,7 @@ import Base from '../layouts/Base.astro';
 import PageHero from '../components/PageHero.astro';
 import CtaBand from '../components/CtaBand.astro';
 import { services } from '../data/services';
-import { localName, t, type Lang } from '../i18n/ui';
+import { localName, type Lang } from '../i18n/ui';
 import { approachSteps, consultancyCopy, inEnglish, serviceHighlights, serviceShorts } from '../i18n/content';
 
 import bioImg from '../assets/photos/biomining-trommel-site.jpg';
@@ -263,7 +263,7 @@ const alternates = { en: '/services', hi: '/hi/services', mr: '/mr/services' };
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
-    .appr li:nth-child(3) {
+    .appr li + li:nth-child(3) {
       padding-left: 0;
       border-left: 0;
     }

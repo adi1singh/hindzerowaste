@@ -1,0 +1,84 @@
+# Hind Zero Waste Management: website
+
+A new website for [Hind Zero Waste Management Pvt. Ltd.](https://www.hindzerowaste.com), the Kolhapur-based manufacturer of waste-processing machinery and turnkey bio-mining, MSW, MRF and RDF/AFR plants.
+
+Built with [Astro](https://astro.build) as a fast static site. English throughout, with Hindi and Marathi versions of the key pages.
+
+Before launch, go through **[CONTENT-REVIEW.md](CONTENT-REVIEW.md)**: the facts, figures and translations the client needs to confirm.
+
+## Pages
+
+| Page | Address | Languages |
+| --- | --- | --- |
+| Home | `/` | EN · HI · MR |
+| Services overview | `/services` | EN · HI · MR |
+| About | `/about-us` | EN · HI · MR |
+| Contact and enquiry form | `/contact-us` | EN · HI · MR |
+| Machinery overview | `/product` | EN |
+| 9 machines | e.g. `/rotary-trommel-machines` | EN |
+| 4 services | e.g. `/bio-mining-and-legacy-waste-management` | EN |
+| Projects | `/projects` | EN |
+| Insights and 5 articles | `/waste-management-blogs`, e.g. `/bio-mining-process` | EN |
+| Privacy, terms, 404 | `/privacy`, `/terms` | EN |
+
+Hindi pages live under `/hi/` and Marathi under `/mr/`. Every page has a language switch in the top bar.
+
+**Addresses match the current site** (for example `/hydraulic-baler-machine` and `/msw-processing-plant`), so Google rankings and shared links keep working after the switch. There are two new pages: `/disc-separator` and `/rdf-afr-plant`.
+
+## Working on the site
+
+Requires Node 22 or newer.
+
+```bash
+npm install
+npm run dev       # local preview at http://localhost:4321
+npm run build     # production build into dist/
+npm run preview   # serve the production build
+npm run check     # type-check
+```
+
+## Where the content lives
+
+| What | File |
+| --- | --- |
+| Phone numbers, emails, address, social links, headline figures | `src/data/site.ts` |
+| Machines: copy, photos, features, specification tables | `src/data/products.ts` |
+| Services: copy, process steps, FAQs, capacity tables | `src/data/services.ts` |
+| Project record | `src/data/projects.ts` |
+| Client logos | `src/assets/clients/` (listed in `src/data/clients.ts`) |
+| Articles | `src/content/blog/*.md` |
+| Menus, footer and buttons in three languages | `src/i18n/ui.ts` |
+| Copy shared by translated pages | `src/i18n/content.ts` |
+| Home, About, Services overview and Contact copy (all three languages) | `src/views/*.astro`, in the `copy` object at the top of each file |
+| Photos | `src/assets/photos/` (resized and converted to WebP at build time) |
+| Brochure and company profile PDFs | `public/downloads/` |
+
+**To add a machine**, add an entry to `products` in `src/data/products.ts`. Its page, menu entries, footer link, contact-form option and sitemap entry are generated automatically.
+
+**To add an article**, add a Markdown file to `src/content/blog/`. Copy the front matter from an existing article; `cover` points to a photo in `src/assets/photos/`. The file name becomes the address.
+
+## Enquiry form
+
+The contact form posts to `enquiryEndpoint` in `src/data/site.ts`.
+
+- **While it is empty** (as now), pressing Send opens the visitor's email app with the enquiry filled in and addressed to `sales@hindzerowaste.com`. The form says so beneath the button.
+- **To receive enquiries directly**, create a form with a service such as [Formspree](https://formspree.io) or [Basin](https://usebasin.com). Paste its endpoint URL into `enquiryEndpoint`, e.g. `'https://formspree.io/f/abcd1234'`. The form then submits in place and shows a thank-you message. Fields sent: name, organisation, phone, email, city, capacity, requirement, message (plus a hidden `website` spam trap).
+
+A "Request a quote" button on any machine or service page opens the form with that requirement pre-selected.
+
+## Design
+
+- **Palette:** ivory paper, deep ink and the navy of the logo. The logo's lime and green are reserved for small accents, such as the square markers that echo the four squares of the mark.
+- **Type:** Instrument Serif for headings and Inter for text. Devanagari uses Tiro Devanagari Hindi or Marathi for headings and Noto Sans Devanagari for text. All fonts are self-hosted, with no Google Fonts requests.
+- **Logo:** cut from the original artwork. `logo-horizontal.png` uses the same mark and lettering in a side-by-side arrangement for the header; the stacked original is used in the footer. A vector (SVG or AI) logo file from the client would make both even sharper.
+- **Video:** product videos load from YouTube only when a visitor presses play.
+- **SEO:** sitemap (`/sitemap-index.xml`), structured data (Organization, Product, Service, FAQ, Article, Breadcrumb), share images and `hreflang` tags between language versions.
+
+## Deploying
+
+The build output is plain static files in `dist/`, so any host works.
+
+- **Vercel or Netlify:** import this repository. The framework is detected as Astro: build command `npm run build`, output directory `dist`.
+- **Hostinger or other shared hosting:** run `npm run build` and upload the contents of `dist/` to the web root.
+
+When pointing hindzerowaste.com at the new host, keep the `www.` address as the primary domain (the site's canonical URLs use it).

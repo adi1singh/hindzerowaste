@@ -837,7 +837,7 @@ const alternates = { en: '/', hi: '/hi/', mr: '/mr/' };
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
-    .figures__item:nth-child(3) {
+    .figures__item + .figures__item:nth-child(3) {
       padding-left: 0;
       border-left: 0;
     }

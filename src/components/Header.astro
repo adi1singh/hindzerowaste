@@ -273,14 +273,19 @@ const langHref = (code: Lang) => alternates?.[code] ?? localePath(code, '/');
     };
 
     const fine = window.matchMedia('(hover: hover) and (pointer: fine)');
+    let hoverOpenedAt = 0;
 
     triggers.forEach((trigger) => {
       trigger.addEventListener('click', () => {
-        if (trigger.getAttribute('aria-expanded') === 'true') closeAll();
+        const isOpen = trigger.getAttribute('aria-expanded') === 'true';
+        // A click that follows a hover-open should keep the menu open, not toggle it shut.
+        if (isOpen && Date.now() - hoverOpenedAt > 700) closeAll();
         else open(trigger);
       });
       trigger.addEventListener('mouseenter', () => {
-        if (fine.matches) open(trigger);
+        if (!fine.matches || trigger.getAttribute('aria-expanded') === 'true') return;
+        open(trigger);
+        hoverOpenedAt = Date.now();
       });
       trigger.addEventListener('mouseleave', () => {
         if (fine.matches) closeTimer = window.setTimeout(() => closeAll(), 180);
@@ -631,10 +636,9 @@ const langHref = (code: Lang) => alternates?.[code] ?? localePath(code, '/');
   }
 
   .mega__meta {
-    font-size: 12px;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
+    font-size: 13px;
     color: var(--muted);
+    font-variant-numeric: tabular-nums;
   }
 
   .mega__item:hover .mega__name,
