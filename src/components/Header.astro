@@ -113,7 +113,7 @@ const chevron =
     </nav>
 
     <div class="bar__actions">
-      <a class="btn bar__quote" href={localePath(lang, '/contact-us') + '#enquiry'}>
+      <a class="btn btn--accent bar__quote" href={localePath(lang, '/contact-us') + '#enquiry'}>
         <span class="bar__quote-long">{t(lang, 'cta.quote')}</span>
         <span class="bar__quote-short">{t(lang, 'cta.quoteShort')}</span>
         <span class="arrow">→</span>
@@ -232,7 +232,7 @@ const chevron =
         }
       </ul>
       <div class="mobile-nav__foot">
-        <a class="btn" href={localePath(lang, '/contact-us') + '#enquiry'}>{t(lang, 'cta.quote')} <span class="arrow">→</span></a>
+        <a class="btn btn--accent" href={localePath(lang, '/contact-us') + '#enquiry'}>{t(lang, 'cta.quote')} <span class="arrow">→</span></a>
         <div class="mobile-nav__phones">
           {site.phones.map((p) => <a href={telHref(p)}>{p}</a>)}
         </div>
@@ -425,7 +425,7 @@ const chevron =
   }
 
   .lang a[aria-current] {
-    color: var(--ink);
+    color: var(--white);
     background: var(--saffron);
   }
 

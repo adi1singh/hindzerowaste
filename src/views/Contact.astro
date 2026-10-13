@@ -615,7 +615,7 @@ const schema = [
     height: 52px;
     border-radius: 50%;
     background: var(--saffron);
-    color: var(--ink);
+    color: var(--white);
   }
 
   .quick__label {
@@ -835,13 +835,6 @@ const schema = [
 
   .form__submit {
     position: relative;
-  }
-
-  /* The default accent hover turns paper, which vanishes on the white card. */
-  .form__submit:hover:not([disabled]) {
-    --btn-bg: var(--navy);
-    --btn-fg: var(--white);
-    border-color: var(--navy);
   }
 
   .form__submit[disabled] {

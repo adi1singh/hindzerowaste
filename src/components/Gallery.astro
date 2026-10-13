@@ -22,6 +22,7 @@ const { images, priority = false } = Astro.props;
           loading={i === 0 && priority ? 'eager' : 'lazy'}
           fetchpriority={i === 0 && priority ? 'high' : undefined}
           class:list={['gallery__img', { 'is-active': i === 0 }]}
+          style={img.focus ? `object-position: ${img.focus}` : undefined}
           data-index={i}
         />
       ))
@@ -32,7 +33,7 @@ const { images, priority = false } = Astro.props;
       <div class="gallery__thumbs" role="group" aria-label="Photos">
         {images.map((img, i) => (
           <button type="button" class="gallery__thumb frame" aria-pressed={i === 0 ? 'true' : 'false'} data-thumb={i}>
-            <Image src={img.src} alt="" width={160} height={120} loading="lazy" />
+            <Image src={img.src} alt="" width={160} height={120} loading="lazy" style={img.focus ? `object-position: ${img.focus}` : undefined} />
             <span class="visually-hidden">{`Show photo ${i + 1}: ${img.alt}`}</span>
           </button>
         ))}

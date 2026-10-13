@@ -3,6 +3,20 @@
 import { Image } from 'astro:assets';
 import { clients } from '../data/clients';
 
+// Size each logo to roughly the same area rather than the same height, so wide
+// wordmarks and tall emblems look equally weighted.
+const AREA = 9000;
+const MAX_H = 80;
+const MAX_W = 176;
+const fit = (w: number, h: number) => {
+  const ratio = w / h;
+  let width = Math.sqrt(AREA * ratio);
+  let height = width / ratio;
+  if (height > MAX_H) [height, width] = [MAX_H, MAX_H * ratio];
+  if (width > MAX_W) [width, height] = [MAX_W, MAX_W / ratio];
+  return `--w: ${Math.round(width)}px; --h: ${Math.round(height)}px`;
+};
+
 const half = Math.ceil(clients.length / 2);
 const rows = [clients.slice(0, half), clients.slice(half)];
 ---
@@ -15,7 +29,14 @@ const rows = [clients.slice(0, half), clients.slice(half)];
           {[0, 1].map((copy) =>
             row.map((c) => (
               <li class:list={['clients__item', { marquee__dup: copy === 1 }]} aria-hidden={copy === 1 ? 'true' : undefined}>
-                <Image src={c.logo} alt={copy === 1 ? '' : c.name} height={100} densities={[1, 2]} loading="lazy" />
+                <Image
+                  src={c.logo}
+                  alt={copy === 1 ? '' : c.name}
+                  height={100}
+                  densities={[1, 2]}
+                  loading="lazy"
+                  style={fit(c.logo.width, c.logo.height)}
+                />
               </li>
             )),
           )}
@@ -60,10 +81,13 @@ const rows = [clients.slice(0, half), clients.slice(half)];
     box-shadow: var(--shadow-md);
   }
 
+  .clients__item {
+    --k: 1;
+  }
+
   .clients__item img {
-    max-height: 100px;
-    width: auto;
-    max-width: 100%;
+    width: calc(var(--w) * var(--k));
+    height: calc(var(--h) * var(--k));
     object-fit: contain;
   }
 
@@ -74,8 +98,8 @@ const rows = [clients.slice(0, half), clients.slice(half)];
       padding: 12px 14px;
     }
 
-    .clients__item img {
-      max-height: 72px;
+    .clients__item {
+      --k: 0.74;
     }
   }
 </style>

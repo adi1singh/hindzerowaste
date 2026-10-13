@@ -37,6 +37,8 @@ import suctionVehicleRear from '../assets/photos/suction-vehicle-rear.jpg';
 export interface Photo {
   src: ImageMetadata;
   alt: string;
+  /** CSS object-position when the photo is cropped, to keep the machine in frame. */
+  focus?: string;
 }
 
 export interface Item {
@@ -94,7 +96,11 @@ export const products: Product[] = [
       'Our bio-mining trommel is engineered for large-scale legacy waste and municipal solid waste. Each line combines a loading and feeding conveyor, a heavy-duty drum with screening sizes from 5 mm to 150 mm, separate product conveyors for each fraction, a dedicated conveyor for high-calorific RDF, and an automated heavy-duty control panel.',
     ],
     images: [
-      { src: trommelDumpsite, alt: 'Hind Zero Waste rotary trommel screen working at a legacy waste dumpsite' },
+      {
+        src: trommelDumpsite,
+        alt: 'Hind Zero Waste rotary trommel screen working at a legacy waste dumpsite',
+        focus: 'center 74%',
+      },
       { src: biominingTrommelSite, alt: 'Trommel screen with feed and product conveyors on a bio-mining site' },
       { src: twinTrommels, alt: 'Two bio-mining trommels with green screening drums' },
       { src: trommelRender, alt: 'Rotary trommel screen with inclined feed and discharge conveyors' },

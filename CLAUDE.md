@@ -13,7 +13,8 @@ Astro static site for hindzerowaste.com. Pushing to `main` deploys to Vercel (hi
 - Never invent facts, figures, promises or client names. Anything unconfirmed goes in `CONTENT-REVIEW.md`.
 - Keep page URLs matching the old site (SEO). Add redirects in `astro.config.mjs` if a URL must change.
 - Keep the real logo, phone numbers and client logos.
-- Design tokens live in `src/styles/global.css`; reuse them. Palette is earth/clay: `--navy` holds charcoal #2e2a27 and `--saffron` holds clay #c8643b (names kept from the first palette). Text on clay buttons is white for contrast.
+- Design tokens live in `src/styles/global.css`; reuse them. Colour roles: ivory `--paper` background, charcoal `--ink`/`--navy` text and dark sections, clay `--saffron` #a84f32 for primary buttons (`btn btn--accent`, white text, 5.5:1) and highlights, light clay `--saffron-2` for accents on dark, olive `--green-ink` #566b35 for small labels, lime only for brand marks.
+- Typography: serif for heroes and section statements; semibold sans for machine names, specs and technical values.
 - The enquiry form posts to `api/enquiry.ts` (Vercel Function, Resend). Never show success unless the send succeeded.
 
 ## Commands

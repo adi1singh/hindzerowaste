@@ -65,6 +65,7 @@ const copy = {
     heroSub: 'Waste-processing machinery & turnkey plants',
     heroLead:
       'Since 2017 we have designed, manufactured and commissioned the machinery and plants that clear legacy dumpsites, process municipal solid waste, and turn refuse into fuel and resources.',
+    heroLeadShort: 'Machinery and turnkey plants that clear legacy dumpsites and turn municipal waste into fuel and resources, since 2017.',
     slides: [
       'Bio-mining trommel line at a legacy dumpsite',
       'Segregation and RDF line in a PEB shed',
@@ -94,7 +95,8 @@ const copy = {
     machIntro:
       'Every machine is designed and fabricated by our own team for efficiency, durability and long service life.',
     machAll: 'View all machinery',
-    filterAll: 'All machines',
+    machAllN: 'See all {n} machines',
+    filterAll: 'Featured',
     apprEyebrow: 'How we work',
     apprTitle: 'One partner, from drawing board to <em>daily operation</em>.',
     apprIntro: 'One team is accountable from the first site survey to everyday operation of the plant.',
@@ -115,6 +117,7 @@ const copy = {
     heroSub: 'कचरा प्रसंस्करण मशीनरी और टर्नकी प्लांट',
     heroLead:
       '2017 से हम पुराने कचरा डंपसाइट साफ़ करने, नगरपालिका ठोस कचरे के प्रसंस्करण और कचरे को ईंधन व संसाधनों में बदलने वाली मशीनरी और प्लांट का डिज़ाइन, निर्माण और कमीशनिंग कर रहे हैं।',
+    heroLeadShort: '2017 से पुराने डंपसाइट साफ़ करने और नगरपालिका कचरे को ईंधन व संसाधनों में बदलने वाली मशीनरी और टर्नकी प्लांट।',
     slides: [
       'पुराने डंपसाइट पर बायो-माइनिंग ट्रॉमेल लाइन',
       'PEB शेड में पृथक्करण और RDF लाइन',
@@ -147,7 +150,8 @@ const copy = {
     machTitle: '24×7 काम के लिए, <em>अपने कारखाने</em> में निर्मित।',
     machIntro: 'हर मशीन हमारी अपनी टीम द्वारा दक्षता, टिकाऊपन और लंबी सेवा-अवधि के लिए डिज़ाइन और निर्मित की जाती है।',
     machAll: 'सभी मशीनें देखें',
-    filterAll: 'सभी मशीनें',
+    machAllN: 'सभी {n} मशीनें देखें',
+    filterAll: 'चुनिंदा',
     apprEyebrow: 'हमारी कार्यप्रणाली',
     apprTitle: 'डिज़ाइन से <em>दैनिक संचालन</em> तक, एक ही साझेदार।',
     apprIntro: 'पहले साइट सर्वेक्षण से लेकर प्लांट के रोज़मर्रा के संचालन तक, एक ही टीम ज़िम्मेदार।',
@@ -167,6 +171,7 @@ const copy = {
     heroSub: 'कचरा प्रक्रिया यंत्रसामग्री आणि टर्नकी प्लांट',
     heroLead:
       '2017 पासून आम्ही जुने कचरा डेपो साफ करणारी, नागरी घनकचऱ्यावर प्रक्रिया करणारी आणि कचऱ्याचे इंधन व संसाधनांमध्ये रूपांतर करणारी यंत्रसामग्री आणि प्लांट डिझाइन, निर्मिती व कार्यान्वित करत आहोत.',
+    heroLeadShort: '2017 पासून जुने कचरा डेपो साफ करणारी आणि नागरी कचऱ्याचे इंधन व संसाधनांमध्ये रूपांतर करणारी यंत्रसामग्री व टर्नकी प्लांट.',
     slides: [
       'जुन्या कचरा डेपोवर बायो-मायनिंग ट्रॉमेल लाइन',
       'PEB शेडमधील विलगीकरण व RDF लाइन',
@@ -199,7 +204,8 @@ const copy = {
     machTitle: '24×7 कामासाठी, <em>आमच्याच कारखान्यात</em> निर्मित.',
     machIntro: 'प्रत्येक यंत्र आमच्या टीमकडून कार्यक्षमता, टिकाऊपणा आणि दीर्घ आयुष्यासाठी डिझाइन व तयार केले जाते.',
     machAll: 'सर्व यंत्रे पाहा',
-    filterAll: 'सर्व यंत्रे',
+    machAllN: 'सर्व {n} यंत्रे पाहा',
+    filterAll: 'निवडक',
     apprEyebrow: 'आमची कार्यपद्धती',
     apprTitle: 'डिझाइनपासून <em>दैनंदिन संचालनापर्यंत</em>, एकच भागीदार.',
     apprIntro: 'पहिल्या साइट सर्वेक्षणापासून प्लांटच्या दैनंदिन संचालनापर्यंत, एकच टीम जबाबदार.',
@@ -215,6 +221,15 @@ const copy = {
 
 
 const categories = [...new Set(products.map((p) => p.category))];
+// One machine from each core category for the home page; the full range is on /product.
+const featured = new Set([
+  'rotary-trommel-machines',
+  'air-density-separator',
+  'industrial-shredder-machine',
+  'hydraulic-baler-machine',
+  'organic-waste-composter-machine',
+  'conveyor-and-conveying-system',
+]);
 const catKey = (c: string) => c.toLowerCase().replace(/[^a-z]+/g, '-');
 
 const puneBg = await getImage({ src: pune, width: 1600, format: 'webp' });
@@ -263,7 +278,10 @@ const aboutHref = localePath(lang, '/about-us');
           }
         </h1>
         <p class="eyebrow hero__sub" data-reveal style="--d: 4">{copy.heroSub}</p>
-        <p class="hero__lead" data-reveal style="--d: 5">{copy.heroLead}</p>
+        <p class="hero__lead" data-reveal style="--d: 5">
+          <span class="hero__lead-full">{copy.heroLead}</span>
+          <span class="hero__lead-short">{copy.heroLeadShort}</span>
+        </p>
         <div class="btn-row" data-reveal style="--d: 6">
           <a class="btn btn--accent" href={localePath(lang, '/contact-us') + '#enquiry'}>{t(lang, 'cta.quote')} <span class="arrow">→</span></a>
           <a class="btn btn--ghost" href="/product">{t(lang, 'cta.explore')} <span class="arrow">→</span></a>
@@ -314,6 +332,11 @@ const aboutHref = localePath(lang, '/about-us');
           ))
         }
       </dl>
+      <ul class="creds" data-reveal style="--d: 4">
+        <li>ISO 9001:2015</li>
+        <li>GeM OEM</li>
+        <li>SWM Rules 2016</li>
+      </ul>
     </div>
   </section>
 
@@ -328,34 +351,6 @@ const aboutHref = localePath(lang, '/about-us');
       <ProjectCards lang={lang} />
       <div class="projects__foot" data-reveal>
         <a class="btn btn--accent" href={`${aboutHref}#projects`}>{copy.projAll} <span class="arrow">→</span></a>
-      </div>
-    </div>
-  </section>
-
-  <!-- Philosophy: the words stay in view and fill with the city as you scroll -->
-  <section class="section bg-paper phil" data-phil style={`--pune: url(${puneBg.src})`}>
-    <div class="container phil__grid">
-      <div class="phil__sticky">
-        <p class="eyebrow">{copy.philEyebrow}</p>
-        <h2 class="phil__words">
-          {
-            copy.philWords.map((w, i) => (
-              <span class:list={['phil__word', { 'is-on': i === 0 }]} data-word={i} data-text={w}>
-                {w}
-              </span>
-            ))
-          }
-        </h2>
-      </div>
-      <div class="phil__body">
-        {copy.philParas.map((p, i) => <p class={i === 0 ? 'phil__lead' : 'muted'} data-reveal>{p}</p>)}
-        <a class="link-arrow" href={aboutHref} data-reveal>{copy.philLink} <span class="arrow">→</span></a>
-        <figure class="phil__figure" data-reveal="zoom">
-          <div class="frame phil__frame">
-            <Image src={pune} alt="Pune city skyline with green tree cover" widths={[600, 900, 1200]} sizes="(min-width: 900px) 46vw, 92vw" loading="lazy" />
-          </div>
-          <figcaption class="caption">{copy.philCaption}</figcaption>
-        </figure>
       </div>
     </div>
   </section>
@@ -414,7 +409,7 @@ const aboutHref = localePath(lang, '/about-us');
         </div>
       </div>
       <div class="filters" role="group" aria-label={copy.machEyebrow} data-filters data-reveal>
-        <button type="button" class="filters__btn" aria-pressed="true" data-filter="all">{copy.filterAll} <span>{products.length}</span></button>
+        <button type="button" class="filters__btn" aria-pressed="true" data-filter="featured">{copy.filterAll} <span>{featured.size}</span></button>
         {
           categories.map((c) => (
             <button type="button" class="filters__btn" aria-pressed="false" data-filter={catKey(c)}>
@@ -426,12 +421,43 @@ const aboutHref = localePath(lang, '/about-us');
       <ul class="mach-grid" data-filter-grid>
         {
           products.map((p, i) => (
-            <li data-cat={catKey(p.category)} data-reveal style={`--d:${i % 3}`}>
-              <ProductCard product={p} lang={lang} index={i} />
+            <li data-cat={catKey(p.category)} data-featured={featured.has(p.slug) ? '' : undefined} hidden={!featured.has(p.slug)} data-reveal style={`--d:${i % 3}`}>
+              <ProductCard product={p} lang={lang} />
             </li>
           ))
         }
       </ul>
+      <div class="mach__foot" data-reveal>
+        <a class="btn btn--ghost" href="/product">{copy.machAllN.replace('{n}', String(products.length))} <span class="arrow">→</span></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Philosophy: the words stay in view and fill with the city as you scroll -->
+  <section class="section bg-paper phil" data-phil style={`--pune: url(${puneBg.src})`}>
+    <div class="container phil__grid">
+      <div class="phil__sticky">
+        <p class="eyebrow">{copy.philEyebrow}</p>
+        <h2 class="phil__words">
+          {
+            copy.philWords.map((w, i) => (
+              <span class:list={['phil__word', { 'is-on': i === 0 }]} data-word={i} data-text={w}>
+                {w}
+              </span>
+            ))
+          }
+        </h2>
+      </div>
+      <div class="phil__body">
+        {copy.philParas.map((p, i) => <p class={i === 0 ? 'phil__lead' : 'muted'} data-reveal>{p}</p>)}
+        <a class="link-arrow" href={aboutHref} data-reveal>{copy.philLink} <span class="arrow">→</span></a>
+        <figure class="phil__figure" data-reveal="zoom">
+          <div class="frame phil__frame">
+            <Image src={pune} alt="Pune city skyline with green tree cover" widths={[600, 900, 1200]} sizes="(min-width: 900px) 46vw, 92vw" loading="lazy" />
+          </div>
+          <figcaption class="caption">{copy.philCaption}</figcaption>
+        </figure>
+      </div>
     </div>
   </section>
 
@@ -454,11 +480,6 @@ const aboutHref = localePath(lang, '/about-us');
         <p class="eyebrow">{copy.clientsEyebrow}</p>
         <h2 class="h2" set:html={copy.clientsTitle} />
         <p class="muted">{copy.clientsIntro}</p>
-        <p class="clients-sec__creds">
-          <span class="chip">ISO 9001:2015</span>
-          <span class="chip">GeM OEM</span>
-          <span class="chip">SWM Rules 2016</span>
-        </p>
       </div>
     </div>
     <div data-reveal>
@@ -476,7 +497,7 @@ const aboutHref = localePath(lang, '/about-us');
               <p class="eyebrow">{copy.insEyebrow}</p>
               <h2 class="h2" set:html={copy.insTitle} />
             </div>
-            <div class="mach__side">
+            <div class="ins__all">
               <a class="link-arrow" href="/waste-management-blogs">
                 {copy.insAll} <span class="arrow">→</span>
               </a>
@@ -580,8 +601,10 @@ const aboutHref = localePath(lang, '/about-us');
       btn.addEventListener('click', () => {
         const key = btn.dataset.filter;
         buttons.forEach((b) => b.setAttribute('aria-pressed', String(b === btn)));
+        // On phones the row scrolls sideways; keep the chosen chip in view.
+        btn.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: reduce ? 'auto' : 'smooth' });
         cards.forEach((card) => {
-          const show = key === 'all' || card.dataset.cat === key;
+          const show = key === 'featured' ? 'featured' in card.dataset : card.dataset.cat === key;
           card.hidden = !show;
           if (show) {
             card.classList.remove('is-entering');
@@ -688,10 +711,12 @@ const aboutHref = localePath(lang, '/about-us');
   }
 
   /* Words settle in from a soft blur rather than just sliding up. */
-  :global(.js) .hero__title.rise > :global(span) {
-    filter: blur(14px);
-    animation-name: hero-word;
-    animation-duration: 1.1s;
+  @media (prefers-reduced-motion: no-preference) {
+    :global(.js) .hero__title.rise > :global(span) {
+      filter: blur(14px);
+      animation-name: hero-word;
+      animation-duration: 1.1s;
+    }
   }
 
   @keyframes hero-word {
@@ -707,7 +732,7 @@ const aboutHref = localePath(lang, '/about-us');
     position: relative;
     display: inline-block;
     padding-inline: 0.04em 0.08em;
-    background: linear-gradient(100deg, #f3b48c 0%, var(--saffron-2) 40%, var(--saffron) 100%);
+    background: linear-gradient(100deg, #f4b993 0%, var(--saffron-2) 45%, #c9663f 100%);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
@@ -722,7 +747,7 @@ const aboutHref = localePath(lang, '/about-us');
     right: 2%;
     bottom: -0.06em;
     height: 0.16em;
-    background: var(--saffron);
+    background: var(--saffron-2);
     -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 20' preserveAspectRatio='none'%3E%3Cpath d='M3 14C60 6 140 3 297 9' stroke='black' stroke-width='5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E")
       center / 100% 100% no-repeat;
     mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 20' preserveAspectRatio='none'%3E%3Cpath d='M3 14C60 6 140 3 297 9' stroke='black' stroke-width='5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E")
@@ -731,9 +756,30 @@ const aboutHref = localePath(lang, '/about-us');
     animation: hero-stroke 0.9s var(--ease-out) 1.1s forwards;
   }
 
+  @media (prefers-reduced-motion: reduce) {
+    .hero__title :global(em)::after {
+      clip-path: none;
+      animation: none;
+    }
+  }
+
   @keyframes hero-stroke {
     to {
       clip-path: inset(0 0 0 0);
+    }
+  }
+
+  .hero__lead-short {
+    display: none;
+  }
+
+  @media (max-width: 600px) {
+    .hero__lead-full {
+      display: none;
+    }
+
+    .hero__lead-short {
+      display: inline;
     }
   }
 
@@ -810,7 +856,7 @@ const aboutHref = localePath(lang, '/about-us');
     content: '';
     position: absolute;
     inset: 0;
-    background: var(--saffron);
+    background: var(--saffron-2);
     transform: scaleX(0);
     transform-origin: left;
   }
@@ -888,7 +934,7 @@ const aboutHref = localePath(lang, '/about-us');
 
   /* ---------- Figures ---------- */
   .numbers {
-    padding-block: clamp(48px, 6vw, 80px);
+    padding-block: clamp(44px, 5vw, 68px) clamp(28px, 3vw, 40px);
     border-bottom: 1px solid var(--line);
   }
 
@@ -922,6 +968,36 @@ const aboutHref = localePath(lang, '/about-us');
     line-height: 1.5;
     color: var(--muted);
     max-width: 16em;
+  }
+
+  .creds {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px 28px;
+    margin-top: clamp(32px, 4vw, 48px);
+    padding-top: 22px;
+    border-top: 1px solid var(--line);
+    list-style: none;
+    font-size: 14px;
+    font-weight: 650;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--green-ink);
+  }
+
+  .creds li {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .creds li::before {
+    content: '';
+    width: 7px;
+    height: 7px;
+    background: var(--lime);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--lime) 25%, transparent);
   }
 
   /* ---------- Projects ---------- */
@@ -973,7 +1049,7 @@ const aboutHref = localePath(lang, '/about-us');
   .phil__words {
     display: flex;
     flex-direction: column;
-    font: 850 clamp(3.4rem, 7.6vw, 7.6rem) / 0.98 var(--sans);
+    font: 850 clamp(3.2rem, 6.6vw, 6.4rem) / 0.98 var(--sans);
     letter-spacing: -0.045em;
     text-transform: uppercase;
   }
@@ -1029,8 +1105,8 @@ const aboutHref = localePath(lang, '/about-us');
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: 22px;
-    padding-top: 52px;
+    gap: 20px;
+    padding-top: 44px;
   }
 
   .phil__lead {
@@ -1042,11 +1118,11 @@ const aboutHref = localePath(lang, '/about-us');
 
   .phil__figure {
     width: 100%;
-    margin: 28px 0 0;
+    margin: 12px 0 0;
   }
 
   .phil__frame {
-    aspect-ratio: 4 / 5;
+    aspect-ratio: 3 / 2;
     border-radius: var(--radius-lg);
   }
 
@@ -1169,7 +1245,7 @@ const aboutHref = localePath(lang, '/about-us');
 
   .svc__row:hover .svc__icon {
     background: var(--saffron);
-    color: var(--ink);
+    color: var(--white);
     transform: rotate(-8deg) scale(1.08);
   }
 
@@ -1194,7 +1270,7 @@ const aboutHref = localePath(lang, '/about-us');
     transform: translateX(6px);
     background: var(--saffron);
     border-color: var(--saffron);
-    color: var(--ink);
+    color: var(--white);
   }
 
   .svc__note {
@@ -1277,7 +1353,7 @@ const aboutHref = localePath(lang, '/about-us');
   .filters__btn[aria-pressed='true'] {
     background: var(--saffron);
     border-color: var(--saffron);
-    color: var(--ink);
+    color: var(--white);
   }
 
   .filters__btn[aria-pressed='true'] span {
@@ -1289,6 +1365,16 @@ const aboutHref = localePath(lang, '/about-us');
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 28px;
     list-style: none;
+  }
+
+  .mach__foot {
+    display: flex;
+    justify-content: center;
+    margin-top: 44px;
+  }
+
+  .ins__all {
+    justify-self: end;
   }
 
   .mach-grid li[hidden] {
@@ -1361,7 +1447,7 @@ const aboutHref = localePath(lang, '/about-us');
     padding: 6px 12px;
     border-radius: 999px;
     background: var(--saffron);
-    color: var(--ink);
+    color: var(--white);
     font-size: 13px;
     font-weight: 700;
   }
@@ -1424,6 +1510,7 @@ const aboutHref = localePath(lang, '/about-us');
 
   .ins__card:hover .ins__go {
     background: var(--saffron);
+    color: var(--white);
     border-color: var(--saffron);
     transform: translateX(4px);
   }
@@ -1530,6 +1617,40 @@ const aboutHref = localePath(lang, '/about-us');
 
     .mach-grid {
       grid-template-columns: minmax(0, 1fr);
+    }
+
+    /* One swipeable row instead of six rows of chips. */
+    .filters {
+      flex-wrap: nowrap;
+      gap: 8px;
+      margin-inline: calc(-1 * var(--gutter));
+      margin-bottom: 24px;
+      padding: 2px var(--gutter) 6px;
+      overflow-x: auto;
+      scroll-snap-type: x proximity;
+      scroll-padding-inline: var(--gutter);
+      scrollbar-width: none;
+      -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 48px), transparent);
+      mask-image: linear-gradient(90deg, #000 calc(100% - 48px), transparent);
+    }
+
+    .filters::-webkit-scrollbar {
+      display: none;
+    }
+
+    .filters__btn {
+      flex: none;
+      padding: 9px 14px;
+      font-size: 14px;
+      scroll-snap-align: start;
+    }
+
+    .filters__btn:hover {
+      transform: none;
+    }
+
+    .mach__foot {
+      margin-top: 32px;
     }
   }
 </style>
