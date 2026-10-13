@@ -31,6 +31,7 @@
   --sage: #e5edd8;
   --sky: #e4ecf8;
   --white: #ffffff;
+  --shade: 8, 16, 30;
   --text: #172133;
   --muted: #4d5768;
   --muted-on-dark: #b3bdcd;
@@ -55,6 +56,47 @@
   --header-h: 92px;
   /* Height of the top bar and header together, used to size first screens. */
   --chrome: calc(var(--top-h) + var(--header-h));
+}
+
+/* Colour previews, switched on with ?theme= (see /colour-preview). */
+html[data-theme='forest'] {
+  --ink: #0e1f17;
+  --ink-2: #15291f;
+  --ink-3: #1f3a2c;
+  --navy: #1d5a3a;
+  --navy-2: #27754c;
+  --navy-deep: #123f27;
+  --saffron: #c3d32c;
+  --saffron-2: #d4e35a;
+  --saffron-ink: #5a6a00;
+  --sky: #e2ede3;
+  --shade: 10, 26, 18;
+}
+
+html[data-theme='clay'] {
+  --ink: #1d1a18;
+  --ink-2: #2a2523;
+  --ink-3: #3a332f;
+  --navy: #2e2a27;
+  --navy-2: #4a423c;
+  --navy-deep: #1a1716;
+  --saffron: #c8643b;
+  --saffron-2: #e5895f;
+  --saffron-ink: #8f3f1d;
+  --sky: #f1e5db;
+  --paper: #f5efe6;
+  --shade: 28, 22, 18;
+}
+
+html[data-theme='ink'] {
+  --ink: #0b0b0b;
+  --ink-2: #161616;
+  --ink-3: #242424;
+  --navy: #141414;
+  --navy-2: #333333;
+  --navy-deep: #000000;
+  --sky: #f0ebe1;
+  --shade: 10, 10, 10;
 }
 
 :lang(mr) {
