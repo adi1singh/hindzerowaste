@@ -1,0 +1,522 @@
+---
+import { Image } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import ClientWall from '../components/ClientWall.astro';
+import CtaBand from '../components/CtaBand.astro';
+import { figures, footprint } from '../data/site';
+import type { Lang } from '../i18n/ui';
+
+import storyImage from '../assets/photos/trommel-and-baler.jpg';
+import siteImage from '../assets/photos/biomining-conveyor.jpg';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+
+const copy = {
+  en: {
+    title: 'About Us | Hind Zero Waste Management Pvt. Ltd.',
+    description:
+      'Founded in 2017 in Kolhapur as Hind Agro and Chemicals, Hind Zero Waste Management designs and manufactures waste-processing machinery and turnkey plants. ISO 9001:2015 certified, GeM registered OEM.',
+    crumbs: ['Home', 'About us'],
+    eyebrow: 'About us',
+    heroTitle: 'Precision-engineered machines for <em>smarter</em> waste management.',
+    lead: 'We design and manufacture advanced waste-processing systems, and deliver turnkey solutions for material recovery, recycling, RDF production and integrated waste management.',
+    storyEyebrow: 'Our story',
+    storyTitle: 'From Kolhapur, <em>for all of India</em>.',
+    story: [
+      'Founded in 2017 as Hind Agro and Chemicals in Kolhapur, Maharashtra, we have evolved with purpose and innovation into Hind Zero Waste Management Pvt. Ltd., a trusted name in integrated solid waste management across India.',
+      'We design, manufacture and supply energy-efficient, low-maintenance waste-processing equipment: balers, organic waste and vessel composters, shredders, trommels, separators and conveyor systems. Around them we build complete plants for municipal, industrial, institutional and residential clients.',
+      'Our work is not just a service but a responsibility: conserving natural resources and significantly reducing environmental impact, for cleaner cities and a greener planet.',
+    ],
+    figures: figures.map((f) => f.label),
+    visionTitle: 'Vision',
+    vision:
+      'To maintain our reputation and leadership by embracing change and professional management, making the best use of resources for continual growth, and delivering services that preserve the environment for the next generation.',
+    missionTitle: 'Mission',
+    mission: [
+      'To meet every need of the businesses we serve.',
+      'To give our clients a consistent, reliable solution to every waste challenge.',
+      'To provide cost-effective technological solutions to industry and government institutions for the preservation of the environment.',
+      'To meet India’s need for solid waste management through the Hind Group.',
+    ],
+    valuesTitle: 'Values',
+    values:
+      'Integrity, environmental responsibility and customer-centricity guide everything we do. We innovate for sustainability, put safety first and tailor every solution, so that waste is managed ethically and efficiently.',
+    whyEyebrow: 'Why Hind Zero Waste',
+    whyTitle: 'Why clients <em>choose us</em>',
+    why: [
+      ['Eco-friendly commitment', 'Sustainable processing, recycling and eco-conscious disposal that protect the environment and reduce landfill.'],
+      ['Customised solutions', 'Every plant and machine is tailored to your waste, tonnage and site.'],
+      ['Transparent pricing', 'Competitive rates with no hidden costs, so you can plan your budget with confidence.'],
+      ['Modern technology', 'The latest waste-processing technology and practices for safe, efficient and responsible handling.'],
+    ],
+    credEyebrow: 'Credentials',
+    credTitle: 'Certified, registered, <em>proven</em>.',
+    creds: ['ISO 9001:2015 certified', 'GeM registered OEM', 'Compliant with SWM Rules 2016 and CPCB norms'],
+    footprintLabel: 'States with our plants and projects',
+    states: [...footprint],
+    clientsEyebrow: 'Clients',
+    clientsTitle: 'In good <em>company</em>.',
+    siteCaption: 'A Hind Zero Waste bio-mining line stacking segregated fractions on site.',
+  },
+  hi: {
+    title: 'हमारे बारे में | हिंद ज़ीरो वेस्ट मैनेजमेंट प्रा. लि.',
+    description:
+      '2017 में कोल्हापुर में हिंद एग्रो एंड केमिकल्स के रूप में स्थापित, हिंद ज़ीरो वेस्ट मैनेजमेंट कचरा प्रसंस्करण मशीनरी और टर्नकी प्लांट का डिज़ाइन और निर्माण करता है।',
+    crumbs: ['होम', 'हमारे बारे में'],
+    eyebrow: 'हमारे बारे में',
+    heroTitle: 'स्मार्ट कचरा प्रबंधन के लिए <em>सटीक</em> इंजीनियरिंग वाली मशीनें।',
+    lead: 'हम उन्नत कचरा प्रसंस्करण प्रणालियों का डिज़ाइन और निर्माण करते हैं, और सामग्री पुनर्प्राप्ति, रीसाइक्लिंग, RDF उत्पादन और एकीकृत कचरा प्रबंधन के लिए टर्नकी समाधान देते हैं।',
+    storyEyebrow: 'हमारी कहानी',
+    storyTitle: 'कोल्हापुर से, <em>पूरे भारत</em> के लिए।',
+    story: [
+      '2017 में कोल्हापुर, महाराष्ट्र में हिंद एग्रो एंड केमिकल्स के रूप में स्थापित, हम उद्देश्य और नवाचार के साथ आगे बढ़ते हुए आज हिंद ज़ीरो वेस्ट मैनेजमेंट प्रा. लि. हैं, जो पूरे भारत में एकीकृत ठोस कचरा प्रबंधन का विश्वसनीय नाम है।',
+      'हम ऊर्जा-कुशल और कम रखरखाव वाले कचरा प्रसंस्करण उपकरणों का डिज़ाइन, निर्माण और आपूर्ति करते हैं: बेलर, ऑर्गेनिक वेस्ट कम्पोस्टर और वेसल कम्पोस्टर, श्रेडर, ट्रॉमेल, सेपरेटर और कन्वेयर सिस्टम। इन्हीं के आधार पर हम नगरपालिका, औद्योगिक, संस्थागत और आवासीय ग्राहकों के लिए पूर्ण प्लांट बनाते हैं।',
+      'हमारा काम केवल सेवा नहीं, बल्कि ज़िम्मेदारी है: प्राकृतिक संसाधनों का संरक्षण और पर्यावरण पर प्रभाव में उल्लेखनीय कमी, स्वच्छ शहरों और हरित धरती के लिए।',
+    ],
+    figures: [
+      'भारत भर में बायो-माइनिंग परियोजनाएँ',
+      'बेलिंग मशीनें आपूर्ति और कमीशन की गईं',
+      'भारत और दक्षिण अफ़्रीका में ग्राहक',
+      'कोल्हापुर, महाराष्ट्र में स्थापना',
+    ],
+    visionTitle: 'दृष्टि',
+    vision:
+      'परिवर्तन और पेशेवर प्रबंधन को अपनाकर, संसाधनों के सर्वोत्तम उपयोग से निरंतर विकास करते हुए, और आने वाली पीढ़ी के लिए पर्यावरण की रक्षा करने वाली सेवाएँ देकर अपनी प्रतिष्ठा और नेतृत्व बनाए रखना।',
+    missionTitle: 'मिशन',
+    mission: [
+      'हमारे ग्राहकों के व्यवसाय की हर आवश्यकता को पूरा करना।',
+      'हमारे ग्राहकों को कचरे की हर चुनौती का एक स्थिर, विश्वसनीय समाधान देना।',
+      'पर्यावरण संरक्षण के लिए उद्योगों और सरकारी संस्थानों को किफ़ायती तकनीकी समाधान प्रदान करना।',
+      'हिंद ग्रुप के माध्यम से भारत की ठोस कचरा प्रबंधन की आवश्यकता को पूरा करना।',
+    ],
+    valuesTitle: 'मूल्य',
+    values:
+      'ईमानदारी, पर्यावरणीय ज़िम्मेदारी और ग्राहक-केंद्रितता हमारे हर काम का आधार हैं। हम स्थिरता के लिए नवाचार करते हैं, सुरक्षा को प्राथमिकता देते हैं और हर समाधान को अनुकूलित करते हैं, ताकि कचरे का प्रबंधन नैतिक और कुशल तरीके से हो।',
+    whyEyebrow: 'हिंद ज़ीरो वेस्ट क्यों',
+    whyTitle: 'ग्राहक हमें <em>क्यों चुनते हैं</em>',
+    why: [
+      ['पर्यावरण के प्रति प्रतिबद्धता', 'टिकाऊ प्रसंस्करण, रीसाइक्लिंग और पर्यावरण-अनुकूल निपटान, जो पर्यावरण की रक्षा करते हैं और लैंडफ़िल घटाते हैं।'],
+      ['अनुकूलित समाधान', 'हर प्लांट और मशीन आपके कचरे, क्षमता और साइट के अनुसार तैयार।'],
+      ['पारदर्शी मूल्य', 'बिना छिपे खर्च के प्रतिस्पर्धी दरें, ताकि आप भरोसे के साथ बजट बना सकें।'],
+      ['आधुनिक तकनीक', 'सुरक्षित, कुशल और ज़िम्मेदार कचरा प्रबंधन के लिए नवीनतम तकनीक और प्रक्रियाएँ।'],
+    ],
+    credEyebrow: 'प्रमाणन',
+    credTitle: 'प्रमाणित, पंजीकृत, <em>सिद्ध</em>।',
+    creds: ['ISO 9001:2015 प्रमाणित', 'GeM पंजीकृत OEM', 'SWM नियम 2016 और CPCB मानदंडों के अनुरूप'],
+    footprintLabel: 'हमारे प्लांट और परियोजनाओं वाले राज्य',
+    states: ['महाराष्ट्र', 'राजस्थान', 'तेलंगाना', 'दिल्ली', 'उत्तर प्रदेश', 'हिमाचल प्रदेश', 'पंजाब', 'कर्नाटक', 'गोवा', 'गुजरात', 'आंध्र प्रदेश', 'मध्य प्रदेश'],
+    clientsEyebrow: 'ग्राहक',
+    clientsTitle: 'भरोसेमंद <em>साथ</em>।',
+    siteCaption: 'साइट पर अलग किए गए अंशों का ढेर लगाती हिंद ज़ीरो वेस्ट की बायो-माइनिंग लाइन।',
+  },
+  mr: {
+    title: 'आमच्याबद्दल | हिंद झिरो वेस्ट मॅनेजमेंट प्रा. लि.',
+    description:
+      '2017 मध्ये कोल्हापूर येथे हिंद ॲग्रो अँड केमिकल्स म्हणून स्थापन झालेली हिंद झिरो वेस्ट मॅनेजमेंट कचरा प्रक्रिया यंत्रसामग्री व टर्नकी प्लांटचे डिझाइन व निर्मिती करते.',
+    crumbs: ['होम', 'आमच्याबद्दल'],
+    eyebrow: 'आमच्याबद्दल',
+    heroTitle: 'स्मार्ट कचरा व्यवस्थापनासाठी <em>अचूक</em> अभियांत्रिकीची यंत्रे.',
+    lead: 'आम्ही प्रगत कचरा प्रक्रिया प्रणालींचे डिझाइन व निर्मिती करतो, आणि साहित्य पुनर्प्राप्ती, पुनर्वापर, RDF निर्मिती व एकात्मिक कचरा व्यवस्थापनासाठी टर्नकी उपाय देतो.',
+    storyEyebrow: 'आमची वाटचाल',
+    storyTitle: 'कोल्हापूरपासून, <em>संपूर्ण भारतासाठी</em>.',
+    story: [
+      '2017 मध्ये कोल्हापूर, महाराष्ट्र येथे हिंद ॲग्रो अँड केमिकल्स म्हणून स्थापन झालेली आमची कंपनी उद्दिष्ट आणि नावीन्यासह वाटचाल करत आज हिंद झिरो वेस्ट मॅनेजमेंट प्रा. लि. म्हणून संपूर्ण भारतात एकात्मिक घनकचरा व्यवस्थापनातील विश्वासार्ह नाव आहे.',
+      'आम्ही ऊर्जा-कार्यक्षम व कमी देखभालीच्या कचरा प्रक्रिया उपकरणांचे डिझाइन, निर्मिती व पुरवठा करतो: बेलर, ऑरगॅनिक वेस्ट कंपोस्टर व व्हेसल कंपोस्टर, श्रेडर, ट्रॉमेल, सेपरेटर आणि कन्व्हेयर सिस्टीम. याच आधारावर आम्ही नागरी, औद्योगिक, संस्थात्मक व निवासी ग्राहकांसाठी संपूर्ण प्लांट उभारतो.',
+      'आमचे काम केवळ सेवा नाही, तर जबाबदारी आहे: नैसर्गिक संसाधनांचे संवर्धन आणि पर्यावरणावरील परिणामात लक्षणीय घट, स्वच्छ शहरे आणि हरित पृथ्वीसाठी.',
+    ],
+    figures: [
+      'भारतभर बायो-मायनिंग प्रकल्प',
+      'बेलिंग मशीन पुरवल्या व कार्यान्वित केल्या',
+      'भारत व दक्षिण आफ्रिकेतील ग्राहक',
+      'कोल्हापूर, महाराष्ट्र येथे स्थापना',
+    ],
+    visionTitle: 'दृष्टिकोन',
+    vision:
+      'बदल आणि व्यावसायिक व्यवस्थापन स्वीकारून, संसाधनांचा सर्वोत्तम वापर करत सातत्यपूर्ण प्रगती साधणे, आणि पुढील पिढीसाठी पर्यावरणाचे रक्षण करणाऱ्या सेवा देऊन आमची प्रतिष्ठा व नेतृत्व टिकवणे.',
+    missionTitle: 'ध्येय',
+    mission: [
+      'आमच्या ग्राहकांच्या व्यवसायाची प्रत्येक गरज पूर्ण करणे.',
+      'ग्राहकांना कचऱ्याच्या प्रत्येक आव्हानावर सातत्यपूर्ण, विश्वासार्ह उपाय देणे.',
+      'पर्यावरण संरक्षणासाठी उद्योग व शासकीय संस्थांना किफायतशीर तांत्रिक उपाय देणे.',
+      'हिंद ग्रुपच्या माध्यमातून भारताची घनकचरा व्यवस्थापनाची गरज पूर्ण करणे.',
+    ],
+    valuesTitle: 'मूल्ये',
+    values:
+      'प्रामाणिकपणा, पर्यावरणीय जबाबदारी आणि ग्राहककेंद्रितता हा आमच्या प्रत्येक कामाचा पाया आहे. आम्ही शाश्वततेसाठी नावीन्य आणतो, सुरक्षिततेला प्राधान्य देतो आणि प्रत्येक उपाय गरजेनुसार तयार करतो, जेणेकरून कचऱ्याचे व्यवस्थापन नैतिक व कार्यक्षम पद्धतीने होईल.',
+    whyEyebrow: 'हिंद झिरो वेस्ट का',
+    whyTitle: 'ग्राहक आम्हाला <em>का निवडतात</em>',
+    why: [
+      ['पर्यावरणाप्रती बांधिलकी', 'शाश्वत प्रक्रिया, पुनर्वापर आणि पर्यावरणपूरक विल्हेवाट, जी पर्यावरणाचे रक्षण करते आणि लँडफिल कमी करते.'],
+      ['गरजेनुसार उपाय', 'प्रत्येक प्लांट व यंत्र तुमचा कचरा, क्षमता आणि साइटनुसार तयार.'],
+      ['पारदर्शक किंमत', 'कोणताही छुपा खर्च नसलेले स्पर्धात्मक दर, जेणेकरून तुम्ही विश्वासाने बजेट आखू शकता.'],
+      ['आधुनिक तंत्रज्ञान', 'सुरक्षित, कार्यक्षम आणि जबाबदार कचरा हाताळणीसाठी नवीनतम तंत्रज्ञान व पद्धती.'],
+    ],
+    credEyebrow: 'प्रमाणपत्रे',
+    credTitle: 'प्रमाणित, नोंदणीकृत, <em>सिद्ध</em>.',
+    creds: ['ISO 9001:2015 प्रमाणित', 'GeM नोंदणीकृत OEM', 'SWM नियम 2016 व CPCB निकषांचे पालन'],
+    footprintLabel: 'आमचे प्लांट व प्रकल्प असलेली राज्ये',
+    states: ['महाराष्ट्र', 'राजस्थान', 'तेलंगणा', 'दिल्ली', 'उत्तर प्रदेश', 'हिमाचल प्रदेश', 'पंजाब', 'कर्नाटक', 'गोवा', 'गुजरात', 'आंध्र प्रदेश', 'मध्य प्रदेश'],
+    clientsEyebrow: 'ग्राहक',
+    clientsTitle: 'विश्वासार्ह <em>सोबत</em>.',
+    siteCaption: 'साइटवर विलग केलेल्या घटकांचे ढीग लावणारी हिंद झिरो वेस्टची बायो-मायनिंग लाइन.',
+  },
+}[lang];
+
+const home = lang === 'en' ? '/' : `/${lang}/`;
+const alternates = { en: '/about-us', hi: '/hi/about-us', mr: '/mr/about-us' };
+---
+
+<Base title={copy.title} description={copy.description} lang={lang} alternates={alternates}>
+  <PageHero
+    eyebrow={copy.eyebrow}
+    title={copy.heroTitle}
+    lead={copy.lead}
+    crumbs={[{ label: copy.crumbs[0], href: home }, { label: copy.crumbs[1] }]}
+  />
+
+  <section class="bg-paper">
+    <div class="container">
+      <div class="frame wide">
+        <Image src={storyImage} alt="Trommel drums and a horizontal baler in the Hind Zero Waste workshop" widths={[800, 1200, 1684]} sizes="(min-width: 1320px) 1240px, 94vw" loading="eager" />
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container story" data-reveal>
+      <div>
+        <p class="eyebrow">{copy.storyEyebrow}</p>
+        <h2 class="h2 story__title" set:html={copy.storyTitle} />
+      </div>
+      <div class="story__body">
+        {copy.story.map((p, i) => <p class={i === 0 ? 'lead' : ''}>{p}</p>)}
+      </div>
+    </div>
+    <div class="container">
+      <dl class="figures" data-reveal>
+        {
+          figures.map((f, i) => (
+            <div>
+              <dt class="tabular">{f.value}</dt>
+              <dd>{copy.figures[i]}</dd>
+            </div>
+          ))
+        }
+      </dl>
+    </div>
+  </section>
+
+  <section class="section bg-ink on-dark">
+    <div class="container vmv">
+      <div class="vmv__vision" data-reveal>
+        <p class="eyebrow">{copy.visionTitle}</p>
+        <p class="vmv__quote">“{copy.vision}”</p>
+      </div>
+      <div class="vmv__cols">
+        <div data-reveal>
+          <h2 class="vmv__title">{copy.missionTitle}</h2>
+          <ol class="vmv__list">
+            {copy.mission.map((m) => <li>{m}</li>)}
+          </ol>
+        </div>
+        <div data-reveal>
+          <h2 class="vmv__title">{copy.valuesTitle}</h2>
+          <p class="vmv__values">{copy.values}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section bg-white">
+    <div class="container">
+      <div class="section-head" data-reveal>
+        <p class="eyebrow">{copy.whyEyebrow}</p>
+        <h2 class="h2" set:html={copy.whyTitle} />
+      </div>
+      <ul class="why">
+        {
+          copy.why.map(([title, text], i) => (
+            <li data-reveal>
+              <span class="why__num tabular">{String(i + 1).padStart(2, '0')}</span>
+              <h3 class="h4">{title}</h3>
+              <p class="muted">{text}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container cred">
+      <div data-reveal>
+        <p class="eyebrow">{copy.credEyebrow}</p>
+        <h2 class="h2 cred__title" set:html={copy.credTitle} />
+        <ul class="cred__list">
+          {copy.creds.map((c) => <li>{c}</li>)}
+        </ul>
+        <p class="cred__label">{copy.footprintLabel}</p>
+        <ul class="states">
+          {copy.states.map((s) => <li>{s}</li>)}
+        </ul>
+      </div>
+      <figure class="cred__media" data-reveal>
+        <div class="frame cred__frame">
+          <Image src={siteImage} alt="" widths={[600, 900, 1280]} sizes="(min-width: 900px) 45vw, 92vw" loading="lazy" />
+        </div>
+        <figcaption class="caption">{copy.siteCaption}</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="section bg-white">
+    <div class="container">
+      <div class="section-head" data-reveal>
+        <p class="eyebrow">{copy.clientsEyebrow}</p>
+        <h2 class="h2" set:html={copy.clientsTitle} />
+      </div>
+      <div data-reveal><ClientWall /></div>
+    </div>
+  </section>
+
+  <CtaBand lang={lang} />
+</Base>
+
+<style>
+  .wide {
+    aspect-ratio: 16 / 7;
+  }
+
+  .story {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: 32px 72px;
+  }
+
+  .story__title {
+    margin-top: 18px;
+  }
+
+  .story__body {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    color: var(--text);
+  }
+
+  .figures {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    margin: clamp(56px, 7vw, 88px) 0 0;
+    border-top: 1px solid var(--line-strong);
+  }
+
+  .figures div {
+    padding: 28px 24px 0 0;
+  }
+
+  .figures div + div {
+    padding-left: 24px;
+    border-left: 1px solid var(--line);
+  }
+
+  .figures dt {
+    font-family: var(--serif);
+    font-size: clamp(2.6rem, 4.6vw, 4rem);
+    line-height: 1;
+    color: var(--ink);
+  }
+
+  .figures dd {
+    margin: 12px 0 0;
+    font-size: 14px;
+    color: var(--muted);
+    max-width: 16em;
+  }
+
+  .vmv__quote {
+    margin-top: 24px;
+    font-family: var(--serif);
+    font-size: clamp(1.8rem, 3.4vw, 2.9rem);
+    line-height: 1.18;
+    color: var(--paper);
+    max-width: 22em;
+  }
+
+  .vmv__cols {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 48px 72px;
+    margin-top: clamp(56px, 7vw, 88px);
+    padding-top: 40px;
+    border-top: 1px solid var(--line-on-dark);
+  }
+
+  .vmv__title {
+    font: 600 12px/1 var(--sans);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--lime) !important;
+    margin-bottom: 20px;
+  }
+
+  .vmv__list {
+    list-style: none;
+    counter-reset: m;
+  }
+
+  .vmv__list li {
+    counter-increment: m;
+    display: grid;
+    grid-template-columns: 40px minmax(0, 1fr);
+    padding: 12px 0;
+    border-bottom: 1px solid var(--line-on-dark);
+    color: #d3dbe7;
+  }
+
+  .vmv__list li::before {
+    content: counter(m, decimal-leading-zero);
+    font-family: var(--serif);
+    color: var(--muted-on-dark);
+  }
+
+  .vmv__values {
+    color: #d3dbe7;
+    font-size: 1.1rem;
+    line-height: 1.7;
+  }
+
+  .why {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    list-style: none;
+    border-top: 1px solid var(--line-strong);
+  }
+
+  .why li {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 28px 28px 8px 0;
+  }
+
+  .why li + li {
+    padding-left: 28px;
+    border-left: 1px solid var(--line);
+  }
+
+  .why__num {
+    font-family: var(--serif);
+    font-size: 2rem;
+    line-height: 1;
+    color: var(--navy);
+    margin-bottom: 8px;
+  }
+
+  .cred {
+    display: grid;
+    grid-template-columns: minmax(0, 6fr) minmax(0, 6fr);
+    gap: 48px 72px;
+    align-items: center;
+  }
+
+  .cred__title {
+    margin-top: 18px;
+  }
+
+  .cred__list {
+    list-style: none;
+    margin-top: 32px;
+    border-top: 1px solid var(--line-strong);
+  }
+
+  .cred__list li {
+    display: flex;
+    gap: 14px;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--line);
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  .cred__list li::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    margin-top: 0.55em;
+    background: var(--lime);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--lime) 25%, transparent);
+    flex: none;
+  }
+
+  .cred__label {
+    margin: 36px 0 14px;
+    font: 600 12px/1.4 var(--sans);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .states {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    list-style: none;
+  }
+
+  .states li {
+    padding: 6px 12px;
+    border: 1px solid var(--line-strong);
+    border-radius: 999px;
+    font-size: 14px;
+    color: var(--ink);
+  }
+
+  .cred__media {
+    margin: 0;
+  }
+
+  .cred__frame {
+    aspect-ratio: 4 / 3;
+  }
+
+  @media (max-width: 960px) {
+    .story,
+    .cred,
+    .vmv__cols {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .why,
+    .figures {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .why li:nth-child(3),
+    .figures div:nth-child(3) {
+      padding-left: 0;
+      border-left: 0;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .wide {
+      aspect-ratio: 4 / 3;
+    }
+
+    .why {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .why li + li {
+      padding-left: 0;
+      border-left: 0;
+      border-top: 1px solid var(--line);
+    }
+  }
+</style>

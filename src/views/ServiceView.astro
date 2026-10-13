@@ -1,0 +1,543 @@
+---
+import { Image } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import Gallery from '../components/Gallery.astro';
+import SpecTable from '../components/SpecTable.astro';
+import ProductCard from '../components/ProductCard.astro';
+import Faq from '../components/Faq.astro';
+import CtaBand from '../components/CtaBand.astro';
+import { productBySlug, type Product } from '../data/products';
+import type { Service } from '../data/services';
+import { site } from '../data/site';
+
+interface Props {
+  service: Service;
+}
+
+const { service: s } = Astro.props;
+const machinery = s.machinery.map(productBySlug).filter((x): x is Product => Boolean(x));
+const quoteHref = `/contact-us?subject=${encodeURIComponent(s.name)}#enquiry`;
+
+const schema: Record<string, unknown>[] = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Service',
+    name: s.name,
+    description: s.seoDescription,
+    serviceType: s.name,
+    areaServed: { '@type': 'Country', name: 'India' },
+    provider: { '@type': 'Organization', name: site.name, url: site.url },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: site.url + '/' },
+      { '@type': 'ListItem', position: 2, name: 'Services', item: site.url + '/services' },
+      { '@type': 'ListItem', position: 3, name: s.name, item: `${site.url}/${s.slug}` },
+    ],
+  },
+];
+if (s.faqs) {
+  schema.push({
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: s.faqs.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+  });
+}
+---
+
+<Base title={s.seoTitle} description={s.seoDescription} schema={schema}>
+  <section class="s-hero">
+    <div class="container">
+      <nav class="crumbs" aria-label="Breadcrumb">
+        <ol>
+          <li><a href="/">Home</a></li>
+          <li><a href="/services">Services</a></li>
+          <li><span aria-current="page">{s.name}</span></li>
+        </ol>
+      </nav>
+      <div class="s-hero__head">
+        <div>
+          <p class="eyebrow">Turnkey service · {s.range}</p>
+          <h1 class="h1 s-hero__title">{s.name}</h1>
+        </div>
+        <div class="s-hero__aside">
+          <p class="lead">{s.lead}</p>
+          <div class="btn-row">
+            <a class="btn" href={quoteHref}>Discuss your project <span class="arrow">→</span></a>
+            <a class="link-arrow" href="/projects">See our projects <span class="arrow">→</span></a>
+          </div>
+        </div>
+      </div>
+      <div class="s-hero__media">
+        <Gallery images={s.images} priority />
+      </div>
+    </div>
+  </section>
+
+  <section class="section bg-white">
+    <div class="container two-col" data-reveal>
+      <div>
+        <p class="eyebrow">Overview</p>
+        <h2 class="h3 two-col__title">{s.short}</h2>
+      </div>
+      <div class="prose">
+        {s.overview.map((para) => <p>{para}</p>)}
+      </div>
+    </div>
+  </section>
+
+  <section class="section bg-ink on-dark">
+    <div class="container">
+      <div class="section-head" data-reveal>
+        <p class="eyebrow">Process</p>
+        <h2 class="h2">{s.stepsTitle}</h2>
+      </div>
+      <ol class="timeline">
+        {
+          s.steps.map((step, i) => (
+            <li data-reveal>
+              <span class="timeline__num tabular">{String(i + 1).padStart(2, '0')}</span>
+              <div>
+                <h3 class="h4">{step.title}</h3>
+                <p class="muted">{step.text}</p>
+              </div>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  {
+    s.figure && (
+      <section class="section--tight bg-white">
+        <div class="container" data-reveal>
+          <figure class="figure">
+            <Image src={s.figure.src} alt={s.figure.alt} widths={[800, 1200, 1600]} sizes="(min-width: 1320px) 1240px, 94vw" loading="lazy" />
+            <figcaption class="caption">{s.figure.caption}</figcaption>
+          </figure>
+        </div>
+      </section>
+    )
+  }
+
+  {
+    s.outputs && (
+      <section class="section">
+        <div class="container">
+          <div class="section-head" data-reveal>
+            <p class="eyebrow">Outcomes</p>
+            <h2 class="h2">{s.outputsTitle}</h2>
+          </div>
+          <ul class:list={['outputs', { 'outputs--two': s.outputs.length === 2 }]}>
+            {s.outputs.map((o) => (
+              <li data-reveal>
+                <h3 class="outputs__title">{o.title}</h3>
+                <p class="muted">{o.text}</p>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+    )
+  }
+
+  <section class="section bg-white">
+    <div class="container benefits" data-reveal>
+      <div>
+        <p class="eyebrow">Benefits</p>
+        <h2 class="h2 two-col__title">Why it <em>matters</em></h2>
+      </div>
+      <ul class="benefits__list">
+        {s.benefits.map((b) => <li>{b}</li>)}
+      </ul>
+    </div>
+    {
+      s.extra && (
+        <div class="container benefits extra" data-reveal>
+          <div>
+            <h3 class="label">{s.extraTitle}</h3>
+          </div>
+          <ul class="extra__list">
+            {s.extra.map((e) => (
+              <li>{e}</li>
+            ))}
+          </ul>
+        </div>
+      )
+    }
+  </section>
+
+  {
+    (s.variants || s.table) && (
+      <section class="section" id="specifications">
+        <div class="container">
+          <div class="section-head section-head--split" data-reveal>
+            <div>
+              <p class="eyebrow">Capacities</p>
+              <h2 class="h2">{s.variantsTitle ?? 'Sizing your plant'}</h2>
+            </div>
+            <p class="muted">Every plant is designed around the tonnage, waste composition and land available at your site.</p>
+          </div>
+          {s.variants && (
+            <ul class="variants" data-reveal>
+              {s.variants.map((v) => (
+                <li>
+                  <p class="variants__title tabular">{v.title}</p>
+                  <p class="muted">{v.text}</p>
+                </li>
+              ))}
+            </ul>
+          )}
+          {s.table && (
+            <div class="table-wrap" data-reveal>
+              <h3 class="label">{s.table.title}</h3>
+              <SpecTable table={s.table} caption={s.table.title} />
+            </div>
+          )}
+        </div>
+      </section>
+    )
+  }
+
+  {
+    s.faqs && (
+      <section class="section bg-white">
+        <div class="container two-col" data-reveal>
+          <div>
+            <p class="eyebrow">Questions</p>
+            <h2 class="h2 two-col__title">Frequently asked</h2>
+          </div>
+          <Faq items={s.faqs} />
+        </div>
+      </section>
+    )
+  }
+
+  <section class="section bg-paper-2">
+    <div class="container">
+      <div class="section-head section-head--split" data-reveal>
+        <div>
+          <p class="eyebrow">Machinery used</p>
+          <h2 class="h2">Built with our <em>own machines</em></h2>
+        </div>
+        <div>
+          <a class="link-arrow" href="/product">View all machinery <span class="arrow">→</span></a>
+        </div>
+      </div>
+      <ul class="related">
+        {
+          machinery.map((m) => (
+            <li data-reveal>
+              <ProductCard product={m} />
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <CtaBand subject={s.name} />
+</Base>
+
+<style>
+  .s-hero {
+    padding-block: clamp(32px, 5vw, 64px) clamp(64px, 8vw, 112px);
+  }
+
+  .crumbs ol {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    list-style: none;
+    margin-bottom: clamp(28px, 4vw, 48px);
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  .crumbs li + li::before {
+    content: '/';
+    margin-right: 6px;
+    color: var(--line-strong);
+  }
+
+  .crumbs a {
+    color: var(--muted);
+    text-decoration: none;
+  }
+
+  .crumbs a:hover {
+    color: var(--ink);
+    text-decoration: underline;
+  }
+
+  .s-hero__head {
+    display: grid;
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    gap: 32px 64px;
+    align-items: end;
+  }
+
+  .s-hero__title {
+    margin-top: 20px;
+  }
+
+  .s-hero__aside {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    padding-bottom: 8px;
+  }
+
+  .s-hero__media {
+    margin-top: clamp(40px, 6vw, 64px);
+  }
+
+  .s-hero__media :global(.gallery__stage) {
+    aspect-ratio: 16 / 7;
+  }
+
+  .s-hero__media :global(.gallery__thumbs) {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+
+  .two-col,
+  .benefits {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: 32px 72px;
+  }
+
+  .two-col__title {
+    margin-top: 18px;
+  }
+
+  .prose p:first-child {
+    font-size: 1.15rem;
+    color: var(--ink);
+  }
+
+  .timeline {
+    list-style: none;
+    border-top: 1px solid var(--line-on-dark);
+  }
+
+  .timeline li {
+    display: grid;
+    grid-template-columns: 120px minmax(0, 1fr);
+    gap: 24px;
+    padding: 30px 0;
+    border-bottom: 1px solid var(--line-on-dark);
+  }
+
+  .timeline li > div {
+    display: grid;
+    grid-template-columns: minmax(0, 4fr) minmax(0, 7fr);
+    gap: 12px 48px;
+  }
+
+  .timeline__num {
+    font-family: var(--serif);
+    font-size: 2.6rem;
+    line-height: 1;
+    color: var(--lime);
+  }
+
+  .figure {
+    margin: 0;
+  }
+
+  .figure :global(img) {
+    width: 100%;
+    border: 1px solid var(--line);
+  }
+
+  .outputs {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    list-style: none;
+    border-top: 1px solid var(--line-strong);
+  }
+
+  .outputs:has(li:nth-child(4):last-child) {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .outputs--two {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .outputs li {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 28px 24px 8px 0;
+  }
+
+  .outputs li + li {
+    padding-left: 24px;
+    border-left: 1px solid var(--line);
+  }
+
+  .outputs__title {
+    font-family: var(--serif);
+    font-size: clamp(1.5rem, 2vw, 1.8rem);
+    line-height: 1.1;
+  }
+
+  .benefits__list,
+  .extra__list {
+    list-style: none;
+    border-top: 1px solid var(--line-strong);
+    align-self: start;
+  }
+
+  .benefits__list li,
+  .extra__list li {
+    display: flex;
+    gap: 16px;
+    padding: 18px 0;
+    border-bottom: 1px solid var(--line);
+    color: var(--ink);
+    font-weight: 500;
+  }
+
+  .benefits__list li::before {
+    content: '';
+    width: 7px;
+    height: 7px;
+    margin-top: 0.62em;
+    background: var(--green);
+    flex: none;
+  }
+
+  .extra {
+    margin-top: clamp(56px, 7vw, 88px);
+  }
+
+  .extra__list li {
+    font-weight: 400;
+    color: var(--text);
+  }
+
+  .extra__list li::before {
+    content: '—';
+    color: var(--muted);
+  }
+
+  .label {
+    font: 600 12px/1.4 var(--sans);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 20px;
+  }
+
+  .variants {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    list-style: none;
+    border-top: 1px solid var(--line-strong);
+    margin-bottom: clamp(48px, 6vw, 80px);
+  }
+
+  .variants li {
+    padding: 24px 24px 8px 0;
+  }
+
+  .variants li + li {
+    padding-left: 24px;
+    border-left: 1px solid var(--line);
+  }
+
+  .variants__title {
+    font-family: var(--serif);
+    font-size: clamp(1.6rem, 2.4vw, 2.1rem);
+    line-height: 1.1;
+    color: var(--ink);
+    margin-bottom: 10px;
+  }
+
+  .related {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 28px;
+    list-style: none;
+  }
+
+  @media (max-width: 1100px) {
+    .related {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .outputs,
+    .outputs:has(li:nth-child(4):last-child) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .outputs li:nth-child(odd) {
+      padding-left: 0;
+      border-left: 0;
+    }
+
+    .outputs li {
+      border-bottom: 1px solid var(--line);
+    }
+  }
+
+  @media (max-width: 900px) {
+    .s-hero__head,
+    .two-col,
+    .benefits {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .s-hero__media :global(.gallery__stage) {
+      aspect-ratio: 4 / 3;
+    }
+
+    .s-hero__media :global(.gallery__thumbs) {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .timeline li {
+      grid-template-columns: 64px minmax(0, 1fr);
+    }
+
+    .timeline li > div {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .variants {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .variants li:nth-child(3) {
+      padding-left: 0;
+      border-left: 0;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .outputs,
+    .outputs--two,
+    .outputs:has(li:nth-child(4):last-child),
+    .variants,
+    .related {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .outputs li,
+    .variants li {
+      padding-left: 0 !important;
+      border-left: 0 !important;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .timeline__num {
+      font-size: 2rem;
+    }
+  }
+</style>

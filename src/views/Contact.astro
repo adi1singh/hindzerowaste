@@ -1,0 +1,540 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import { site, telHref } from '../data/site';
+import { products } from '../data/products';
+import { services } from '../data/services';
+import { localName, type Lang } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+
+const copy = {
+  en: {
+    title: 'Contact Us | Request a Quote',
+    description:
+      'Contact Hind Zero Waste Management, Kolhapur, for bio-mining, MSW, MRF and RDF plants and waste-processing machinery. Call +91 96370 01919 or send an enquiry.',
+    crumbs: ['Home', 'Contact'],
+    eyebrow: 'Contact',
+    heroTitle: 'Let’s talk about your <em>project</em>.',
+    lead: 'Tell us about your waste, tonnage and site. Our engineers will recommend a configuration and prepare a quotation.',
+    formTitle: 'Send an enquiry',
+    required: 'Required',
+    name: 'Name',
+    org: 'Organisation',
+    phone: 'Phone',
+    email: 'Email',
+    city: 'City / State',
+    requirement: 'Requirement',
+    choose: 'Select a requirement',
+    servicesGroup: 'Turnkey plants',
+    machineryGroup: 'Machinery',
+    other: 'Other',
+    capacity: 'Approximate capacity (e.g. TPD)',
+    message: 'Message',
+    messagePlaceholder: 'Waste type, quantity, site location, timeline…',
+    send: 'Send enquiry',
+    mailNote: `Sending opens your email app with your enquiry ready to send to ${site.emails.sales}.`,
+    success: 'Thank you. Our team will be in touch shortly.',
+    error: `Something went wrong. Please call us or email ${site.emails.sales}.`,
+    call: 'Call',
+    emailLabel: 'Email',
+    office: 'Office',
+    map: 'Open in Google Maps',
+    downloads: 'Downloads',
+    brochure: 'Brochure (PDF)',
+    profile: 'Company profile (PDF)',
+    subjectPrefix: 'Enquiry',
+  },
+  hi: {
+    title: 'संपर्क करें | कोटेशन माँगें',
+    description:
+      'बायो-माइनिंग, MSW, MRF और RDF प्लांट तथा कचरा प्रसंस्करण मशीनरी के लिए हिंद ज़ीरो वेस्ट मैनेजमेंट, कोल्हापुर से संपर्क करें। कॉल करें +91 96370 01919।',
+    crumbs: ['होम', 'संपर्क'],
+    eyebrow: 'संपर्क',
+    heroTitle: 'आइए, आपकी <em>परियोजना</em> पर बात करें।',
+    lead: 'अपने कचरे, क्षमता और साइट के बारे में बताइए। हमारे इंजीनियर उपयुक्त कॉन्फ़िगरेशन सुझाकर कोटेशन तैयार करेंगे।',
+    formTitle: 'पूछताछ भेजें',
+    required: 'आवश्यक',
+    name: 'नाम',
+    org: 'संस्था',
+    phone: 'फ़ोन',
+    email: 'ईमेल',
+    city: 'शहर / राज्य',
+    requirement: 'आवश्यकता',
+    choose: 'आवश्यकता चुनें',
+    servicesGroup: 'टर्नकी प्लांट',
+    machineryGroup: 'मशीनरी',
+    other: 'अन्य',
+    capacity: 'अनुमानित क्षमता (जैसे TPD)',
+    message: 'संदेश',
+    messagePlaceholder: 'कचरे का प्रकार, मात्रा, साइट का स्थान, समय-सीमा…',
+    send: 'पूछताछ भेजें',
+    mailNote: `भेजने पर आपका ईमेल ऐप खुलेगा, जिसमें ${site.emails.sales} को भेजने के लिए आपकी पूछताछ तैयार होगी।`,
+    success: 'धन्यवाद। हमारी टीम जल्द ही आपसे संपर्क करेगी।',
+    error: `कुछ गड़बड़ हुई। कृपया हमें कॉल करें या ${site.emails.sales} पर ईमेल भेजें।`,
+    call: 'कॉल करें',
+    emailLabel: 'ईमेल',
+    office: 'कार्यालय',
+    map: 'Google Maps में खोलें',
+    downloads: 'डाउनलोड',
+    brochure: 'ब्रोशर (PDF)',
+    profile: 'कंपनी प्रोफ़ाइल (PDF)',
+    subjectPrefix: 'पूछताछ',
+  },
+  mr: {
+    title: 'संपर्क | कोटेशन मागवा',
+    description:
+      'बायो-मायनिंग, MSW, MRF व RDF प्लांट तसेच कचरा प्रक्रिया यंत्रसामग्रीसाठी हिंद झिरो वेस्ट मॅनेजमेंट, कोल्हापूरशी संपर्क साधा. कॉल करा +91 96370 01919.',
+    crumbs: ['होम', 'संपर्क'],
+    eyebrow: 'संपर्क',
+    heroTitle: 'चला, तुमच्या <em>प्रकल्पाबद्दल</em> बोलूया.',
+    lead: 'तुमचा कचरा, क्षमता आणि साइटबद्दल सांगा. आमचे अभियंते योग्य रचना सुचवून कोटेशन तयार करतील.',
+    formTitle: 'चौकशी पाठवा',
+    required: 'आवश्यक',
+    name: 'नाव',
+    org: 'संस्था',
+    phone: 'फोन',
+    email: 'ईमेल',
+    city: 'शहर / राज्य',
+    requirement: 'गरज',
+    choose: 'गरज निवडा',
+    servicesGroup: 'टर्नकी प्लांट',
+    machineryGroup: 'यंत्रसामग्री',
+    other: 'इतर',
+    capacity: 'अंदाजे क्षमता (उदा. TPD)',
+    message: 'संदेश',
+    messagePlaceholder: 'कचऱ्याचा प्रकार, प्रमाण, साइटचे ठिकाण, कालमर्यादा…',
+    send: 'चौकशी पाठवा',
+    mailNote: `पाठवल्यावर तुमचे ईमेल ॲप उघडेल, ज्यामध्ये ${site.emails.sales} ला पाठवण्यासाठी तुमची चौकशी तयार असेल.`,
+    success: 'धन्यवाद. आमची टीम लवकरच तुमच्याशी संपर्क साधेल.',
+    error: `काहीतरी चूक झाली. कृपया आम्हाला कॉल करा किंवा ${site.emails.sales} वर ईमेल पाठवा.`,
+    call: 'कॉल करा',
+    emailLabel: 'ईमेल',
+    office: 'कार्यालय',
+    map: 'Google Maps मध्ये उघडा',
+    downloads: 'डाउनलोड',
+    brochure: 'ब्रोशर (PDF)',
+    profile: 'कंपनी प्रोफाइल (PDF)',
+    subjectPrefix: 'चौकशी',
+  },
+}[lang];
+
+const home = lang === 'en' ? '/' : `/${lang}/`;
+const alternates = { en: '/contact-us', hi: '/hi/contact-us', mr: '/mr/contact-us' };
+const endpoint = site.enquiryEndpoint as string;
+
+const schema = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'ContactPage',
+    name: copy.title,
+    url: `${site.url}${alternates[lang]}`,
+  },
+];
+---
+
+<Base title={copy.title} description={copy.description} lang={lang} alternates={alternates} schema={schema}>
+  <PageHero
+    eyebrow={copy.eyebrow}
+    title={copy.heroTitle}
+    lead={copy.lead}
+    crumbs={[{ label: copy.crumbs[0], href: home }, { label: copy.crumbs[1] }]}
+  />
+
+  <section class="section--tight contact-wrap">
+    <div class="container contact">
+      <div class="form-card" id="enquiry">
+        <h2 class="h3">{copy.formTitle}</h2>
+        <form
+          class="form"
+          data-enquiry
+          data-endpoint={endpoint}
+          data-to={site.emails.sales}
+          data-subject={copy.subjectPrefix}
+          novalidate
+        >
+          <div class="field">
+            <label for="f-name">{copy.name} <span aria-hidden="true">*</span></label>
+            <input id="f-name" name="name" type="text" autocomplete="name" required />
+          </div>
+          <div class="field">
+            <label for="f-org">{copy.org}</label>
+            <input id="f-org" name="organisation" type="text" autocomplete="organization" />
+          </div>
+          <div class="field">
+            <label for="f-phone">{copy.phone} <span aria-hidden="true">*</span></label>
+            <input id="f-phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" required />
+          </div>
+          <div class="field">
+            <label for="f-email">{copy.email}</label>
+            <input id="f-email" name="email" type="email" autocomplete="email" />
+          </div>
+          <div class="field">
+            <label for="f-city">{copy.city}</label>
+            <input id="f-city" name="city" type="text" autocomplete="address-level2" />
+          </div>
+          <div class="field">
+            <label for="f-capacity">{copy.capacity}</label>
+            <input id="f-capacity" name="capacity" type="text" />
+          </div>
+          <div class="field field--full">
+            <label for="f-req">{copy.requirement} <span aria-hidden="true">*</span></label>
+            <select id="f-req" name="requirement" required>
+              <option value="">{copy.choose}</option>
+              <optgroup label={copy.servicesGroup}>
+                {services.map((s) => <option value={s.name}>{localName(lang, s.slug, s.name)}</option>)}
+              </optgroup>
+              <optgroup label={copy.machineryGroup}>
+                {products.map((p) => <option value={p.name}>{localName(lang, p.slug, p.name)}</option>)}
+              </optgroup>
+              <option value="Other">{copy.other}</option>
+            </select>
+          </div>
+          <div class="field field--full">
+            <label for="f-msg">{copy.message}</label>
+            <textarea id="f-msg" name="message" rows="5" placeholder={copy.messagePlaceholder}></textarea>
+          </div>
+          <div class="hp" aria-hidden="true">
+            <label for="f-website">Website</label>
+            <input id="f-website" name="website" type="text" tabindex="-1" autocomplete="off" />
+          </div>
+          <div class="form__foot field--full">
+            <button class="btn" type="submit">{copy.send} <span class="arrow">→</span></button>
+            <p class="form__note">
+              <span>* {copy.required}.</span>
+              {!endpoint && <span> {copy.mailNote}</span>}
+            </p>
+          </div>
+          <p class="form__status" role="status" aria-live="polite" data-status data-success={copy.success} data-error={copy.error}></p>
+        </form>
+      </div>
+
+      <aside class="details">
+        <div class="details__block">
+          <p class="details__label">{copy.call}</p>
+          <ul class="details__phones">
+            {
+              site.phones.map((p) => (
+                <li>
+                  <a href={telHref(p)}>{p}</a>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+        <div class="details__block">
+          <p class="details__label">{copy.emailLabel}</p>
+          <ul class="details__mail">
+            {
+              Object.values(site.emails).map((e) => (
+                <li>
+                  <a href={`mailto:${e}`}>{e}</a>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+        <div class="details__block">
+          <p class="details__label">{copy.office}</p>
+          <address>
+            <strong>{site.name}</strong>
+            {site.address.lines.map((l) => <span>{l}</span>)}
+            <span>{site.address.city} {site.address.postcode}</span>
+            <span>{site.address.region}, {site.address.country}</span>
+          </address>
+          <a class="link-arrow" href={site.mapUrl} target="_blank" rel="noopener">{copy.map} <span class="arrow">↗</span></a>
+        </div>
+        <div class="details__block">
+          <p class="details__label">{copy.downloads}</p>
+          <div class="details__downloads">
+            <a class="link-arrow" href={site.downloads.brochure} target="_blank" rel="noopener">{copy.brochure} <span class="arrow">↗</span></a>
+            <a class="link-arrow" href={site.downloads.profile} target="_blank" rel="noopener">{copy.profile} <span class="arrow">↗</span></a>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </section>
+</Base>
+
+<script>
+  const form = document.querySelector<HTMLFormElement>('[data-enquiry]');
+  if (form) {
+    const status = form.querySelector<HTMLElement>('[data-status]')!;
+    const select = form.querySelector<HTMLSelectElement>('select[name="requirement"]')!;
+    const message = form.querySelector<HTMLTextAreaElement>('textarea[name="message"]')!;
+
+    // Pre-fill the requirement from ?subject= (set by "Request a quote" buttons on product pages).
+    const subject = new URLSearchParams(window.location.search).get('subject');
+    if (subject) {
+      const match = [...select.options].find((o) => o.value === subject);
+      if (match) select.value = match.value;
+      else if (!message.value) message.value = subject;
+    }
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      status.textContent = '';
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+      }
+      const data = new FormData(form);
+      if (data.get('website')) return; // spam trap
+
+      const endpoint = form.dataset.endpoint;
+      if (endpoint) {
+        const button = form.querySelector<HTMLButtonElement>('button[type="submit"]')!;
+        button.disabled = true;
+        try {
+          const res = await fetch(endpoint, { method: 'POST', body: data, headers: { Accept: 'application/json' } });
+          if (!res.ok) throw new Error(String(res.status));
+          form.reset();
+          status.textContent = status.dataset.success ?? '';
+          status.dataset.state = 'success';
+        } catch {
+          status.textContent = status.dataset.error ?? '';
+          status.dataset.state = 'error';
+        } finally {
+          button.disabled = false;
+        }
+        return;
+      }
+
+      // No form service yet: open the visitor's email app with the enquiry filled in.
+      const labels: Record<string, string> = {
+        name: 'Name',
+        organisation: 'Organisation',
+        phone: 'Phone',
+        email: 'Email',
+        city: 'City / State',
+        requirement: 'Requirement',
+        capacity: 'Capacity',
+        message: 'Message',
+      };
+      const lines = Object.entries(labels)
+        .map(([key, label]) => [label, String(data.get(key) ?? '').trim()])
+        .filter(([, value]) => value)
+        .map(([label, value]) => `${label}: ${value}`);
+      const subjectLine = `${form.dataset.subject}: ${data.get('requirement')}${data.get('organisation') ? ` – ${data.get('organisation')}` : ''}`;
+      window.location.href = `mailto:${form.dataset.to}?subject=${encodeURIComponent(subjectLine)}&body=${encodeURIComponent(lines.join('\n'))}`;
+    });
+  }
+</script>
+
+<style>
+  .contact-wrap {
+    padding-top: 0;
+  }
+
+  .contact {
+    display: grid;
+    grid-template-columns: minmax(0, 7fr) minmax(0, 4fr);
+    gap: 48px 72px;
+    align-items: start;
+  }
+
+  .form-card {
+    padding: clamp(28px, 4vw, 48px);
+    background: var(--white);
+    border: 1px solid var(--line);
+  }
+
+  .form {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 22px 24px;
+    margin-top: 32px;
+  }
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .field--full {
+    grid-column: 1 / -1;
+  }
+
+  label {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: var(--ink);
+  }
+
+  label span {
+    color: var(--navy);
+  }
+
+  input,
+  select,
+  textarea {
+    width: 100%;
+    padding: 13px 14px;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius);
+    background: var(--paper);
+    color: var(--ink);
+    font: 400 16px/1.4 var(--sans);
+    transition:
+      border-color 0.2s var(--ease),
+      background-color 0.2s var(--ease);
+  }
+
+  textarea {
+    resize: vertical;
+    min-height: 140px;
+  }
+
+  input:hover,
+  select:hover,
+  textarea:hover {
+    border-color: var(--ink);
+  }
+
+  input:focus,
+  select:focus,
+  textarea:focus {
+    outline: none;
+    border-color: var(--navy);
+    background: var(--white);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--navy) 16%, transparent);
+  }
+
+  input:user-invalid,
+  select:user-invalid {
+    border-color: #b42318;
+  }
+
+  .hp {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+
+  .form__foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px 24px;
+    margin-top: 4px;
+  }
+
+  .form__note {
+    flex: 1;
+    min-width: 240px;
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  .form__status {
+    grid-column: 1 / -1;
+    font-weight: 600;
+  }
+
+  .form__status:empty {
+    display: none;
+  }
+
+  .form__status[data-state='success'] {
+    color: var(--green-ink);
+  }
+
+  .form__status[data-state='error'] {
+    color: #b42318;
+  }
+
+  .details {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .details__block {
+    padding: 24px 0;
+    border-top: 1px solid var(--line-strong);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+  }
+
+  .details__block:first-child {
+    padding-top: 0;
+    border-top: 0;
+  }
+
+  .details__label {
+    font: 600 12px/1 var(--sans);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .details__phones {
+    list-style: none;
+    display: grid;
+    gap: 4px;
+  }
+
+  .details__phones a {
+    font-family: var(--serif);
+    font-size: clamp(1.7rem, 2.6vw, 2.1rem);
+    line-height: 1.2;
+    color: var(--ink);
+    text-decoration: none;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .details__phones a:hover {
+    color: var(--navy);
+  }
+
+  .details__mail {
+    list-style: none;
+    display: grid;
+    gap: 6px;
+  }
+
+  .details__mail a {
+    color: var(--ink);
+  }
+
+  address {
+    font-style: normal;
+    display: grid;
+    gap: 2px;
+    color: var(--text);
+  }
+
+  address strong {
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 4px;
+  }
+
+  .details__downloads {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  @media (max-width: 960px) {
+    .contact {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  @media (max-width: 560px) {
+    .form {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+</style>

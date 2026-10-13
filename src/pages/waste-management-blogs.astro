@@ -1,0 +1,135 @@
+---
+import { Image } from 'astro:assets';
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import CtaBand from '../components/CtaBand.astro';
+
+const posts = (await getCollection('blog')).sort((a, b) => a.data.order - b.data.order);
+const [lead, ...rest] = posts;
+---
+
+<Base
+  title="Waste Management Insights | Bio-mining, MSW, MRF & Recycling"
+  description="Practical guides on bio-mining, waste segregation plants, MSW processing, shredders and balers from the engineers at Hind Zero Waste Management."
+>
+  <PageHero
+    eyebrow="Insights"
+    title="Notes from the <em>field</em>."
+    lead="Practical guides on bio-mining, segregation, processing plants and machinery, written by the people who build them."
+    crumbs={[{ label: 'Home', href: '/' }, { label: 'Insights' }]}
+  />
+
+  <section class="section--tight">
+    <div class="container">
+      {
+        lead && (
+          <a class="lead-post" href={`/${lead.id}`}>
+            <div class="frame lead-post__media">
+              <Image src={lead.data.cover} alt={lead.data.coverAlt} widths={[640, 960, 1280]} sizes="(min-width: 1000px) 720px, 92vw" loading="eager" />
+            </div>
+            <div class="lead-post__body">
+              <p class="topic">{lead.data.topic}</p>
+              <h2 class="h2 lead-post__title">{lead.data.title}</h2>
+              <p class="muted">{lead.data.description}</p>
+              <span class="link-arrow">Read article <span class="arrow">→</span></span>
+            </div>
+          </a>
+        )
+      }
+      <ul class="posts">
+        {
+          rest.map((p) => (
+            <li data-reveal>
+              <a href={`/${p.id}`}>
+                <div class="frame posts__media">
+                  <Image src={p.data.cover} alt={p.data.coverAlt} widths={[480, 720]} sizes="(min-width: 1000px) 400px, 92vw" loading="lazy" />
+                </div>
+                <p class="topic">{p.data.topic}</p>
+                <h3 class="posts__title">{p.data.title}</h3>
+                <p class="muted posts__desc">{p.data.description}</p>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <CtaBand />
+</Base>
+
+<style>
+  .lead-post {
+    display: grid;
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    gap: 32px 56px;
+    align-items: center;
+    padding-bottom: clamp(56px, 7vw, 88px);
+    border-bottom: 1px solid var(--line-strong);
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .lead-post__media {
+    aspect-ratio: 4 / 3;
+  }
+
+  .lead-post__body {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 18px;
+  }
+
+  .lead-post:hover .lead-post__title,
+  .posts a:hover .posts__title {
+    color: var(--navy);
+  }
+
+  .topic {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--green-ink);
+  }
+
+  .posts {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 56px 40px;
+    list-style: none;
+    padding-top: clamp(56px, 7vw, 88px);
+  }
+
+  .posts a {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .posts__media {
+    aspect-ratio: 16 / 10;
+    margin-bottom: 8px;
+  }
+
+  .posts__title {
+    font-family: var(--serif);
+    font-size: clamp(1.7rem, 2.6vw, 2.2rem);
+    line-height: 1.1;
+  }
+
+  .posts__desc {
+    font-size: 15px;
+  }
+
+  @media (max-width: 860px) {
+    .lead-post,
+    .posts {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+</style>

@@ -7,13 +7,14 @@ import ProductCard from '../components/ProductCard.astro';
 import ClientWall from '../components/ClientWall.astro';
 import CtaBand from '../components/CtaBand.astro';
 import { products } from '../data/products';
-import { services, consultancy } from '../data/services';
+import { services } from '../data/services';
 import { featuredProjects } from '../data/projects';
 import { figures, footprint, site } from '../data/site';
 import { localName, localePath, t, type Lang } from '../i18n/ui';
+import { approachSteps, consultancyCopy, serviceShorts } from '../i18n/content';
 
 import heroImage from '../assets/photos/hero-plant-shed.jpg';
-import approachImage from '../assets/photos/shredder-blades.jpg';
+import approachImage from '../assets/photos/biomining-plant-tall.jpg';
 import bioImg from '../assets/photos/biomining-trommel-site.jpg';
 import mswImg from '../assets/photos/plant-line-wide.jpg';
 import mrfImg from '../assets/photos/mrf-sorting-floor.jpg';
@@ -53,7 +54,6 @@ const copy = {
     svcTitle: 'Turnkey plants, from survey to <em>operation</em>.',
     svcIntro:
       'We take responsibility for the whole system: engineering, machinery, installation, commissioning and long-term operation and maintenance.',
-    svcShorts: Object.fromEntries(services.map((s) => [s.slug, s.short])),
     machEyebrow: 'Machinery',
     machTitle: 'Engineered in-house, for <em>24×7</em> duty.',
     machIntro:
@@ -67,12 +67,6 @@ const copy = {
     status: { Completed: 'Completed', Ongoing: 'Ongoing', Commissioned: 'Commissioned' },
     apprEyebrow: 'How we work',
     apprTitle: 'One partner, from drawing board to <em>daily operation</em>.',
-    steps: [
-      ['Design & engineering', 'Site study, waste characterisation and a plant layout sized to your tonnage, land and budget.'],
-      ['Manufacturing & procurement', 'Trommels, separators, shredders, balers and conveyors built in-house, every component specified for 24×7 duty.'],
-      ['Erection & commissioning', 'Our engineers install, integrate and commission the line on site, then train your operators.'],
-      ['Operation & maintenance', 'Long-term O&M, AMC and spares keep the plant running at capacity.'],
-    ],
     clientsEyebrow: 'Clients',
     clientsTitle: 'In good <em>company</em>.',
     clientsIntro:
@@ -107,12 +101,6 @@ const copy = {
     svcEyebrow: 'हमारी सेवाएँ',
     svcTitle: 'सर्वेक्षण से <em>संचालन</em> तक, टर्नकी प्लांट।',
     svcIntro: 'इंजीनियरिंग, मशीनरी, स्थापना, कमीशनिंग और दीर्घकालीन संचालन व रखरखाव, पूरी प्रणाली की ज़िम्मेदारी हमारी।',
-    svcShorts: {
-      'bio-mining-and-legacy-waste-management': 'दशकों पुराने डंपसाइट साफ़ कर ज़मीन शहर को लौटाना।',
-      'msw-processing-plant': 'मिश्रित नगरपालिका कचरे को कम्पोस्ट, रीसायकल योग्य सामग्री और RDF में बदलने वाले एकीकृत प्लांट।',
-      'material-recovery-facility-mrf-plant': 'मिश्रित सूखे कचरे से रीसायकल योग्य सामग्री अलग करने वाले टर्नकी MRF प्लांट।',
-      'rdf-afr-plant': 'सीमेंट और उद्योगों के लिए कचरे को भट्ठी-योग्य वैकल्पिक ईंधन में बदलने वाले प्लांट।',
-    } as Record<string, string>,
     machEyebrow: 'मशीनरी',
     machTitle: '24×7 काम के लिए, <em>अपने कारखाने</em> में निर्मित।',
     machIntro:
@@ -133,12 +121,6 @@ const copy = {
     status: { Completed: 'पूर्ण', Ongoing: 'जारी', Commissioned: 'कमीशन किया गया' },
     apprEyebrow: 'हमारी कार्यप्रणाली',
     apprTitle: 'डिज़ाइन से <em>दैनिक संचालन</em> तक, एक ही साझेदार।',
-    steps: [
-      ['डिज़ाइन और इंजीनियरिंग', 'साइट अध्ययन, कचरे का विश्लेषण और आपकी क्षमता, ज़मीन व बजट के अनुसार प्लांट लेआउट।'],
-      ['निर्माण और खरीद', 'ट्रॉमेल, सेपरेटर, श्रेडर, बेलर और कन्वेयर हमारे अपने कारखाने में, 24×7 काम के लिए।'],
-      ['स्थापना और कमीशनिंग', 'हमारे इंजीनियर साइट पर लाइन स्थापित और कमीशन करते हैं, फिर आपके ऑपरेटरों को प्रशिक्षण देते हैं।'],
-      ['संचालन और रखरखाव', 'दीर्घकालीन O&M, AMC और स्पेयर पार्ट्स से प्लांट पूरी क्षमता पर चलता रहता है।'],
-    ],
     clientsEyebrow: 'ग्राहक',
     clientsTitle: 'भरोसेमंद <em>साथ</em>।',
     clientsIntro:
@@ -173,12 +155,6 @@ const copy = {
     svcEyebrow: 'आमच्या सेवा',
     svcTitle: 'सर्वेक्षणापासून <em>संचालनापर्यंत</em>, टर्नकी प्लांट.',
     svcIntro: 'अभियांत्रिकी, यंत्रसामग्री, उभारणी, कमिशनिंग आणि दीर्घकालीन संचालन व देखभाल, संपूर्ण प्रणालीची जबाबदारी आमची.',
-    svcShorts: {
-      'bio-mining-and-legacy-waste-management': 'दशकांपासून साचलेले कचरा डेपो साफ करून जमीन पुन्हा शहराच्या उपयोगासाठी.',
-      'msw-processing-plant': 'मिश्र नागरी कचऱ्याचे कंपोस्ट, पुनर्वापरयोग्य साहित्य आणि RDF मध्ये रूपांतर करणारे एकात्मिक प्लांट.',
-      'material-recovery-facility-mrf-plant': 'मिश्र सुक्या कचऱ्यातून पुनर्वापरयोग्य साहित्य वेगळे करणारे टर्नकी MRF प्लांट.',
-      'rdf-afr-plant': 'सिमेंट व उद्योगांसाठी कचऱ्याचे भट्टीयोग्य पर्यायी इंधनात रूपांतर करणारे प्लांट.',
-    } as Record<string, string>,
     machEyebrow: 'यंत्रसामग्री',
     machTitle: '24×7 कामासाठी, <em>आमच्याच कारखान्यात</em> निर्मित.',
     machIntro:
@@ -199,12 +175,6 @@ const copy = {
     status: { Completed: 'पूर्ण', Ongoing: 'सुरू', Commissioned: 'कार्यान्वित' },
     apprEyebrow: 'आमची कार्यपद्धती',
     apprTitle: 'डिझाइनपासून <em>दैनंदिन संचालनापर्यंत</em>, एकच भागीदार.',
-    steps: [
-      ['डिझाइन व अभियांत्रिकी', 'साइट अभ्यास, कचऱ्याचे विश्लेषण आणि तुमची क्षमता, जागा व बजेटनुसार प्लांटचा आराखडा.'],
-      ['निर्मिती व खरेदी', 'ट्रॉमेल, सेपरेटर, श्रेडर, बेलर आणि कन्व्हेयर आमच्याच कारखान्यात, 24×7 कामासाठी.'],
-      ['उभारणी व कमिशनिंग', 'आमचे अभियंते साइटवर लाइन बसवून कार्यान्वित करतात आणि तुमच्या ऑपरेटरना प्रशिक्षण देतात.'],
-      ['संचालन व देखभाल', 'दीर्घकालीन O&M, AMC आणि सुटे भाग यामुळे प्लांट पूर्ण क्षमतेने चालू राहतो.'],
-    ],
     clientsEyebrow: 'ग्राहक',
     clientsTitle: 'विश्वासार्ह <em>सोबत</em>.',
     clientsIntro:
@@ -295,7 +265,7 @@ const alternates = { en: '/', hi: '/hi/', mr: '/mr/' };
                 <span class="svc__num tabular">{String(i + 1).padStart(2, '0')}</span>
                 <span class="svc__main">
                   <span class="svc__name">{localName(lang, s.slug, s.name)}</span>
-                  <span class="svc__short">{copy.svcShorts[s.slug]}</span>
+                  <span class="svc__short">{serviceShorts[lang][s.slug]}</span>
                 </span>
                 <span class="svc__range tabular">{s.range}</span>
                 <span class="svc__thumb frame" aria-hidden="true">
@@ -307,13 +277,9 @@ const alternates = { en: '/', hi: '/hi/', mr: '/mr/' };
           ))
         }
       </ol>
-      {
-        lang === 'en' && (
-          <p class="svc__note">
-            <strong>{consultancy.name}.</strong> {consultancy.text}
-          </p>
-        )
-      }
+      <p class="svc__note">
+        <strong>{consultancyCopy[lang].name}.</strong> {consultancyCopy[lang].text}
+      </p>
     </div>
   </section>
 
@@ -383,7 +349,7 @@ const alternates = { en: '/', hi: '/hi/', mr: '/mr/' };
         <div class="frame appr__frame">
           <Image
             src={approachImage}
-            alt="Hardened cutters inside a twin-shaft shredder built by Hind Zero Waste"
+            alt="Hind Zero Waste trommel and conveyor line working at a legacy waste site"
             widths={[480, 720]}
             sizes="(min-width: 900px) 40vw, 92vw"
             loading="lazy"
@@ -397,7 +363,7 @@ const alternates = { en: '/', hi: '/hi/', mr: '/mr/' };
         </div>
         <ol class="appr__steps">
           {
-            copy.steps.map(([title, text], i) => (
+            approachSteps[lang].map(([title, text], i) => (
               <li data-reveal>
                 <span class="appr__num tabular">{String(i + 1).padStart(2, '0')}</span>
                 <div>

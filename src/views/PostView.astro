@@ -1,0 +1,358 @@
+---
+import { Image } from 'astro:assets';
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import CtaBand from '../components/CtaBand.astro';
+import { productBySlug } from '../data/products';
+import { serviceBySlug } from '../data/services';
+import { site } from '../data/site';
+
+interface Props {
+  post: CollectionEntry<'blog'>;
+}
+
+const { post } = Astro.props;
+const { Content, headings } = await render(post);
+const toc = headings.filter((h) => h.depth === 2);
+
+const related = post.data.related
+  .map((slug) => {
+    const p = productBySlug(slug);
+    if (p) return { href: `/${p.slug}`, name: p.name, kind: 'Machinery', short: p.short };
+    const s = serviceBySlug(slug);
+    if (s) return { href: `/${s.slug}`, name: s.name, kind: 'Service', short: s.short };
+    return undefined;
+  })
+  .filter((x) => x !== undefined);
+
+const others = (await getCollection('blog'))
+  .filter((p) => p.id !== post.id)
+  .sort((a, b) => a.data.order - b.data.order)
+  .slice(0, 3);
+
+const schema = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: post.data.seoTitle ?? post.data.title,
+    description: post.data.description,
+    image: new URL(post.data.cover.src, Astro.site).href,
+    author: { '@type': 'Organization', name: site.name },
+    publisher: { '@type': 'Organization', name: site.name, logo: { '@type': 'ImageObject', url: site.url + '/logo.png' } },
+    mainEntityOfPage: `${site.url}/${post.id}`,
+  },
+];
+---
+
+<Base title={post.data.seoTitle ?? post.data.title} description={post.data.description} schema={schema}>
+  <article>
+    <header class="a-hero">
+      <div class="container">
+        <nav class="crumbs" aria-label="Breadcrumb">
+          <ol>
+            <li><a href="/">Home</a></li>
+            <li><a href="/waste-management-blogs">Insights</a></li>
+            <li><span aria-current="page">{post.data.topic}</span></li>
+          </ol>
+        </nav>
+        <p class="eyebrow">{post.data.topic}</p>
+        <h1 class="h1 a-hero__title">{post.data.title}</h1>
+        <p class="lead a-hero__lead">{post.data.description}</p>
+      </div>
+      <div class="container">
+        <div class="frame a-hero__cover">
+          <Image
+            src={post.data.cover}
+            alt={post.data.coverAlt}
+            widths={[640, 960, 1280, 1600]}
+            sizes="(min-width: 1320px) 1240px, 94vw"
+            loading="eager"
+            fetchpriority="high"
+          />
+        </div>
+      </div>
+    </header>
+
+    <div class="section--tight">
+      <div class="container a-body">
+        <aside class="a-side">
+          {
+            toc.length > 2 && (
+              <nav class="a-toc" aria-label="In this article">
+                <p class="a-side__title">In this article</p>
+                <ol>
+                  {toc.map((h) => (
+                    <li>
+                      <a href={`#${h.slug}`}>{h.text}</a>
+                    </li>
+                  ))}
+                </ol>
+              </nav>
+            )
+          }
+        </aside>
+        <div class="prose a-prose">
+          <Content />
+        </div>
+        <aside class="a-related">
+          {
+            related.length > 0 && (
+              <>
+                <p class="a-side__title">Related</p>
+                <ul>
+                  {related.map((r) => (
+                    <li>
+                      <a href={r!.href}>
+                        <span class="a-related__kind">{r!.kind}</span>
+                        <span class="a-related__name">{r!.name}</span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </>
+            )
+          }
+          <div class="a-quote">
+            <p>Planning a project? Our engineers will recommend a configuration for your site.</p>
+            <a class="btn" href="/contact-us#enquiry">Request a quote <span class="arrow">→</span></a>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </article>
+
+  <section class="section bg-white">
+    <div class="container">
+      <div class="section-head section-head--split">
+        <div>
+          <p class="eyebrow">Keep reading</p>
+          <h2 class="h2">More <em>insights</em></h2>
+        </div>
+        <div>
+          <a class="link-arrow" href="/waste-management-blogs">All articles <span class="arrow">→</span></a>
+        </div>
+      </div>
+      <ul class="more">
+        {
+          others.map((o) => (
+            <li>
+              <a href={`/${o.id}`}>
+                <p class="more__topic">{o.data.topic}</p>
+                <h3 class="more__title">{o.data.title}</h3>
+                <p class="muted">{o.data.description}</p>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <CtaBand />
+</Base>
+
+<style>
+  .a-hero {
+    padding-top: clamp(32px, 5vw, 64px);
+  }
+
+  .crumbs ol {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    list-style: none;
+    margin-bottom: clamp(28px, 4vw, 48px);
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  .crumbs li + li::before {
+    content: '/';
+    margin-right: 6px;
+    color: var(--line-strong);
+  }
+
+  .crumbs a {
+    color: var(--muted);
+    text-decoration: none;
+  }
+
+  .a-hero__title {
+    margin-top: 20px;
+    max-width: 16em;
+  }
+
+  .a-hero__lead {
+    margin-top: 24px;
+  }
+
+  .a-hero__cover {
+    aspect-ratio: 16 / 7;
+    margin-top: clamp(40px, 5vw, 64px);
+  }
+
+  .a-body {
+    display: grid;
+    grid-template-columns: minmax(0, 3fr) minmax(0, 6fr) minmax(0, 3fr);
+    gap: 48px;
+    align-items: start;
+  }
+
+  .a-side,
+  .a-related {
+    position: sticky;
+    top: calc(var(--header-h) + 32px);
+  }
+
+  .a-side__title {
+    font: 600 12px/1 var(--sans);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 16px;
+  }
+
+  .a-toc ol {
+    list-style: none;
+    border-left: 1px solid var(--line-strong);
+  }
+
+  .a-toc a {
+    display: block;
+    padding: 6px 0 6px 16px;
+    font-size: 14px;
+    line-height: 1.4;
+    color: var(--muted);
+    text-decoration: none;
+  }
+
+  .a-toc a:hover {
+    color: var(--ink);
+  }
+
+  .a-prose {
+    max-width: none;
+  }
+
+  .a-prose :global(h2:first-child) {
+    margin-top: 0;
+  }
+
+  .a-prose :global(table) {
+    font-variant-numeric: tabular-nums;
+    border-top: 1px solid var(--ink);
+  }
+
+  .a-prose :global(thead th) {
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .a-related ul {
+    list-style: none;
+    border-top: 1px solid var(--line-strong);
+  }
+
+  .a-related li a {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--line);
+    text-decoration: none;
+  }
+
+  .a-related__kind {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .a-related__name {
+    font-family: var(--serif);
+    font-size: 1.3rem;
+    line-height: 1.15;
+    color: var(--ink);
+  }
+
+  .a-related li a:hover .a-related__name {
+    color: var(--navy);
+  }
+
+  .a-quote {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    margin-top: 36px;
+    padding: 24px;
+    background: var(--white);
+    border: 1px solid var(--line);
+    font-size: 15px;
+  }
+
+  .more {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 32px;
+    list-style: none;
+  }
+
+  .more a {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding-top: 28px;
+    border-top: 1px solid var(--line-strong);
+    text-decoration: none;
+  }
+
+  .more__topic {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--green-ink);
+  }
+
+  .more__title {
+    font-family: var(--serif);
+    font-size: 1.7rem;
+    line-height: 1.12;
+  }
+
+  .more a:hover .more__title {
+    color: var(--navy);
+  }
+
+  @media (max-width: 1100px) {
+    .a-body {
+      grid-template-columns: minmax(0, 8fr) minmax(0, 4fr);
+    }
+
+    .a-side {
+      display: none;
+    }
+  }
+
+  @media (max-width: 860px) {
+    .a-body {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .a-related {
+      position: static;
+    }
+
+    .a-hero__cover {
+      aspect-ratio: 4 / 3;
+    }
+
+    .more {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+</style>

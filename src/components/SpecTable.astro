@@ -1,0 +1,88 @@
+---
+import type { SpecTable } from '../data/products';
+
+interface Props {
+  table: SpecTable;
+  caption?: string;
+}
+
+const { table, caption } = Astro.props;
+---
+
+<figure class="spec">
+  <div class="spec__scroll" tabindex="0" role="region" aria-label={caption ?? 'Technical data'}>
+    <table>
+      {caption && <caption class="visually-hidden">{caption}</caption>}
+      <thead>
+        <tr>{table.columns.map((c) => <th scope="col">{c}</th>)}</tr>
+      </thead>
+      <tbody>
+        {
+          table.rows.map((row) => (
+            <tr>
+              {row.map((cell, i) => (i === 0 ? <th scope="row">{cell}</th> : <td>{cell}</td>))}
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </div>
+  {table.note && <figcaption class="spec__note">{table.note}</figcaption>}
+</figure>
+
+<style>
+  .spec {
+    margin: 0;
+  }
+
+  .spec__scroll {
+    overflow-x: auto;
+    border-top: 1px solid var(--ink);
+    -webkit-overflow-scrolling: touch;
+  }
+
+  table {
+    width: 100%;
+    min-width: 760px;
+    border-collapse: collapse;
+    font-size: 14px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  th,
+  td {
+    padding: 14px 16px 14px 0;
+    text-align: left;
+    vertical-align: top;
+    border-bottom: 1px solid var(--line);
+  }
+
+  thead th {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+
+  tbody th {
+    font-weight: 600;
+    color: var(--ink);
+    white-space: nowrap;
+    position: sticky;
+    left: 0;
+    background: inherit;
+  }
+
+  tbody tr:hover td,
+  tbody tr:hover th {
+    background: color-mix(in srgb, var(--lime) 10%, transparent);
+  }
+
+  .spec__note {
+    margin-top: 14px;
+    font-size: 13px;
+    color: var(--muted);
+  }
+</style>

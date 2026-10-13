@@ -1,0 +1,25 @@
+---
+// Product, service and article pages all live at the site root, matching the
+// addresses used by the current hindzerowaste.com.
+import { getCollection } from 'astro:content';
+import { products, type Product } from '../data/products';
+import { services, type Service } from '../data/services';
+import ProductView from '../views/ProductView.astro';
+import ServiceView from '../views/ServiceView.astro';
+import PostView from '../views/PostView.astro';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog');
+  return [
+    ...products.map((product) => ({ params: { slug: product.slug }, props: { kind: 'product' as const, product } })),
+    ...services.map((service) => ({ params: { slug: service.slug }, props: { kind: 'service' as const, service } })),
+    ...posts.map((post) => ({ params: { slug: post.id }, props: { kind: 'post' as const, post } })),
+  ];
+}
+
+const props = Astro.props;
+---
+
+{props.kind === 'product' && <ProductView product={props.product as Product} />}
+{props.kind === 'service' && <ServiceView service={props.service as Service} />}
+{props.kind === 'post' && <PostView post={props.post} />}

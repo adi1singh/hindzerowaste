@@ -29,11 +29,17 @@ export const site = {
     { label: 'YouTube', href: 'https://www.youtube.com/channel/UCxfhha7Iv5jutaeXTjxkIlQ' },
     { label: 'Facebook', href: 'https://facebook.com/p/Hind-Agro-Chemicals-100063770114850/' },
   ],
+  /**
+   * Where the enquiry form posts. Leave empty until the email service is set up:
+   * the form then opens the visitor's email app with the enquiry addressed to
+   * emails.sales. Any form service that accepts a POST (Formspree, Web3Forms,
+   * Basin, or your own endpoint) works here. See README.md.
+   */
+  enquiryEndpoint: '',
+  // Copied from the current site so the links survive the move off Zyro.
   downloads: {
-    brochure:
-      'https://assets.zyrosite.com/Yg2j8a0zDrtZWaXb/broucher--hind-zero-waste-management-9pxhyDBSMpQlRCH0.pdf',
-    profile:
-      'https://assets.zyrosite.com/Yg2j8a0zDrtZWaXb/hind-zero-waste-management--company-profile-ILlwsSs2czycCNIu.pdf',
+    brochure: '/downloads/hind-zero-waste-brochure.pdf',
+    profile: '/downloads/hind-zero-waste-company-profile.pdf',
   },
 } as const;
 

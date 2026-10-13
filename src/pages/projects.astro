@@ -1,0 +1,408 @@
+---
+import { Image } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import CtaBand from '../components/CtaBand.astro';
+import {
+  completedBiomining,
+  featuredProjects,
+  machineSupply,
+  ongoingBiomining,
+  plantProjects,
+  plantsInstalled,
+} from '../data/projects';
+import siteWide from '../assets/photos/biomining-site-wide.jpg';
+
+const installedCount = plantsInstalled.reduce((n, s) => n + s.sites.length, 0);
+---
+
+<Base
+  title="Projects | Bio-mining, MSW & MRF Plants Across India"
+  description="Hind Zero Waste project record: bio-mining at Pimpri Chinchwad (Moshi) and Bhiwandi, 300 TPD plants at Bhalaswa, Delhi, MSW plants in Rajasthan and the Telangana cluster project."
+>
+  <PageHero
+    eyebrow="Projects"
+    title="A record built on <em>cleared ground</em>."
+    lead="From municipal councils in Maharashtra to the Bhalaswa dumping ground in Delhi, our machinery and teams have processed legacy waste and built processing plants across India."
+    crumbs={[{ label: 'Home', href: '/' }, { label: 'Projects' }]}
+  />
+
+  <section class="bg-paper">
+    <div class="container">
+      <figure class="frame wide">
+        <Image src={siteWide} alt="Bio-mining plant working across a legacy dumpsite" widths={[800, 1200, 1600]} sizes="(min-width: 1320px) 1240px, 94vw" loading="eager" />
+      </figure>
+      <dl class="figures">
+        <div>
+          <dt class="tabular">{completedBiomining.length}</dt>
+          <dd>Bio-mining projects completed, as listed in our company profile</dd>
+        </div>
+        <div>
+          <dt class="tabular">{ongoingBiomining.length}</dt>
+          <dd>Large bio-mining projects in progress, including 8,00,000 m³ at Moshi</dd>
+        </div>
+        <div>
+          <dt class="tabular">{installedCount}+</dt>
+          <dd>Bio-mining processing plants installed, from Punjab to Telangana</dd>
+        </div>
+        <div>
+          <dt class="tabular">30</dt>
+          <dd>Years of O&amp;M contracted at Jaisalmer and Dausa, Rajasthan</dd>
+        </div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-head" data-reveal>
+        <p class="eyebrow">Featured</p>
+        <h2 class="h2">Landmark projects</h2>
+      </div>
+      <ul class="feat">
+        {
+          featuredProjects.map((p) => (
+            <li data-reveal>
+              <p class="feat__scale tabular">{p.scale}</p>
+              <h3 class="h4">{p.client}</h3>
+              <p class="muted feat__loc">{p.location}</p>
+              <p class="feat__scope">{p.scope}{p.note && <span class="muted"> · {p.note}</span>}</p>
+              <p class:list={['status', `is-${p.status.toLowerCase()}`]}>{p.status}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <section class="section bg-white">
+    <div class="container tables">
+      <div data-reveal>
+        <p class="eyebrow">Bio-mining</p>
+        <h2 class="h3 tables__title">Completed</h2>
+        <table class="ptable">
+          <thead>
+            <tr><th scope="col">Site</th><th scope="col">Volume</th></tr>
+          </thead>
+          <tbody>
+            {
+              completedBiomining.map((r) => (
+                <tr>
+                  <th scope="row">
+                    {r.site}
+                    {r.note && <span class="muted ptable__note">{r.note}</span>}
+                  </th>
+                  <td class="tabular">{r.volume}</td>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+      </div>
+      <div data-reveal>
+        <p class="eyebrow">Bio-mining</p>
+        <h2 class="h3 tables__title">In progress</h2>
+        <table class="ptable">
+          <thead>
+            <tr><th scope="col">Site</th><th scope="col">Scale</th></tr>
+          </thead>
+          <tbody>
+            {
+              ongoingBiomining.map((r) => (
+                <tr>
+                  <th scope="row">
+                    {r.site}
+                    {r.note && <span class="muted ptable__note">{r.note}</span>}
+                  </th>
+                  <td class="tabular">{r.volume}</td>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+
+        <p class="eyebrow tables__gap">Plants</p>
+        <h2 class="h3 tables__title">Processing plants &amp; O&amp;M</h2>
+        <ul class="plist">
+          {plantProjects.map((p) => <li>{p}</li>)}
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section bg-ink on-dark">
+    <div class="container">
+      <div class="section-head section-head--split" data-reveal>
+        <div>
+          <p class="eyebrow">Installed base</p>
+          <h2 class="h2">Bio-mining plants <em>installed</em></h2>
+        </div>
+        <p class="muted">Processing plants supplied and commissioned for municipal bodies and their contractors.</p>
+      </div>
+      <ul class="states">
+        {
+          plantsInstalled.map((s) => (
+            <li data-reveal>
+              <h3 class="states__name">{s.state}</h3>
+              <ul>
+                {s.sites.map((site) => (
+                  <li>{site}</li>
+                ))}
+              </ul>
+            </li>
+          ))
+        }
+        <li data-reveal>
+          <h3 class="states__name">Machine supply</h3>
+          <ul>
+            {machineSupply.map((m) => <li>{m}</li>)}
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <CtaBand />
+</Base>
+
+<style>
+  .wide {
+    aspect-ratio: 16 / 6;
+    margin: 0;
+  }
+
+  .figures {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    margin: 0;
+    padding-block: 40px clamp(64px, 8vw, 104px);
+  }
+
+  .figures div {
+    padding: 0 24px 0 0;
+  }
+
+  .figures div + div {
+    padding-left: 24px;
+    border-left: 1px solid var(--line);
+  }
+
+  .figures dt {
+    font-family: var(--serif);
+    font-size: clamp(2.6rem, 4.6vw, 4rem);
+    line-height: 1;
+    color: var(--ink);
+  }
+
+  .figures dd {
+    margin: 12px 0 0;
+    font-size: 14px;
+    color: var(--muted);
+    max-width: 18em;
+  }
+
+  .feat {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    list-style: none;
+    border-top: 1px solid var(--line-strong);
+  }
+
+  .feat li {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 32px 28px 40px 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .feat li:not(:nth-child(3n + 1)) {
+    padding-left: 28px;
+    border-left: 1px solid var(--line);
+  }
+
+  .feat__scale {
+    font-family: var(--serif);
+    font-size: clamp(2rem, 3vw, 2.6rem);
+    line-height: 1.05;
+    color: var(--navy);
+    margin-bottom: 8px;
+  }
+
+  .feat__loc {
+    font-size: 14px;
+  }
+
+  .feat__scope {
+    font-size: 15px;
+  }
+
+  .status {
+    margin-top: auto;
+    padding-top: 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .status::before {
+    content: '';
+    width: 7px;
+    height: 7px;
+    background: var(--green);
+  }
+
+  .status.is-ongoing::before {
+    background: var(--lime);
+  }
+
+  .tables {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 48px 72px;
+  }
+
+  .tables__title {
+    margin: 14px 0 24px;
+  }
+
+  .tables__gap {
+    margin-top: 56px;
+  }
+
+  .ptable {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 15px;
+    border-top: 1px solid var(--ink);
+  }
+
+  .ptable th,
+  .ptable td {
+    padding: 13px 0;
+    text-align: left;
+    vertical-align: top;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .ptable thead th {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .ptable tbody th {
+    font-weight: 500;
+    color: var(--ink);
+    padding-right: 16px;
+  }
+
+  .ptable td {
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  .ptable thead th:last-child {
+    text-align: right;
+  }
+
+  .ptable__note {
+    display: block;
+    font-size: 13px;
+    font-weight: 400;
+  }
+
+  .plist {
+    list-style: none;
+    border-top: 1px solid var(--ink);
+  }
+
+  .plist li {
+    padding: 13px 0;
+    border-bottom: 1px solid var(--line);
+    font-size: 15px;
+  }
+
+  .states {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 40px 32px;
+    list-style: none;
+  }
+
+  .states > li {
+    border-top: 1px solid var(--line-on-dark);
+    padding-top: 20px;
+  }
+
+  .states__name {
+    font-family: var(--serif);
+    font-size: 1.6rem;
+    margin-bottom: 14px;
+  }
+
+  .states ul {
+    list-style: none;
+    display: grid;
+    gap: 8px;
+    color: #c6cfdc;
+    font-size: 14px;
+  }
+
+  @media (max-width: 1000px) {
+    .feat {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .feat li:not(:nth-child(3n + 1)) {
+      padding-left: 0;
+      border-left: 0;
+    }
+
+    .feat li:nth-child(even) {
+      padding-left: 28px;
+      border-left: 1px solid var(--line);
+    }
+
+    .tables {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .states {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .figures {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 32px 0;
+    }
+
+    .figures div:nth-child(3) {
+      padding-left: 0;
+      border-left: 0;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .wide {
+      aspect-ratio: 4 / 3;
+    }
+
+    .feat,
+    .states {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .feat li:nth-child(even) {
+      padding-left: 0;
+      border-left: 0;
+    }
+  }
+</style>

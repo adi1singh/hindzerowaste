@@ -1,0 +1,46 @@
+---
+import Base from './Base.astro';
+import PageHero from '../components/PageHero.astro';
+
+interface Props {
+  frontmatter: { title: string; description: string; eyebrow?: string };
+}
+
+const { frontmatter } = Astro.props;
+---
+
+<Base title={frontmatter.title} description={frontmatter.description}>
+  <PageHero
+    eyebrow={frontmatter.eyebrow ?? 'Legal'}
+    title={frontmatter.title}
+    crumbs={[{ label: 'Home', href: '/' }, { label: frontmatter.title }]}
+  />
+  <section class="section--tight bg-white">
+    <div class="container legal">
+      <div class="prose">
+        <slot />
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .legal {
+    display: grid;
+    grid-template-columns: minmax(0, 3fr) minmax(0, 8fr);
+  }
+
+  .legal .prose {
+    grid-column: 2;
+  }
+
+  @media (max-width: 900px) {
+    .legal {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .legal .prose {
+      grid-column: 1;
+    }
+  }
+</style>

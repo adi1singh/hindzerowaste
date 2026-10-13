@@ -1,0 +1,283 @@
+---
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import CtaBand from '../components/CtaBand.astro';
+import { services } from '../data/services';
+import { localName, t, type Lang } from '../i18n/ui';
+import { approachSteps, consultancyCopy, inEnglish, serviceHighlights, serviceShorts } from '../i18n/content';
+
+import bioImg from '../assets/photos/biomining-trommel-site.jpg';
+import mswImg from '../assets/photos/plant-line-wide.jpg';
+import mrfImg from '../assets/photos/mrf-sorting-floor.jpg';
+import rdfImg from '../assets/photos/shredder-ads-line.jpg';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const images: Record<string, ImageMetadata> = {
+  'bio-mining-and-legacy-waste-management': bioImg,
+  'msw-processing-plant': mswImg,
+  'material-recovery-facility-mrf-plant': mrfImg,
+  'rdf-afr-plant': rdfImg,
+};
+
+const copy = {
+  en: {
+    title: 'Services | Bio-mining, MSW, MRF & RDF/AFR Plants',
+    description:
+      'Turnkey waste-processing plants from Hind Zero Waste: bio-mining of legacy waste, MSW processing, material recovery facilities and RDF/AFR plants, designed, built, commissioned and operated.',
+    eyebrow: 'Services',
+    heroTitle: 'Turnkey plants, <em>end to end</em>.',
+    lead: 'We design, manufacture, install, commission and operate complete waste-processing plants, and take responsibility for their performance from the first survey to daily operation.',
+    explore: 'Explore',
+    consEyebrow: 'Consultancy',
+    apprEyebrow: 'How we work',
+    apprTitle: 'One partner, from drawing board to <em>daily operation</em>.',
+    crumbs: ['Home', 'Services'],
+  },
+  hi: {
+    title: 'सेवाएँ | बायो-माइनिंग, MSW, MRF और RDF/AFR प्लांट',
+    description:
+      'हिंद ज़ीरो वेस्ट के टर्नकी कचरा प्रसंस्करण प्लांट: पुराने कचरे का बायो-माइनिंग, MSW प्रसंस्करण, मटेरियल रिकवरी फ़ैसिलिटी और RDF/AFR प्लांट।',
+    eyebrow: 'सेवाएँ',
+    heroTitle: 'शुरुआत से अंत तक, <em>टर्नकी</em> प्लांट।',
+    lead: 'हम पूर्ण कचरा प्रसंस्करण प्लांट का डिज़ाइन, निर्माण, स्थापना, कमीशनिंग और संचालन करते हैं, और पहले सर्वेक्षण से लेकर दैनिक संचालन तक उनके प्रदर्शन की ज़िम्मेदारी लेते हैं।',
+    explore: 'विस्तार से देखें',
+    consEyebrow: 'परामर्श',
+    apprEyebrow: 'हमारी कार्यप्रणाली',
+    apprTitle: 'डिज़ाइन से <em>दैनिक संचालन</em> तक, एक ही साझेदार।',
+    crumbs: ['होम', 'सेवाएँ'],
+  },
+  mr: {
+    title: 'सेवा | बायो-मायनिंग, MSW, MRF व RDF/AFR प्लांट',
+    description:
+      'हिंद झिरो वेस्टचे टर्नकी कचरा प्रक्रिया प्लांट: जुन्या कचऱ्याचे बायो-मायनिंग, MSW प्रक्रिया, मटेरियल रिकव्हरी फॅसिलिटी आणि RDF/AFR प्लांट.',
+    eyebrow: 'सेवा',
+    heroTitle: 'सुरुवातीपासून शेवटपर्यंत, <em>टर्नकी</em> प्लांट.',
+    lead: 'आम्ही संपूर्ण कचरा प्रक्रिया प्लांटचे डिझाइन, निर्मिती, उभारणी, कमिशनिंग आणि संचालन करतो, आणि पहिल्या सर्वेक्षणापासून दैनंदिन संचालनापर्यंत त्यांच्या कामगिरीची जबाबदारी घेतो.',
+    explore: 'सविस्तर पाहा',
+    consEyebrow: 'सल्ला',
+    apprEyebrow: 'आमची कार्यपद्धती',
+    apprTitle: 'डिझाइनपासून <em>दैनंदिन संचालनापर्यंत</em>, एकच भागीदार.',
+    crumbs: ['होम', 'सेवा'],
+  },
+}[lang];
+
+const home = lang === 'en' ? '/' : `/${lang}/`;
+const alternates = { en: '/services', hi: '/hi/services', mr: '/mr/services' };
+---
+
+<Base title={copy.title} description={copy.description} lang={lang} alternates={alternates}>
+  <PageHero
+    eyebrow={copy.eyebrow}
+    title={copy.heroTitle}
+    lead={copy.lead}
+    crumbs={[{ label: copy.crumbs[0], href: home }, { label: copy.crumbs[1] }]}
+  />
+
+  <section class="svc-list">
+    {
+      services.map((s, i) => (
+        <article class:list={['svc', i % 2 === 0 ? 'bg-white' : 'bg-paper']}>
+          <div class:list={['container', 'svc__inner', { 'is-flipped': i % 2 === 1 }]}>
+            <div class="frame svc__media" data-reveal>
+              <Image src={images[s.slug]} alt={s.images[0].alt} widths={[640, 960, 1280]} sizes="(min-width: 1000px) 640px, 92vw" loading={i === 0 ? 'eager' : 'lazy'} />
+            </div>
+            <div class="svc__body" data-reveal>
+              <p class="svc__num tabular">
+                {String(i + 1).padStart(2, '0')} <span>{s.range}</span>
+              </p>
+              <h2 class="h2">{localName(lang, s.slug, s.name)}</h2>
+              <p class="lead">{serviceShorts[lang][s.slug]}</p>
+              <ul class="svc__points">
+                {serviceHighlights[lang][s.slug].map((h) => (
+                  <li>{h}</li>
+                ))}
+              </ul>
+              <a class="link-arrow" href={`/${s.slug}`}>
+                {copy.explore} {inEnglish[lang]} <span class="arrow">→</span>
+              </a>
+            </div>
+          </div>
+        </article>
+      ))
+    }
+  </section>
+
+  <section class="section--tight bg-ink on-dark" id="consultancy">
+    <div class="container cons" data-reveal>
+      <p class="eyebrow">{copy.consEyebrow}</p>
+      <div class="cons__body">
+        <h2 class="h3">{consultancyCopy[lang].name}</h2>
+        <p class="muted">{consultancyCopy[lang].text}</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section bg-white">
+    <div class="container">
+      <div class="section-head" data-reveal>
+        <p class="eyebrow">{copy.apprEyebrow}</p>
+        <h2 class="h2" set:html={copy.apprTitle} />
+      </div>
+      <ol class="appr">
+        {
+          approachSteps[lang].map(([title, text], i) => (
+            <li data-reveal>
+              <span class="appr__num tabular">{String(i + 1).padStart(2, '0')}</span>
+              <h3 class="h4">{title}</h3>
+              <p class="muted">{text}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <CtaBand lang={lang} />
+</Base>
+
+<style>
+  .svc {
+    padding-block: clamp(64px, 8vw, 112px);
+  }
+
+  .svc__inner {
+    display: grid;
+    grid-template-columns: minmax(0, 6fr) minmax(0, 5fr);
+    gap: 40px 72px;
+    align-items: center;
+  }
+
+  .svc__inner.is-flipped .svc__media {
+    order: 2;
+  }
+
+  .svc__media {
+    aspect-ratio: 4 / 3;
+  }
+
+  .svc__body {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 22px;
+  }
+
+  .svc__num {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    font-family: var(--serif);
+    font-size: 1.5rem;
+    color: var(--navy);
+  }
+
+  .svc__num span {
+    font-family: var(--sans);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .svc__points {
+    list-style: none;
+    width: 100%;
+    border-top: 1px solid var(--line-strong);
+  }
+
+  .svc__points li {
+    display: flex;
+    gap: 14px;
+    padding: 13px 0;
+    border-bottom: 1px solid var(--line);
+    font-size: 15px;
+    color: var(--ink);
+  }
+
+  .svc__points li::before {
+    content: '';
+    width: 7px;
+    height: 7px;
+    margin-top: 0.6em;
+    background: var(--green);
+    flex: none;
+  }
+
+  .cons {
+    display: grid;
+    grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+    gap: 24px 72px;
+  }
+
+  .cons__body {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .appr {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    list-style: none;
+    border-top: 1px solid var(--line-strong);
+  }
+
+  .appr li {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 28px 28px 8px 0;
+  }
+
+  .appr li + li {
+    padding-left: 28px;
+    border-left: 1px solid var(--line);
+  }
+
+  .appr__num {
+    font-family: var(--serif);
+    font-size: 2rem;
+    line-height: 1;
+    color: var(--navy);
+    margin-bottom: 8px;
+  }
+
+  @media (max-width: 960px) {
+    .svc__inner,
+    .cons {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .svc__inner.is-flipped .svc__media {
+      order: 0;
+    }
+
+    .appr {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .appr li:nth-child(3) {
+      padding-left: 0;
+      border-left: 0;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .appr {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .appr li + li {
+      padding-left: 0;
+      border-left: 0;
+      border-top: 1px solid var(--line);
+    }
+  }
+</style>
