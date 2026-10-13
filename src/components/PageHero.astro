@@ -1,0 +1,92 @@
+---
+interface Crumb {
+  label: string;
+  href?: string;
+}
+
+interface Props {
+  eyebrow?: string;
+  title: string;
+  lead?: string;
+  crumbs?: Crumb[];
+}
+
+const { eyebrow, title, lead, crumbs = [] } = Astro.props;
+---
+
+<section class="phero">
+  <div class="container">
+    {
+      crumbs.length > 0 && (
+        <nav class="crumbs" aria-label="Breadcrumb">
+          <ol>
+            {crumbs.map((c, i) => (
+              <li>{c.href && i < crumbs.length - 1 ? <a href={c.href}>{c.label}</a> : <span aria-current="page">{c.label}</span>}</li>
+            ))}
+          </ol>
+        </nav>
+      )
+    }
+    <div class="phero__grid">
+      <div>
+        {eyebrow && <p class="eyebrow">{eyebrow}</p>}
+        <h1 class="h1 phero__title" set:html={title} />
+      </div>
+      {lead && <p class="lead phero__lead">{lead}</p>}
+    </div>
+    <slot />
+  </div>
+</section>
+
+<style>
+  .phero {
+    padding-block: clamp(40px, 6vw, 80px) clamp(48px, 7vw, 96px);
+  }
+
+  .crumbs ol {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    list-style: none;
+    margin-bottom: clamp(32px, 5vw, 56px);
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  .crumbs li + li::before {
+    content: '/';
+    margin-right: 6px;
+    color: var(--line-strong);
+  }
+
+  .crumbs a {
+    color: var(--muted);
+    text-decoration: none;
+  }
+
+  .crumbs a:hover {
+    color: var(--ink);
+    text-decoration: underline;
+  }
+
+  .phero__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    gap: 32px 64px;
+    align-items: end;
+  }
+
+  .phero__title {
+    margin-top: 20px;
+  }
+
+  .phero__lead {
+    padding-bottom: 8px;
+  }
+
+  @media (max-width: 900px) {
+    .phero__grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+</style>

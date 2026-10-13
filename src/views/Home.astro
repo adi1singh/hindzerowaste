@@ -1,0 +1,936 @@
+---
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import ProductCard from '../components/ProductCard.astro';
+import ClientWall from '../components/ClientWall.astro';
+import CtaBand from '../components/CtaBand.astro';
+import { products } from '../data/products';
+import { services, consultancy } from '../data/services';
+import { featuredProjects } from '../data/projects';
+import { figures, footprint, site } from '../data/site';
+import { localName, localePath, t, type Lang } from '../i18n/ui';
+
+import heroImage from '../assets/photos/hero-plant-shed.jpg';
+import approachImage from '../assets/photos/shredder-blades.jpg';
+import bioImg from '../assets/photos/biomining-trommel-site.jpg';
+import mswImg from '../assets/photos/plant-line-wide.jpg';
+import mrfImg from '../assets/photos/mrf-sorting-floor.jpg';
+import rdfImg from '../assets/photos/shredder-ads-line.jpg';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const serviceImages: Record<string, ImageMetadata> = {
+  'bio-mining-and-legacy-waste-management': bioImg,
+  'msw-processing-plant': mswImg,
+  'material-recovery-facility-mrf-plant': mrfImg,
+  'rdf-afr-plant': rdfImg,
+};
+
+const copy = {
+  en: {
+    title: `${site.name} | Waste Processing Machinery & Turnkey Plants`,
+    description:
+      'Hind Zero Waste designs, manufactures and commissions bio-mining, MSW, MRF and RDF/AFR plants and waste-processing machinery. 87+ bio-mining projects across India. ISO 9001:2015.',
+    heroEyebrow: 'Waste-processing machinery & turnkey plants',
+    heroTitle: 'Engineering a <em>zero-waste</em> India.',
+    heroLead:
+      'Since 2017 we have designed, manufactured and commissioned the machinery and plants that clear legacy dumpsites, process municipal solid waste, and turn refuse into fuel and resources.',
+    heroCaption: 'A segregation and RDF line by Hind Zero Waste, installed in a pre-engineered steel shed.',
+    figures: figures.map((f) => f.label),
+    philEyebrow: 'Our philosophy',
+    philTitle: 'Rethink. Reduce. Reuse. <em>Recover.</em>',
+    philParas: [
+      'Founded in 2017 as Hind Agro and Chemicals in Kolhapur, we have grown into Hind Zero Waste Management Pvt. Ltd., a trusted partner in integrated solid waste management across India.',
+      'We go beyond disposal. Our systems are designed for resource recovery and waste-to-energy, helping municipal bodies, industries and public–private enterprises reduce landfill dependency, lower carbon emissions and move towards a circular economy.',
+    ],
+    philLink: 'Our story',
+    svcEyebrow: 'What we do',
+    svcTitle: 'Turnkey plants, from survey to <em>operation</em>.',
+    svcIntro:
+      'We take responsibility for the whole system: engineering, machinery, installation, commissioning and long-term operation and maintenance.',
+    svcShorts: Object.fromEntries(services.map((s) => [s.slug, s.short])),
+    machEyebrow: 'Machinery',
+    machTitle: 'Engineered in-house, for <em>24×7</em> duty.',
+    machIntro:
+      'Every machine is designed and fabricated by our own team for efficiency, durability and long service life, so waste-management and RDF plants run smoothly nationwide.',
+    machAll: 'View all machinery',
+    projEyebrow: 'Selected projects',
+    projTitle: 'Trusted by municipal bodies <em>across India</em>.',
+    projIntro: `Bio-mining, MSW and MRF projects in ${footprint.slice(0, 7).join(', ')} and beyond.`,
+    projAll: 'View the project record',
+    projects: featuredProjects,
+    status: { Completed: 'Completed', Ongoing: 'Ongoing', Commissioned: 'Commissioned' },
+    apprEyebrow: 'How we work',
+    apprTitle: 'One partner, from drawing board to <em>daily operation</em>.',
+    steps: [
+      ['Design & engineering', 'Site study, waste characterisation and a plant layout sized to your tonnage, land and budget.'],
+      ['Manufacturing & procurement', 'Trommels, separators, shredders, balers and conveyors built in-house, every component specified for 24×7 duty.'],
+      ['Erection & commissioning', 'Our engineers install, integrate and commission the line on site, then train your operators.'],
+      ['Operation & maintenance', 'Long-term O&M, AMC and spares keep the plant running at capacity.'],
+    ],
+    clientsEyebrow: 'Clients',
+    clientsTitle: 'In good <em>company</em>.',
+    clientsIntro:
+      'Municipal corporations, industry leaders and institutions rely on our machinery and plants. We are an ISO 9001:2015 certified, GeM registered OEM.',
+    insEyebrow: 'Insights',
+    insTitle: 'Notes from the <em>field</em>.',
+    insAll: 'All articles',
+    read: 'Read article',
+  },
+  hi: {
+    title: 'हिंद ज़ीरो वेस्ट मैनेजमेंट | कचरा प्रसंस्करण मशीनरी और टर्नकी प्लांट',
+    description:
+      'हिंद ज़ीरो वेस्ट बायो-माइनिंग, MSW, MRF और RDF/AFR प्लांट तथा कचरा प्रसंस्करण मशीनरी का डिज़ाइन, निर्माण और कमीशनिंग करता है। भारत भर में 87+ बायो-माइनिंग परियोजनाएँ।',
+    heroEyebrow: 'कचरा प्रसंस्करण मशीनरी और टर्नकी प्लांट',
+    heroTitle: 'शून्य-कचरा भारत का <em>निर्माण</em>।',
+    heroLead:
+      '2017 से हम पुराने कचरा डंपसाइट साफ़ करने, नगरपालिका ठोस कचरे के प्रसंस्करण और कचरे को ईंधन व संसाधनों में बदलने वाली मशीनरी और प्लांट का डिज़ाइन, निर्माण और कमीशनिंग कर रहे हैं।',
+    heroCaption: 'हिंद ज़ीरो वेस्ट द्वारा स्टील शेड में स्थापित पृथक्करण और RDF लाइन।',
+    figures: [
+      'भारत भर में बायो-माइनिंग परियोजनाएँ',
+      'बेलिंग मशीनें आपूर्ति और कमीशन की गईं',
+      'भारत और दक्षिण अफ़्रीका में ग्राहक',
+      'कोल्हापुर, महाराष्ट्र में स्थापना',
+    ],
+    philEyebrow: 'हमारा दर्शन',
+    philTitle: 'पुनर्विचार। कमी। पुन: उपयोग। <em>पुनर्प्राप्ति।</em>',
+    philParas: [
+      '2017 में कोल्हापुर में हिंद एग्रो एंड केमिकल्स के रूप में स्थापित, आज हम हिंद ज़ीरो वेस्ट मैनेजमेंट प्रा. लि. हैं, जो पूरे भारत में एकीकृत ठोस कचरा प्रबंधन का विश्वसनीय साझेदार है।',
+      'हम केवल निपटान तक सीमित नहीं हैं। हमारी प्रणालियाँ संसाधन पुनर्प्राप्ति और कचरे से ऊर्जा के लिए बनाई जाती हैं, जिससे नगर निकाय, उद्योग और सार्वजनिक-निजी उद्यम लैंडफ़िल पर निर्भरता घटाते हैं, कार्बन उत्सर्जन कम करते हैं और चक्रीय अर्थव्यवस्था की ओर बढ़ते हैं।',
+    ],
+    philLink: 'हमारी कहानी',
+    svcEyebrow: 'हमारी सेवाएँ',
+    svcTitle: 'सर्वेक्षण से <em>संचालन</em> तक, टर्नकी प्लांट।',
+    svcIntro: 'इंजीनियरिंग, मशीनरी, स्थापना, कमीशनिंग और दीर्घकालीन संचालन व रखरखाव, पूरी प्रणाली की ज़िम्मेदारी हमारी।',
+    svcShorts: {
+      'bio-mining-and-legacy-waste-management': 'दशकों पुराने डंपसाइट साफ़ कर ज़मीन शहर को लौटाना।',
+      'msw-processing-plant': 'मिश्रित नगरपालिका कचरे को कम्पोस्ट, रीसायकल योग्य सामग्री और RDF में बदलने वाले एकीकृत प्लांट।',
+      'material-recovery-facility-mrf-plant': 'मिश्रित सूखे कचरे से रीसायकल योग्य सामग्री अलग करने वाले टर्नकी MRF प्लांट।',
+      'rdf-afr-plant': 'सीमेंट और उद्योगों के लिए कचरे को भट्ठी-योग्य वैकल्पिक ईंधन में बदलने वाले प्लांट।',
+    } as Record<string, string>,
+    machEyebrow: 'मशीनरी',
+    machTitle: '24×7 काम के लिए, <em>अपने कारखाने</em> में निर्मित।',
+    machIntro:
+      'हर मशीन हमारी अपनी टीम द्वारा दक्षता, टिकाऊपन और लंबी सेवा-अवधि के लिए डिज़ाइन और निर्मित की जाती है, ताकि देश भर के कचरा प्रबंधन और RDF प्लांट सुचारु रूप से चलें।',
+    machAll: 'सभी मशीनें देखें',
+    projEyebrow: 'प्रमुख परियोजनाएँ',
+    projTitle: 'देश भर के नगर निकायों का <em>भरोसा</em>।',
+    projIntro: 'महाराष्ट्र, राजस्थान, तेलंगाना, दिल्ली, उत्तर प्रदेश, हिमाचल प्रदेश, पंजाब और अन्य राज्यों में बायो-माइनिंग, MSW और MRF परियोजनाएँ।',
+    projAll: 'सभी परियोजनाएँ देखें',
+    projects: [
+      { ...featuredProjects[0], client: 'पिंपरी चिंचवड महानगरपालिका', location: 'मोशी डंपिंग ग्राउंड, महाराष्ट्र', scope: 'पुराने कचरे का बायो-माइनिंग', note: '7,02,900 m³ पूर्ण' },
+      { ...featuredProjects[1], client: 'भिवंडी निज़ामपुर महानगरपालिका', location: 'महाराष्ट्र', scope: 'पुराने कचरे का बायो-माइनिंग' },
+      { ...featuredProjects[2], client: 'दक्षिण दिल्ली नगर निगम (रीकार्ट इनोवेशन्स के लिए)', location: 'भलस्वा डंपिंग ग्राउंड, दिल्ली', scope: 'दो बायो-माइनिंग प्लांट' },
+      { ...featuredProjects[3], client: 'तेलंगाना राज्य, क्लस्टर 6', location: '14 नगरपालिकाएँ, तेलंगाना', scope: 'बायो-माइनिंग और 10 वर्ष का ताज़ा कचरा प्रबंधन', scale: '5 लाख टन' },
+      { ...featuredProjects[4], client: 'जैसलमेर नगर परिषद', location: 'राजस्थान', scope: 'MSW प्रसंस्करण और सैनिटरी लैंडफ़िल: डिज़ाइन, निर्माण और 30 वर्ष संचालन' },
+      { ...featuredProjects[5], client: 'दौसा नगर परिषद', location: 'राजस्थान', scope: 'MSW प्रसंस्करण और सैनिटरी लैंडफ़िल: डिज़ाइन, निर्माण और 30 वर्ष संचालन' },
+    ],
+    status: { Completed: 'पूर्ण', Ongoing: 'जारी', Commissioned: 'कमीशन किया गया' },
+    apprEyebrow: 'हमारी कार्यप्रणाली',
+    apprTitle: 'डिज़ाइन से <em>दैनिक संचालन</em> तक, एक ही साझेदार।',
+    steps: [
+      ['डिज़ाइन और इंजीनियरिंग', 'साइट अध्ययन, कचरे का विश्लेषण और आपकी क्षमता, ज़मीन व बजट के अनुसार प्लांट लेआउट।'],
+      ['निर्माण और खरीद', 'ट्रॉमेल, सेपरेटर, श्रेडर, बेलर और कन्वेयर हमारे अपने कारखाने में, 24×7 काम के लिए।'],
+      ['स्थापना और कमीशनिंग', 'हमारे इंजीनियर साइट पर लाइन स्थापित और कमीशन करते हैं, फिर आपके ऑपरेटरों को प्रशिक्षण देते हैं।'],
+      ['संचालन और रखरखाव', 'दीर्घकालीन O&M, AMC और स्पेयर पार्ट्स से प्लांट पूरी क्षमता पर चलता रहता है।'],
+    ],
+    clientsEyebrow: 'ग्राहक',
+    clientsTitle: 'भरोसेमंद <em>साथ</em>।',
+    clientsIntro:
+      'नगर निगम, अग्रणी उद्योग और संस्थान हमारी मशीनरी और प्लांट पर भरोसा करते हैं। हम ISO 9001:2015 प्रमाणित और GeM पंजीकृत OEM हैं।',
+    insEyebrow: '',
+    insTitle: '',
+    insAll: '',
+    read: '',
+  },
+  mr: {
+    title: 'हिंद झिरो वेस्ट मॅनेजमेंट | कचरा प्रक्रिया यंत्रसामग्री व टर्नकी प्लांट',
+    description:
+      'हिंद झिरो वेस्ट बायो-मायनिंग, MSW, MRF आणि RDF/AFR प्लांट तसेच कचरा प्रक्रिया यंत्रसामग्रीचे डिझाइन, निर्मिती व कमिशनिंग करते. भारतभर 87+ बायो-मायनिंग प्रकल्प.',
+    heroEyebrow: 'कचरा प्रक्रिया यंत्रसामग्री आणि टर्नकी प्लांट',
+    heroTitle: 'शून्य-कचरा भारताची <em>उभारणी</em>.',
+    heroLead:
+      '2017 पासून आम्ही जुने कचरा डेपो साफ करणारी, नागरी घनकचऱ्यावर प्रक्रिया करणारी आणि कचऱ्याचे इंधन व संसाधनांमध्ये रूपांतर करणारी यंत्रसामग्री आणि प्लांट डिझाइन, निर्मिती व कार्यान्वित करत आहोत.',
+    heroCaption: 'हिंद झिरो वेस्टने स्टील शेडमध्ये उभारलेली विलगीकरण व RDF लाइन.',
+    figures: [
+      'भारतभर बायो-मायनिंग प्रकल्प',
+      'बेलिंग मशीन पुरवल्या व कार्यान्वित केल्या',
+      'भारत व दक्षिण आफ्रिकेतील ग्राहक',
+      'कोल्हापूर, महाराष्ट्र येथे स्थापना',
+    ],
+    philEyebrow: 'आमचे तत्त्वज्ञान',
+    philTitle: 'पुनर्विचार. कपात. पुनर्वापर. <em>पुनर्प्राप्ती.</em>',
+    philParas: [
+      '2017 मध्ये कोल्हापूर येथे हिंद ॲग्रो अँड केमिकल्स म्हणून स्थापन झालेली आमची कंपनी आज हिंद झिरो वेस्ट मॅनेजमेंट प्रा. लि. म्हणून संपूर्ण भारतात एकात्मिक घनकचरा व्यवस्थापनातील विश्वासार्ह भागीदार आहे.',
+      'आम्ही केवळ विल्हेवाटीपुरते मर्यादित नाही. आमच्या प्रणाली संसाधन पुनर्प्राप्ती आणि कचऱ्यापासून ऊर्जा यासाठी तयार केल्या जातात, ज्यामुळे नागरी संस्था, उद्योग आणि सार्वजनिक-खाजगी उपक्रम लँडफिलवरील अवलंबित्व कमी करतात, कार्बन उत्सर्जन घटवतात आणि चक्राकार अर्थव्यवस्थेकडे वाटचाल करतात.',
+    ],
+    philLink: 'आमची वाटचाल',
+    svcEyebrow: 'आमच्या सेवा',
+    svcTitle: 'सर्वेक्षणापासून <em>संचालनापर्यंत</em>, टर्नकी प्लांट.',
+    svcIntro: 'अभियांत्रिकी, यंत्रसामग्री, उभारणी, कमिशनिंग आणि दीर्घकालीन संचालन व देखभाल, संपूर्ण प्रणालीची जबाबदारी आमची.',
+    svcShorts: {
+      'bio-mining-and-legacy-waste-management': 'दशकांपासून साचलेले कचरा डेपो साफ करून जमीन पुन्हा शहराच्या उपयोगासाठी.',
+      'msw-processing-plant': 'मिश्र नागरी कचऱ्याचे कंपोस्ट, पुनर्वापरयोग्य साहित्य आणि RDF मध्ये रूपांतर करणारे एकात्मिक प्लांट.',
+      'material-recovery-facility-mrf-plant': 'मिश्र सुक्या कचऱ्यातून पुनर्वापरयोग्य साहित्य वेगळे करणारे टर्नकी MRF प्लांट.',
+      'rdf-afr-plant': 'सिमेंट व उद्योगांसाठी कचऱ्याचे भट्टीयोग्य पर्यायी इंधनात रूपांतर करणारे प्लांट.',
+    } as Record<string, string>,
+    machEyebrow: 'यंत्रसामग्री',
+    machTitle: '24×7 कामासाठी, <em>आमच्याच कारखान्यात</em> निर्मित.',
+    machIntro:
+      'प्रत्येक यंत्र आमच्या टीमकडून कार्यक्षमता, टिकाऊपणा आणि दीर्घ आयुष्यासाठी डिझाइन व तयार केले जाते, जेणेकरून देशभरातील कचरा व्यवस्थापन व RDF प्लांट सुरळीत चालतात.',
+    machAll: 'सर्व यंत्रे पाहा',
+    projEyebrow: 'निवडक प्रकल्प',
+    projTitle: 'देशभरातील नागरी संस्थांचा <em>विश्वास</em>.',
+    projIntro: 'महाराष्ट्र, राजस्थान, तेलंगणा, दिल्ली, उत्तर प्रदेश, हिमाचल प्रदेश, पंजाब आणि इतर राज्यांमध्ये बायो-मायनिंग, MSW व MRF प्रकल्प.',
+    projAll: 'सर्व प्रकल्प पाहा',
+    projects: [
+      { ...featuredProjects[0], client: 'पिंपरी चिंचवड महानगरपालिका', location: 'मोशी कचरा डेपो, महाराष्ट्र', scope: 'जुन्या कचऱ्याचे बायो-मायनिंग', note: '7,02,900 m³ पूर्ण' },
+      { ...featuredProjects[1], client: 'भिवंडी निजामपूर महानगरपालिका', location: 'महाराष्ट्र', scope: 'जुन्या कचऱ्याचे बायो-मायनिंग' },
+      { ...featuredProjects[2], client: 'दक्षिण दिल्ली महानगरपालिका (रीकार्ट इनोव्हेशन्ससाठी)', location: 'भलस्वा कचरा डेपो, दिल्ली', scope: 'दोन बायो-मायनिंग प्लांट' },
+      { ...featuredProjects[3], client: 'तेलंगणा राज्य, क्लस्टर 6', location: '14 नगरपालिका, तेलंगणा', scope: 'बायो-मायनिंग आणि 10 वर्षांचे ताज्या कचऱ्याचे व्यवस्थापन', scale: '5 लाख टन' },
+      { ...featuredProjects[4], client: 'जैसलमेर नगर परिषद', location: 'राजस्थान', scope: 'MSW प्रक्रिया व सॅनिटरी लँडफिल: डिझाइन, बांधकाम व 30 वर्षे संचालन' },
+      { ...featuredProjects[5], client: 'दौसा नगर परिषद', location: 'राजस्थान', scope: 'MSW प्रक्रिया व सॅनिटरी लँडफिल: डिझाइन, बांधकाम व 30 वर्षे संचालन' },
+    ],
+    status: { Completed: 'पूर्ण', Ongoing: 'सुरू', Commissioned: 'कार्यान्वित' },
+    apprEyebrow: 'आमची कार्यपद्धती',
+    apprTitle: 'डिझाइनपासून <em>दैनंदिन संचालनापर्यंत</em>, एकच भागीदार.',
+    steps: [
+      ['डिझाइन व अभियांत्रिकी', 'साइट अभ्यास, कचऱ्याचे विश्लेषण आणि तुमची क्षमता, जागा व बजेटनुसार प्लांटचा आराखडा.'],
+      ['निर्मिती व खरेदी', 'ट्रॉमेल, सेपरेटर, श्रेडर, बेलर आणि कन्व्हेयर आमच्याच कारखान्यात, 24×7 कामासाठी.'],
+      ['उभारणी व कमिशनिंग', 'आमचे अभियंते साइटवर लाइन बसवून कार्यान्वित करतात आणि तुमच्या ऑपरेटरना प्रशिक्षण देतात.'],
+      ['संचालन व देखभाल', 'दीर्घकालीन O&M, AMC आणि सुटे भाग यामुळे प्लांट पूर्ण क्षमतेने चालू राहतो.'],
+    ],
+    clientsEyebrow: 'ग्राहक',
+    clientsTitle: 'विश्वासार्ह <em>सोबत</em>.',
+    clientsIntro:
+      'महानगरपालिका, आघाडीचे उद्योग आणि संस्था आमच्या यंत्रसामग्री व प्लांटवर विश्वास ठेवतात. आम्ही ISO 9001:2015 प्रमाणित आणि GeM नोंदणीकृत OEM आहोत.',
+    insEyebrow: '',
+    insTitle: '',
+    insAll: '',
+    read: '',
+  },
+}[lang];
+
+const posts = lang === 'en' ? (await getCollection('blog')).sort((a, b) => a.data.order - b.data.order).slice(0, 3) : [];
+const alternates = { en: '/', hi: '/hi/', mr: '/mr/' };
+---
+
+<Base title={copy.title} description={copy.description} lang={lang} alternates={alternates}>
+  <!-- Hero -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero__top">
+        <div>
+          <p class="eyebrow">{copy.heroEyebrow}</p>
+          <h1 class="display hero__title" set:html={copy.heroTitle} />
+        </div>
+        <div class="hero__aside">
+          <p class="lead">{copy.heroLead}</p>
+          <div class="btn-row">
+            <a class="btn" href={localePath(lang, '/contact-us') + '#enquiry'}>{t(lang, 'cta.quote')} <span class="arrow">→</span></a>
+            <a class="link-arrow" href="/product">{t(lang, 'cta.explore')} <span class="arrow">→</span></a>
+          </div>
+        </div>
+      </div>
+      <figure class="hero__figure">
+        <div class="frame hero__frame">
+          <Image
+            src={heroImage}
+            alt="Conveyors, separators and a shredder line inside a large steel processing shed"
+            widths={[640, 960, 1280, 1600]}
+            sizes="(min-width: 1320px) 1240px, 94vw"
+            loading="eager"
+            fetchpriority="high"
+          />
+        </div>
+        <figcaption class="caption">{copy.heroCaption}</figcaption>
+      </figure>
+      <dl class="figures">
+        {
+          figures.map((f, i) => (
+            <div class="figures__item">
+              <dt class="figures__value tabular">{f.value}</dt>
+              <dd class="figures__label">{copy.figures[i]}</dd>
+            </div>
+          ))
+        }
+      </dl>
+    </div>
+  </section>
+
+  <!-- Philosophy -->
+  <section class="section bg-white">
+    <div class="container phil" data-reveal>
+      <div>
+        <p class="eyebrow">{copy.philEyebrow}</p>
+        <h2 class="h1 phil__title" set:html={copy.philTitle} />
+      </div>
+      <div class="phil__body">
+        {copy.philParas.map((p, i) => <p class={i === 0 ? 'lead' : 'muted'}>{p}</p>)}
+        <a class="link-arrow" href={localePath(lang, '/about-us')}>{copy.philLink} <span class="arrow">→</span></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Services -->
+  <section class="section">
+    <div class="container">
+      <div class="section-head section-head--split" data-reveal>
+        <div>
+          <p class="eyebrow">{copy.svcEyebrow}</p>
+          <h2 class="h2" set:html={copy.svcTitle} />
+        </div>
+        <p class="muted">{copy.svcIntro}</p>
+      </div>
+      <ol class="svc" data-reveal>
+        {
+          services.map((s, i) => (
+            <li>
+              <a class="svc__row" href={`/${s.slug}`}>
+                <span class="svc__num tabular">{String(i + 1).padStart(2, '0')}</span>
+                <span class="svc__main">
+                  <span class="svc__name">{localName(lang, s.slug, s.name)}</span>
+                  <span class="svc__short">{copy.svcShorts[s.slug]}</span>
+                </span>
+                <span class="svc__range tabular">{s.range}</span>
+                <span class="svc__thumb frame" aria-hidden="true">
+                  <Image src={serviceImages[s.slug]} alt="" width={240} height={170} loading="lazy" />
+                </span>
+                <span class="svc__arrow" aria-hidden="true">→</span>
+              </a>
+            </li>
+          ))
+        }
+      </ol>
+      {
+        lang === 'en' && (
+          <p class="svc__note">
+            <strong>{consultancy.name}.</strong> {consultancy.text}
+          </p>
+        )
+      }
+    </div>
+  </section>
+
+  <!-- Machinery -->
+  <section class="section bg-paper-2">
+    <div class="container">
+      <div class="section-head section-head--split" data-reveal>
+        <div>
+          <p class="eyebrow">{copy.machEyebrow}</p>
+          <h2 class="h2" set:html={copy.machTitle} />
+        </div>
+        <div class="mach__side">
+          <p class="muted">{copy.machIntro}</p>
+          <a class="link-arrow" href="/product">{copy.machAll} <span class="arrow">→</span></a>
+        </div>
+      </div>
+      <ul class="mach-grid">
+        {
+          products.map((p, i) => (
+            <li data-reveal>
+              <ProductCard product={p} lang={lang} index={i} />
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <!-- Projects -->
+  <section class="section bg-ink on-dark">
+    <div class="container">
+      <div class="section-head section-head--split" data-reveal>
+        <div>
+          <p class="eyebrow">{copy.projEyebrow}</p>
+          <h2 class="h2" set:html={copy.projTitle} />
+        </div>
+        <p class="muted">{copy.projIntro}</p>
+      </div>
+      <ul class="proj" data-reveal>
+        {
+          copy.projects.map((p) => (
+            <li class="proj__row">
+              <p class="proj__scale tabular">{p.scale}</p>
+              <div class="proj__client">
+                <p class="proj__name">{p.client}</p>
+                <p class="muted">{p.location}</p>
+              </div>
+              <p class="proj__scope">
+                {p.scope}
+                {p.note && <span class="muted"> · {p.note}</span>}
+              </p>
+              <p class:list={['proj__status', `is-${p.status.toLowerCase()}`]}>{copy.status[p.status]}</p>
+            </li>
+          ))
+        }
+      </ul>
+      <div class="proj__foot">
+        <a class="link-arrow" href="/projects">{copy.projAll} <span class="arrow">→</span></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Approach -->
+  <section class="section bg-white">
+    <div class="container appr">
+      <div class="appr__media" data-reveal>
+        <div class="frame appr__frame">
+          <Image
+            src={approachImage}
+            alt="Hardened cutters inside a twin-shaft shredder built by Hind Zero Waste"
+            widths={[480, 720]}
+            sizes="(min-width: 900px) 40vw, 92vw"
+            loading="lazy"
+          />
+        </div>
+      </div>
+      <div>
+        <div data-reveal>
+          <p class="eyebrow">{copy.apprEyebrow}</p>
+          <h2 class="h2 appr__title" set:html={copy.apprTitle} />
+        </div>
+        <ol class="appr__steps">
+          {
+            copy.steps.map(([title, text], i) => (
+              <li data-reveal>
+                <span class="appr__num tabular">{String(i + 1).padStart(2, '0')}</span>
+                <div>
+                  <h3 class="h4">{title}</h3>
+                  <p class="muted">{text}</p>
+                </div>
+              </li>
+            ))
+          }
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- Clients -->
+  <section class="section">
+    <div class="container">
+      <div class="section-head section-head--split" data-reveal>
+        <div>
+          <p class="eyebrow">{copy.clientsEyebrow}</p>
+          <h2 class="h2" set:html={copy.clientsTitle} />
+        </div>
+        <p class="muted">{copy.clientsIntro}</p>
+      </div>
+      <div data-reveal>
+        <ClientWall />
+      </div>
+    </div>
+  </section>
+
+  <!-- Insights -->
+  {
+    posts.length > 0 && (
+      <section class="section bg-white">
+        <div class="container">
+          <div class="section-head section-head--split" data-reveal>
+            <div>
+              <p class="eyebrow">{copy.insEyebrow}</p>
+              <h2 class="h2" set:html={copy.insTitle} />
+            </div>
+            <div class="mach__side">
+              <a class="link-arrow" href="/waste-management-blogs">
+                {copy.insAll} <span class="arrow">→</span>
+              </a>
+            </div>
+          </div>
+          <ul class="ins">
+            {posts.map((post) => (
+              <li data-reveal>
+                <a class="ins__card" href={`/${post.id}`}>
+                  <p class="ins__topic">{post.data.topic}</p>
+                  <h3 class="ins__title">{post.data.title}</h3>
+                  <p class="muted ins__excerpt">{post.data.description}</p>
+                  <span class="ins__more">
+                    {copy.read} <span class="arrow">→</span>
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+    )
+  }
+
+  <CtaBand lang={lang} />
+</Base>
+
+<style>
+  /* Hero */
+  .hero {
+    padding-top: clamp(40px, 6vw, 88px);
+    padding-bottom: clamp(56px, 7vw, 96px);
+  }
+
+  .hero__top {
+    display: grid;
+    grid-template-columns: minmax(0, 7.5fr) minmax(0, 4.5fr);
+    gap: 32px 64px;
+    align-items: end;
+  }
+
+  .hero__title {
+    margin-top: 24px;
+  }
+
+  .hero__aside {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    padding-bottom: 12px;
+  }
+
+  .hero__figure {
+    margin: clamp(40px, 6vw, 72px) 0 0;
+  }
+
+  .hero__frame {
+    aspect-ratio: 16 / 7;
+  }
+
+  .hero__frame img {
+    object-position: 50% 62%;
+  }
+
+  .figures {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    margin: clamp(40px, 6vw, 72px) 0 0;
+    border-top: 1px solid var(--line-strong);
+  }
+
+  .figures__item {
+    padding: 28px 24px 0 0;
+  }
+
+  .figures__item + .figures__item {
+    padding-left: 24px;
+    border-left: 1px solid var(--line);
+  }
+
+  .figures__value {
+    font-family: var(--serif);
+    font-size: clamp(2.8rem, 5vw, 4.4rem);
+    line-height: 1;
+    color: var(--ink);
+  }
+
+  .figures__label {
+    margin: 12px 0 0;
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--muted);
+    max-width: 16em;
+  }
+
+  /* Philosophy */
+  .phil {
+    display: grid;
+    grid-template-columns: minmax(0, 6fr) minmax(0, 6fr);
+    gap: 40px 80px;
+  }
+
+  .phil__title {
+    margin-top: 20px;
+  }
+
+  .phil__body {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 22px;
+    padding-top: 40px;
+  }
+
+  /* Services */
+  .svc {
+    list-style: none;
+    border-top: 1px solid var(--line-strong);
+  }
+
+  .svc li {
+    border-bottom: 1px solid var(--line);
+  }
+
+  .svc__row {
+    display: grid;
+    grid-template-columns: 64px minmax(0, 1fr) 160px 120px 32px;
+    gap: 24px;
+    align-items: center;
+    padding: 28px 0;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .svc__num {
+    font-family: var(--serif);
+    font-size: 1.5rem;
+    color: var(--muted);
+  }
+
+  .svc__main {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .svc__name {
+    font-family: var(--serif);
+    font-size: clamp(1.7rem, 2.8vw, 2.4rem);
+    line-height: 1.08;
+    color: var(--ink);
+    transition: color 0.25s var(--ease);
+  }
+
+  .svc__short {
+    color: var(--muted);
+    font-size: 15px;
+  }
+
+  .svc__range {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink);
+  }
+
+  .svc__thumb {
+    width: 120px;
+    aspect-ratio: 12 / 8.5;
+    opacity: 0.85;
+    transition: opacity 0.4s var(--ease);
+  }
+
+  .svc__arrow {
+    font-size: 1.3rem;
+    transition: transform 0.3s var(--ease);
+  }
+
+  .svc__row:hover .svc__name {
+    color: var(--navy);
+  }
+
+  .svc__row:hover .svc__thumb {
+    opacity: 1;
+  }
+
+  .svc__row:hover .svc__arrow {
+    transform: translateX(6px);
+  }
+
+  .svc__note {
+    margin-top: 28px;
+    max-width: 52em;
+    color: var(--muted);
+    font-size: 15px;
+  }
+
+  .svc__note strong {
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  /* Machinery */
+  .mach__side {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+  }
+
+  .mach-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 56px 32px;
+    list-style: none;
+  }
+
+  /* Projects */
+  .proj {
+    list-style: none;
+    border-top: 1px solid var(--line-on-dark);
+  }
+
+  .proj__row {
+    display: grid;
+    grid-template-columns: minmax(0, 2.4fr) minmax(0, 3.6fr) minmax(0, 4fr) minmax(0, 1.4fr);
+    gap: 16px 32px;
+    align-items: baseline;
+    padding: 28px 0;
+    border-bottom: 1px solid var(--line-on-dark);
+  }
+
+  .proj__scale {
+    font-family: var(--serif);
+    font-size: clamp(1.8rem, 2.6vw, 2.3rem);
+    line-height: 1.05;
+    color: var(--paper);
+  }
+
+  .proj__name {
+    color: var(--paper);
+    font-weight: 600;
+  }
+
+  .proj__client .muted {
+    font-size: 14px;
+  }
+
+  .proj__scope {
+    color: #cdd5e2;
+    font-size: 15px;
+  }
+
+  .proj__status {
+    justify-self: end;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted-on-dark);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .proj__status::before {
+    content: '';
+    width: 7px;
+    height: 7px;
+    background: var(--muted-on-dark);
+  }
+
+  .proj__status.is-ongoing::before {
+    background: var(--lime);
+  }
+
+  .proj__status.is-completed::before,
+  .proj__status.is-commissioned::before {
+    background: var(--green);
+  }
+
+  .proj__foot {
+    margin-top: 40px;
+  }
+
+  /* Approach */
+  .appr {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: 48px 88px;
+    align-items: start;
+  }
+
+  .appr__frame {
+    aspect-ratio: 4 / 5;
+  }
+
+  .appr__media {
+    position: sticky;
+    top: calc(var(--header-h) + 32px);
+  }
+
+  .appr__title {
+    margin-top: 20px;
+  }
+
+  .appr__steps {
+    list-style: none;
+    margin-top: 48px;
+    border-top: 1px solid var(--line-strong);
+  }
+
+  .appr__steps li {
+    display: grid;
+    grid-template-columns: 72px minmax(0, 1fr);
+    gap: 20px;
+    padding: 28px 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .appr__steps .muted {
+    margin-top: 8px;
+  }
+
+  .appr__num {
+    font-family: var(--serif);
+    font-size: 2rem;
+    line-height: 1;
+    color: var(--navy);
+  }
+
+  /* Insights */
+  .ins {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 32px;
+    list-style: none;
+  }
+
+  .ins__card {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    height: 100%;
+    padding: 32px 0 0;
+    border-top: 1px solid var(--line-strong);
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .ins__topic {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--green-ink);
+  }
+
+  .ins__title {
+    font-family: var(--serif);
+    font-size: clamp(1.6rem, 2.2vw, 1.9rem);
+    line-height: 1.12;
+    color: var(--ink);
+    transition: color 0.25s var(--ease);
+  }
+
+  .ins__excerpt {
+    font-size: 15px;
+  }
+
+  .ins__more {
+    margin-top: auto;
+    padding-top: 8px;
+    font-weight: 600;
+    font-size: 14px;
+  }
+
+  .ins__card:hover .ins__title {
+    color: var(--navy);
+  }
+
+  @media (max-width: 1080px) {
+    .svc__row {
+      grid-template-columns: 52px minmax(0, 1fr) 140px 28px;
+    }
+
+    .svc__thumb {
+      display: none;
+    }
+
+    .mach-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .proj__row {
+      grid-template-columns: minmax(0, 2fr) minmax(0, 3fr) minmax(0, 1.2fr);
+    }
+
+    .proj__scope {
+      grid-column: 2 / 3;
+    }
+
+    .proj__status {
+      grid-row: 1;
+      grid-column: 3;
+    }
+  }
+
+  @media (max-width: 900px) {
+    .hero__top,
+    .phil,
+    .appr {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .phil__body {
+      padding-top: 0;
+    }
+
+    .appr__media {
+      position: static;
+    }
+
+    .appr__frame {
+      aspect-ratio: 16 / 10;
+    }
+
+    .figures {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .figures__item:nth-child(3) {
+      padding-left: 0;
+      border-left: 0;
+    }
+
+    .figures__item:nth-child(n + 3) {
+      margin-top: 8px;
+      border-top: 1px solid var(--line);
+    }
+
+    .ins {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  @media (max-width: 680px) {
+    .hero__frame {
+      aspect-ratio: 4 / 3;
+    }
+
+    .svc__row {
+      grid-template-columns: 40px minmax(0, 1fr) 24px;
+      gap: 16px;
+    }
+
+    .svc__range {
+      grid-column: 2;
+      grid-row: 2;
+    }
+
+    .svc__arrow {
+      grid-column: 3;
+      grid-row: 1;
+    }
+
+    .mach-grid {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 48px;
+    }
+
+    .proj__row {
+      grid-template-columns: minmax(0, 1fr) auto;
+    }
+
+    .proj__scale {
+      grid-column: 1;
+    }
+
+    .proj__status {
+      grid-column: 2;
+      grid-row: 1;
+    }
+
+    .proj__client,
+    .proj__scope {
+      grid-column: 1 / -1;
+    }
+
+    .appr__steps li {
+      grid-template-columns: 52px minmax(0, 1fr);
+    }
+  }
+</style>

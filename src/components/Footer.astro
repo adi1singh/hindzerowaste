@@ -1,0 +1,252 @@
+---
+import { Image } from 'astro:assets';
+import logoLight from '../assets/brand/logo-stacked-light.png';
+import { site, telHref } from '../data/site';
+import { products } from '../data/products';
+import { services } from '../data/services';
+import { localName, localePath, t, type Lang } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const year = new Date().getFullYear();
+
+const company = [
+  { key: 'nav.about', href: localePath(lang, '/about-us') },
+  { key: 'nav.projects', href: '/projects' },
+  { key: 'nav.insights', href: '/waste-management-blogs' },
+  { key: 'nav.contact', href: localePath(lang, '/contact-us') },
+] as const;
+---
+
+<footer class="footer bg-ink on-dark">
+  <div class="container">
+    <div class="footer__top">
+      <div class="footer__brand">
+        <a href={localePath(lang, '/')} aria-label={`${site.name}, home`}>
+          <Image src={logoLight} alt="" height={92} densities={[1, 2]} />
+        </a>
+        <p class="footer__blurb">{t(lang, 'footer.blurb')}</p>
+        <div class="footer__downloads">
+          <a class="link-arrow" href={site.downloads.brochure} target="_blank" rel="noopener"
+            >{t(lang, 'footer.brochure')} <span class="arrow">↗</span></a
+          >
+          <a class="link-arrow" href={site.downloads.profile} target="_blank" rel="noopener"
+            >{t(lang, 'footer.profile')} <span class="arrow">↗</span></a
+          >
+        </div>
+      </div>
+
+      <nav class="footer__col" aria-label={t(lang, 'nav.machinery')}>
+        <p class="footer__title">{t(lang, 'nav.machinery')}</p>
+        <ul>
+          {
+            products.map((p) => (
+              <li>
+                <a href={`/${p.slug}`}>{localName(lang, p.slug, p.name)}</a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+
+      <nav class="footer__col" aria-label={t(lang, 'nav.services')}>
+        <p class="footer__title">{t(lang, 'nav.services')}</p>
+        <ul>
+          {
+            services.map((s) => (
+              <li>
+                <a href={`/${s.slug}`}>{localName(lang, s.slug, s.name)}</a>
+              </li>
+            ))
+          }
+        </ul>
+        <p class="footer__title footer__title--spaced">{t(lang, 'footer.company')}</p>
+        <ul>
+          {
+            company.map((c) => (
+              <li>
+                <a href={c.href}>{t(lang, c.key)}</a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+
+      <div class="footer__col footer__contact">
+        <p class="footer__title">{t(lang, 'footer.contact')}</p>
+        <ul class="footer__phones">
+          {
+            site.phones.map((p) => (
+              <li>
+                <a href={telHref(p)}>{p}</a>
+              </li>
+            ))
+          }
+        </ul>
+        <p class="footer__mail">
+          <a href={`mailto:${site.emails.sales}`}>{site.emails.sales}</a><br />
+          <a href={`mailto:${site.emails.info}`}>{site.emails.info}</a>
+        </p>
+        <p class="footer__title footer__title--spaced">{t(lang, 'footer.office')}</p>
+        <address>
+          {site.address.lines.map((l) => <span>{l}</span>)}
+          <span>{site.address.city} {site.address.postcode}, {site.address.region}</span>
+        </address>
+      </div>
+    </div>
+
+    <div class="footer__bottom">
+      <p>© {year} {site.name} {t(lang, 'footer.rights')}</p>
+      <ul class="footer__legal">
+        <li><a href="/privacy">{t(lang, 'footer.privacy')}</a></li>
+        <li><a href="/terms">{t(lang, 'footer.terms')}</a></li>
+      </ul>
+      <ul class="footer__social">
+        {
+          site.socials.map((s) => (
+            <li>
+              <a href={s.href} target="_blank" rel="noopener">
+                {s.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    padding-top: clamp(64px, 8vw, 104px);
+    font-size: 15px;
+  }
+
+  .footer a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .footer a:hover {
+    color: var(--paper);
+    text-decoration: underline;
+    text-underline-offset: 0.25em;
+  }
+
+  .footer__top {
+    display: grid;
+    grid-template-columns: minmax(0, 1.3fr) repeat(3, minmax(0, 1fr));
+    gap: 48px;
+    padding-bottom: 64px;
+  }
+
+  .footer__brand img {
+    height: 92px;
+    width: auto;
+  }
+
+  .footer__blurb {
+    margin-top: 28px;
+    max-width: 26em;
+    color: var(--muted-on-dark);
+    line-height: 1.7;
+  }
+
+  .footer__downloads {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px 24px;
+    margin-top: 28px;
+  }
+
+  .footer__downloads .link-arrow:hover {
+    text-decoration: none;
+  }
+
+  .footer__title {
+    margin-bottom: 18px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--lime);
+  }
+
+  .footer__title--spaced {
+    margin-top: 36px;
+  }
+
+  .footer__col ul {
+    list-style: none;
+    display: grid;
+    gap: 10px;
+  }
+
+  .footer__col {
+    color: #c9d1dd;
+  }
+
+  .footer__phones a {
+    font-variant-numeric: tabular-nums;
+    color: var(--paper);
+  }
+
+  .footer__mail {
+    margin-top: 16px;
+    line-height: 1.9;
+  }
+
+  address {
+    font-style: normal;
+    display: grid;
+    gap: 2px;
+    color: var(--muted-on-dark);
+  }
+
+  .footer__bottom {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px 32px;
+    padding-block: 28px 36px;
+    border-top: 1px solid var(--line-on-dark);
+    color: var(--muted-on-dark);
+    font-size: 13px;
+  }
+
+  .footer__bottom p {
+    margin-right: auto;
+  }
+
+  .footer__legal,
+  .footer__social {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 22px;
+    list-style: none;
+  }
+
+  @media (max-width: 1023px) {
+    .footer__top {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .footer__brand {
+      grid-column: 1 / -1;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .footer__top {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 40px;
+    }
+
+    .footer__bottom p {
+      width: 100%;
+    }
+  }
+</style>

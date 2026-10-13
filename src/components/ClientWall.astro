@@ -1,0 +1,72 @@
+---
+import { Image } from 'astro:assets';
+import { clients } from '../data/clients';
+---
+
+<ul class="clients" aria-label="Clients">
+  {
+    clients.map((c) => (
+      <li>
+        <Image src={c.logo} alt={c.name} height={64} densities={[1, 2]} loading="lazy" />
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  .clients {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    list-style: none;
+    border-top: 1px solid var(--line);
+    border-left: 1px solid var(--line);
+    background: var(--white);
+  }
+
+  .clients li {
+    display: grid;
+    place-items: center;
+    aspect-ratio: 3 / 2;
+    padding: 18px;
+    border-right: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .clients img {
+    max-height: 64px;
+    width: auto;
+    max-width: 100%;
+    object-fit: contain;
+    filter: grayscale(1) contrast(1.05);
+    opacity: 0.72;
+    mix-blend-mode: multiply;
+    transition:
+      filter 0.4s var(--ease),
+      opacity 0.4s var(--ease);
+  }
+
+  .clients li:hover img {
+    filter: none;
+    opacity: 1;
+  }
+
+  @media (max-width: 900px) {
+    .clients {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 560px) {
+    .clients {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .clients li {
+      padding: 10px;
+    }
+
+    .clients img {
+      max-height: 44px;
+    }
+  }
+</style>

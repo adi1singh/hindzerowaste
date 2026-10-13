@@ -1,0 +1,117 @@
+---
+import { site, telHref } from '../data/site';
+import { localePath, type Lang } from '../i18n/ui';
+
+interface Props {
+  lang?: Lang;
+  title?: string;
+  text?: string;
+  /** Pre-fill the enquiry form with this subject. */
+  subject?: string;
+}
+
+const copy = {
+  en: {
+    eyebrow: 'Start a project',
+    title: 'Have a dumpsite to clear, or a <em>plant</em> to build?',
+    text: 'Tell us your tonnage and your site. Our engineers will recommend a configuration and prepare a quotation.',
+    quote: 'Request a quote',
+    or: 'Or call',
+  },
+  hi: {
+    eyebrow: 'परियोजना शुरू करें',
+    title: 'पुराना डंपसाइट साफ़ करना है, या नया <em>प्लांट</em> लगाना है?',
+    text: 'अपनी क्षमता (टन प्रति दिन) और साइट के बारे में बताइए। हमारे इंजीनियर उपयुक्त कॉन्फ़िगरेशन सुझाकर कोटेशन तैयार करेंगे।',
+    quote: 'कोटेशन माँगें',
+    or: 'या कॉल करें',
+  },
+  mr: {
+    eyebrow: 'प्रकल्प सुरू करा',
+    title: 'जुना कचरा डेपो साफ करायचा आहे, की नवीन <em>प्लांट</em> उभारायचा आहे?',
+    text: 'तुमची क्षमता (टन प्रतिदिन) आणि साइटबद्दल सांगा. आमचे अभियंते योग्य रचना सुचवून कोटेशन तयार करतील.',
+    quote: 'कोटेशन मागवा',
+    or: 'किंवा कॉल करा',
+  },
+};
+
+const { lang = 'en', title, text, subject } = Astro.props;
+const c = copy[lang];
+const href = localePath(lang, '/contact-us') + (subject ? `?subject=${encodeURIComponent(subject)}` : '') + '#enquiry';
+---
+
+<section class="cta bg-navy on-dark">
+  <div class="container cta__inner">
+    <div>
+      <p class="eyebrow">{c.eyebrow}</p>
+      <h2 class="h2 cta__title" set:html={title ?? c.title} />
+    </div>
+    <div class="cta__side">
+      <p class="cta__text">{text ?? c.text}</p>
+      <div class="btn-row">
+        <a class="btn btn--light" href={href}>{c.quote} <span class="arrow">→</span></a>
+      </div>
+      <p class="cta__phones">
+        <span>{c.or}</span>
+        {site.phones.map((p) => <a href={telHref(p)}>{p}</a>)}
+      </p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .cta {
+    padding-block: clamp(72px, 9vw, 128px);
+  }
+
+  .cta__inner {
+    display: grid;
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    gap: 40px 72px;
+    align-items: end;
+  }
+
+  .cta__title {
+    margin-top: 20px;
+    max-width: 14em;
+  }
+
+  .cta__side {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+  }
+
+  .cta__text {
+    color: #d4dcea;
+    font-size: 1.1rem;
+    line-height: 1.6;
+  }
+
+  .cta__phones {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 18px;
+    font-size: 14px;
+    color: #b8c4da;
+  }
+
+  .cta__phones a {
+    color: var(--paper);
+    text-decoration: none;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .cta__phones a:hover {
+    text-decoration: underline;
+  }
+
+  .cta :global(.eyebrow::before) {
+    background: var(--lime);
+  }
+
+  @media (max-width: 900px) {
+    .cta__inner {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+</style>

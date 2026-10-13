@@ -1,0 +1,795 @@
+---
+import { Image } from 'astro:assets';
+import logo from '../assets/brand/logo-horizontal.png';
+import { site, telHref } from '../data/site';
+import { products } from '../data/products';
+import { services, consultancy } from '../data/services';
+import { languages, localName, localePath, t, type Lang } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+  alternates?: Partial<Record<Lang, string>>;
+  tone?: 'light' | 'dark';
+}
+
+const { lang, alternates } = Astro.props;
+const path = Astro.url.pathname.replace(/\/$/, '') || '/';
+
+const home = localePath(lang, '/');
+const links = [
+  { key: 'nav.projects', href: '/projects' },
+  { key: 'nav.about', href: localePath(lang, '/about-us') },
+  { key: 'nav.insights', href: '/waste-management-blogs' },
+  { key: 'nav.contact', href: localePath(lang, '/contact-us') },
+] as const;
+
+const productSlugs = new Set(products.map((p) => `/${p.slug}`));
+const serviceSlugs = new Set(services.map((s) => `/${s.slug}`));
+const isCurrent = (href: string) => (href.replace(/\/$/, '') || '/') === path;
+const inMachinery = path === '/product' || productSlugs.has(path);
+const inServices = path.endsWith('/services') || serviceSlugs.has(path);
+
+const langHref = (code: Lang) => alternates?.[code] ?? localePath(code, '/');
+---
+
+<div class="topbar on-dark">
+  <div class="container topbar__inner">
+    <p class="topbar__creds">{t(lang, 'top.credentials')}</p>
+    <div class="topbar__right">
+      <a class="topbar__phone" href={telHref(site.phones[0])}>
+        <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"
+          ><path
+            fill="currentColor"
+            d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z"
+          ></path></svg
+        >
+        {site.phones[0]}
+      </a>
+      <nav class="lang" aria-label={t(lang, 'lang.label')}>
+        {
+          (Object.keys(languages) as Lang[]).map((code) => (
+            <a
+              href={langHref(code)}
+              lang={languages[code].htmlLang}
+              hreflang={languages[code].htmlLang}
+              aria-current={code === lang ? 'true' : undefined}
+            >
+              {languages[code].label}
+            </a>
+          ))
+        }
+      </nav>
+    </div>
+  </div>
+</div>
+
+<header class="site-header" data-header>
+  <div class="container bar">
+    <a class="brand" href={home} aria-label={`${site.name}, home`}>
+      <Image src={logo} alt="" height={46} densities={[1, 2]} loading="eager" />
+    </a>
+
+    <nav class="nav" aria-label="Main">
+      <ul class="nav__list">
+        <li>
+          <button
+            class="nav__link nav__trigger"
+            type="button"
+            aria-expanded="false"
+            aria-controls="mega-machinery"
+            data-mega-trigger
+            aria-current={inMachinery ? 'true' : undefined}
+          >
+            {t(lang, 'nav.machinery')}
+            <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"
+              ><path d="M1 3.5l4 3.5 4-3.5" fill="none" stroke="currentColor" stroke-width="1.4"></path></svg
+            >
+          </button>
+        </li>
+        <li>
+          <button
+            class="nav__link nav__trigger"
+            type="button"
+            aria-expanded="false"
+            aria-controls="mega-services"
+            data-mega-trigger
+            aria-current={inServices ? 'true' : undefined}
+          >
+            {t(lang, 'nav.services')}
+            <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"
+              ><path d="M1 3.5l4 3.5 4-3.5" fill="none" stroke="currentColor" stroke-width="1.4"></path></svg
+            >
+          </button>
+        </li>
+        {
+          links.map((l) => (
+            <li>
+              <a class="nav__link" href={l.href} aria-current={isCurrent(l.href) ? 'page' : undefined}>
+                {t(lang, l.key)}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <div class="bar__actions">
+      <a class="btn bar__quote" href={localePath(lang, '/contact-us') + '#enquiry'}>
+        {t(lang, 'cta.quote')}
+      </a>
+      <button class="menu-btn" type="button" aria-expanded="false" aria-controls="mobile-nav" data-menu-toggle>
+        <span class="menu-btn__label" data-open-label={t(lang, 'nav.menu')} data-close-label={t(lang, 'nav.close')}
+          >{t(lang, 'nav.menu')}</span
+        >
+        <span class="menu-btn__icon" aria-hidden="true"><span></span><span></span></span>
+      </button>
+    </div>
+  </div>
+
+  <div class="mega" id="mega-machinery" hidden data-mega>
+    <div class="container mega__inner">
+      <div class="mega__intro">
+        <p class="eyebrow">{t(lang, 'nav.machinery')}</p>
+        <p class="mega__text">{t(lang, 'nav.machineryIntro')}</p>
+        <a class="link-arrow" href="/product">{t(lang, 'nav.allMachinery')} <span class="arrow">→</span></a>
+      </div>
+      <ul class="mega__grid">
+        {
+          products.map((p) => (
+            <li>
+              <a class="mega__item" href={`/${p.slug}`} aria-current={isCurrent(`/${p.slug}`) ? 'page' : undefined}>
+                <span class="mega__name">{localName(lang, p.slug, p.name)}</span>
+                <span class="mega__meta">{p.range}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </div>
+
+  <div class="mega" id="mega-services" hidden data-mega>
+    <div class="container mega__inner">
+      <div class="mega__intro">
+        <p class="eyebrow">{t(lang, 'nav.services')}</p>
+        <p class="mega__text">{t(lang, 'nav.servicesIntro')}</p>
+        <a class="link-arrow" href={localePath(lang, '/services')}
+          >{t(lang, 'nav.allServices')} <span class="arrow">→</span></a
+        >
+      </div>
+      <ul class="mega__grid mega__grid--two">
+        {
+          services.map((s) => (
+            <li>
+              <a class="mega__item" href={`/${s.slug}`} aria-current={isCurrent(`/${s.slug}`) ? 'page' : undefined}>
+                <span class="mega__name">{localName(lang, s.slug, s.name)}</span>
+                {lang === 'en' && <span class="mega__desc">{s.short}</span>}
+                <span class="mega__meta">{s.range}</span>
+              </a>
+            </li>
+          ))
+        }
+        {
+          lang === 'en' && (
+            <li>
+              <a class="mega__item" href="/services#consultancy">
+                <span class="mega__name">{consultancy.name}</span>
+                <span class="mega__desc">Planning, DPRs and implementation support.</span>
+              </a>
+            </li>
+          )
+        }
+      </ul>
+    </div>
+  </div>
+
+  <div class="mobile-nav" id="mobile-nav" hidden data-mobile-nav>
+    <div class="container mobile-nav__inner">
+      <ul class="mobile-nav__list">
+        <li>
+          <details>
+            <summary>{t(lang, 'nav.machinery')}</summary>
+            <ul>
+              {
+                products.map((p) => (
+                  <li>
+                    <a href={`/${p.slug}`}>{localName(lang, p.slug, p.name)}</a>
+                  </li>
+                ))
+              }
+              <li><a class="mobile-nav__all" href="/product">{t(lang, 'nav.allMachinery')} →</a></li>
+            </ul>
+          </details>
+        </li>
+        <li>
+          <details>
+            <summary>{t(lang, 'nav.services')}</summary>
+            <ul>
+              {
+                services.map((s) => (
+                  <li>
+                    <a href={`/${s.slug}`}>{localName(lang, s.slug, s.name)}</a>
+                  </li>
+                ))
+              }
+              <li>
+                <a class="mobile-nav__all" href={localePath(lang, '/services')}>{t(lang, 'nav.allServices')} →</a>
+              </li>
+            </ul>
+          </details>
+        </li>
+        {
+          links.map((l) => (
+            <li>
+              <a class="mobile-nav__top" href={l.href}>
+                {t(lang, l.key)}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+      <div class="mobile-nav__foot">
+        <a class="btn" href={localePath(lang, '/contact-us') + '#enquiry'}>{t(lang, 'cta.quote')} <span class="arrow">→</span></a>
+        <div class="mobile-nav__phones">
+          {site.phones.map((p) => <a href={telHref(p)}>{p}</a>)}
+        </div>
+        <nav class="lang lang--mobile" aria-label={t(lang, 'lang.label')}>
+          {
+            (Object.keys(languages) as Lang[]).map((code) => (
+              <a href={langHref(code)} lang={languages[code].htmlLang} aria-current={code === lang ? 'true' : undefined}>
+                {languages[code].label}
+              </a>
+            ))
+          }
+        </nav>
+      </div>
+    </div>
+  </div>
+</header>
+
+<script>
+  const header = document.querySelector<HTMLElement>('[data-header]');
+  if (header) {
+    const triggers = [...header.querySelectorAll<HTMLButtonElement>('[data-mega-trigger]')];
+    const panels = [...header.querySelectorAll<HTMLElement>('[data-mega]')];
+    let closeTimer: number | undefined;
+
+    const closeAll = (except?: HTMLButtonElement) => {
+      triggers.forEach((t) => {
+        if (t === except) return;
+        t.setAttribute('aria-expanded', 'false');
+        const panel = document.getElementById(t.getAttribute('aria-controls')!);
+        if (panel) panel.hidden = true;
+      });
+      header.classList.toggle('has-mega', !!except);
+    };
+
+    const open = (trigger: HTMLButtonElement) => {
+      window.clearTimeout(closeTimer);
+      closeAll(trigger);
+      trigger.setAttribute('aria-expanded', 'true');
+      const panel = document.getElementById(trigger.getAttribute('aria-controls')!);
+      if (panel) panel.hidden = false;
+    };
+
+    const fine = window.matchMedia('(hover: hover) and (pointer: fine)');
+
+    triggers.forEach((trigger) => {
+      trigger.addEventListener('click', () => {
+        if (trigger.getAttribute('aria-expanded') === 'true') closeAll();
+        else open(trigger);
+      });
+      trigger.addEventListener('mouseenter', () => {
+        if (fine.matches) open(trigger);
+      });
+      trigger.addEventListener('mouseleave', () => {
+        if (fine.matches) closeTimer = window.setTimeout(() => closeAll(), 180);
+      });
+    });
+
+    panels.forEach((panel) => {
+      panel.addEventListener('mouseenter', () => window.clearTimeout(closeTimer));
+      panel.addEventListener('mouseleave', () => {
+        if (fine.matches) closeTimer = window.setTimeout(() => closeAll(), 180);
+      });
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key !== 'Escape') return;
+      const openTrigger = triggers.find((t) => t.getAttribute('aria-expanded') === 'true');
+      if (openTrigger) {
+        closeAll();
+        openTrigger.focus();
+      }
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!header.contains(e.target as Node)) closeAll();
+    });
+
+    // Mobile menu
+    const toggle = header.querySelector<HTMLButtonElement>('[data-menu-toggle]');
+    const mobile = header.querySelector<HTMLElement>('[data-mobile-nav]');
+    const label = toggle?.querySelector<HTMLElement>('.menu-btn__label');
+    const setMobile = (isOpen: boolean) => {
+      if (!toggle || !mobile) return;
+      toggle.setAttribute('aria-expanded', String(isOpen));
+      if (isOpen) mobile.style.top = `${header.getBoundingClientRect().bottom}px`;
+      mobile.hidden = !isOpen;
+      document.documentElement.classList.toggle('menu-open', isOpen);
+      if (label) label.textContent = (isOpen ? label.dataset.closeLabel : label.dataset.openLabel) ?? '';
+    };
+    toggle?.addEventListener('click', () => setMobile(toggle.getAttribute('aria-expanded') !== 'true'));
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && toggle?.getAttribute('aria-expanded') === 'true') {
+        setMobile(false);
+        toggle.focus();
+      }
+    });
+    window.matchMedia('(min-width: 1080px)').addEventListener('change', (e) => {
+      if (e.matches) setMobile(false);
+    });
+
+    // Hairline shadow once the page scrolls
+    const onScroll = () => header.classList.toggle('is-scrolled', window.scrollY > 8);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+  }
+</script>
+
+<style>
+  .topbar {
+    background: var(--ink);
+    color: var(--muted-on-dark);
+    font-size: 13px;
+  }
+
+  .topbar__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    min-height: 38px;
+  }
+
+  .topbar__creds {
+    letter-spacing: 0.02em;
+  }
+
+  .topbar__right {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+  }
+
+  .topbar__phone {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--paper);
+    text-decoration: none;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .topbar__phone:hover {
+    color: var(--lime);
+  }
+
+  .lang {
+    display: flex;
+    gap: 2px;
+  }
+
+  .lang a {
+    padding: 4px 8px;
+    color: var(--muted-on-dark);
+    text-decoration: none;
+    border-radius: var(--radius);
+  }
+
+  .lang a:hover {
+    color: var(--paper);
+  }
+
+  .lang a[aria-current] {
+    color: var(--ink);
+    background: var(--paper);
+  }
+
+  @media (max-width: 760px) {
+    .topbar__creds {
+      display: none;
+    }
+
+    .topbar__inner {
+      justify-content: space-between;
+    }
+
+    .topbar__right {
+      width: 100%;
+      justify-content: space-between;
+      gap: 12px;
+    }
+  }
+
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: color-mix(in srgb, var(--paper) 94%, transparent);
+    backdrop-filter: saturate(1.4) blur(14px);
+    -webkit-backdrop-filter: saturate(1.4) blur(14px);
+    border-bottom: 1px solid transparent;
+    transition:
+      border-color 0.3s var(--ease),
+      background-color 0.3s var(--ease);
+  }
+
+  .site-header.is-scrolled,
+  .site-header.has-mega {
+    border-bottom-color: var(--line);
+  }
+
+  .site-header.has-mega {
+    background: var(--paper);
+  }
+
+  .bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    height: var(--header-h);
+  }
+
+  .brand {
+    display: block;
+    flex: none;
+  }
+
+  .brand img {
+    height: 46px;
+    width: auto;
+  }
+
+  .nav__list {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    list-style: none;
+  }
+
+  .nav__link {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    border: 0;
+    background: none;
+    color: var(--ink);
+    font: 500 15px/1 var(--sans);
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  .nav__link::after {
+    content: '';
+    position: absolute;
+    left: 14px;
+    right: 14px;
+    bottom: 2px;
+    height: 1px;
+    background: var(--ink);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.35s var(--ease);
+  }
+
+  .nav__link:hover::after,
+  .nav__link[aria-current]::after,
+  .nav__trigger[aria-expanded='true']::after {
+    transform: scaleX(1);
+  }
+
+  .nav__trigger svg {
+    transition: transform 0.3s var(--ease);
+  }
+
+  .nav__trigger[aria-expanded='true'] svg {
+    transform: rotate(180deg);
+  }
+
+  .bar__actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .bar__quote {
+    min-height: 46px;
+    padding: 12px 20px;
+  }
+
+  .menu-btn {
+    display: none;
+    align-items: center;
+    gap: 12px;
+    min-height: 46px;
+    padding: 0 4px 0 12px;
+    border: 0;
+    background: none;
+    color: var(--ink);
+    font: 600 15px/1 var(--sans);
+    cursor: pointer;
+  }
+
+  .menu-btn__icon {
+    position: relative;
+    width: 22px;
+    height: 12px;
+  }
+
+  .menu-btn__icon span {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 1.5px;
+    background: currentColor;
+    transition:
+      transform 0.3s var(--ease),
+      top 0.3s var(--ease);
+  }
+
+  .menu-btn__icon span:first-child {
+    top: 0;
+  }
+
+  .menu-btn__icon span:last-child {
+    top: 10px;
+  }
+
+  .menu-btn[aria-expanded='true'] .menu-btn__icon span:first-child {
+    top: 5px;
+    transform: rotate(45deg);
+  }
+
+  .menu-btn[aria-expanded='true'] .menu-btn__icon span:last-child {
+    top: 5px;
+    transform: rotate(-45deg);
+  }
+
+  /* Mega menus */
+  .mega {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 100%;
+    background: var(--paper);
+    border-bottom: 1px solid var(--line);
+    box-shadow: 0 30px 60px -30px rgba(12, 22, 38, 0.25);
+  }
+
+  .mega__inner {
+    display: grid;
+    grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+    gap: 56px;
+    padding-block: 44px 52px;
+  }
+
+  .mega__intro {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 18px;
+  }
+
+  .mega__text {
+    font-family: var(--serif);
+    font-size: 1.6rem;
+    line-height: 1.2;
+    color: var(--ink);
+    max-width: 16em;
+  }
+
+  .mega__grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    list-style: none;
+    border-top: 1px solid var(--line);
+  }
+
+  .mega__grid--two {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .mega__grid li {
+    border-bottom: 1px solid var(--line);
+  }
+
+  .mega__item {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    height: 100%;
+    padding: 18px 18px 18px 0;
+    text-decoration: none;
+    color: var(--ink);
+    transition: color 0.2s var(--ease);
+  }
+
+  .mega__name {
+    font-weight: 600;
+    font-size: 15px;
+    line-height: 1.3;
+  }
+
+  .mega__desc {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  .mega__meta {
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .mega__item:hover .mega__name,
+  .mega__item[aria-current] .mega__name {
+    color: var(--navy);
+    text-decoration: underline;
+    text-underline-offset: 0.25em;
+  }
+
+  /* Mobile navigation */
+  .mobile-nav {
+    position: fixed;
+    inset: var(--header-h) 0 0 0;
+    background: var(--paper);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    border-top: 1px solid var(--line);
+  }
+
+  .mobile-nav__inner {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    padding-block: 12px 40px;
+    min-height: 100%;
+  }
+
+  .mobile-nav__list {
+    list-style: none;
+  }
+
+  .mobile-nav__list > li {
+    border-bottom: 1px solid var(--line);
+  }
+
+  .mobile-nav__list summary,
+  .mobile-nav__top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 0;
+    font-family: var(--serif);
+    font-size: 1.9rem;
+    line-height: 1.1;
+    color: var(--ink);
+    text-decoration: none;
+    cursor: pointer;
+    list-style: none;
+  }
+
+  .mobile-nav__list summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .mobile-nav__list summary::after {
+    content: '+';
+    font-family: var(--sans);
+    font-size: 1.4rem;
+    font-weight: 300;
+  }
+
+  .mobile-nav__list details[open] summary::after {
+    content: '–';
+  }
+
+  .mobile-nav__list details ul {
+    list-style: none;
+    padding: 0 0 18px;
+  }
+
+  .mobile-nav__list details a {
+    display: block;
+    padding: 9px 0;
+    color: var(--text);
+    text-decoration: none;
+    font-size: 16px;
+  }
+
+  .mobile-nav__all {
+    font-weight: 600;
+    color: var(--navy) !important;
+  }
+
+  .mobile-nav__foot {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-top: auto;
+  }
+
+  .mobile-nav__phones {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .mobile-nav__phones a {
+    color: var(--ink);
+    text-decoration: none;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .lang--mobile a {
+    color: var(--muted);
+    border: 1px solid var(--line);
+    padding: 6px 12px;
+  }
+
+  .lang--mobile a[aria-current] {
+    background: var(--ink);
+    color: var(--paper);
+    border-color: var(--ink);
+  }
+
+  @media (max-width: 1180px) {
+    .nav__link {
+      padding-inline: 10px;
+    }
+
+    .nav__link::after {
+      left: 10px;
+      right: 10px;
+    }
+  }
+
+  @media (max-width: 1079px) {
+    :global(:root) {
+      --header-h: 72px;
+    }
+
+    .nav,
+    .mega {
+      display: none;
+    }
+
+    .menu-btn {
+      display: inline-flex;
+    }
+
+    .brand img {
+      height: 40px;
+    }
+  }
+
+  @media (max-width: 520px) {
+    .bar__quote {
+      display: none;
+    }
+
+    .brand img {
+      height: 36px;
+    }
+  }
+
+  :global(html.menu-open) {
+    overflow: hidden;
+  }
+</style>
