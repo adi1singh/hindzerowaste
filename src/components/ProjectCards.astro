@@ -1,0 +1,126 @@
+---
+// The six featured projects as cards with count-up figures (home and about pages).
+import Count from './Count.astro';
+import { featuredProjects, type Project } from '../data/projects';
+import { featuredProjectsLocal, statusLabels } from '../i18n/content';
+import type { Lang } from '../i18n/ui';
+
+interface Props {
+  lang?: Lang;
+}
+
+const { lang = 'en' } = Astro.props;
+const projects: Project[] =
+  lang === 'en'
+    ? featuredProjects
+    : featuredProjects.map((p, i) => ({ ...p, ...(featuredProjectsLocal[lang][i] as Partial<Project>) }));
+---
+
+<ul class="pgrid">
+  {
+    projects.map((p, i) => (
+      <li class="pgrid__card" data-reveal style={`--d:${i % 3}`}>
+        <p class="pgrid__num">
+          <Count value={p.count.value} prefix={p.count.prefix} suffix={p.count.suffix} format={p.count.format} />
+        </p>
+        <p class="pgrid__client">{p.client}</p>
+        <p class="pgrid__loc">{p.location}</p>
+        <p class="pgrid__scope">
+          {p.scope}
+          {p.note && <span> · {p.note}</span>}
+        </p>
+        <span class:list={['pgrid__status', `is-${p.status.toLowerCase()}`]}>{statusLabels[lang][p.status]}</span>
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  .pgrid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
+    list-style: none;
+  }
+
+  .pgrid__card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 30px 28px 28px;
+    border-radius: var(--radius-lg);
+    background: rgba(246, 243, 236, 0.04);
+    border: 1px solid var(--line-on-dark);
+    transition:
+      transform 0.45s var(--ease-out),
+      background-color 0.45s var(--ease-out),
+      border-color 0.45s var(--ease-out),
+      box-shadow 0.45s var(--ease-out);
+  }
+
+  .pgrid__card:hover {
+    transform: translateY(-8px) scale(1.015);
+    background: rgba(246, 243, 236, 0.08);
+    border-color: var(--saffron);
+    box-shadow: 0 30px 60px -30px rgba(0, 0, 0, 0.7);
+  }
+
+  .pgrid__num {
+    font: 800 clamp(2.2rem, 3.4vw, 3.1rem) / 1.05 var(--sans);
+    letter-spacing: -0.03em;
+    color: var(--saffron-2);
+    margin-bottom: 10px;
+  }
+
+  .pgrid__client {
+    font-size: 18px;
+    font-weight: 650;
+    color: var(--paper);
+    line-height: 1.35;
+  }
+
+  .pgrid__loc {
+    font-size: 15px;
+    color: var(--muted-on-dark);
+  }
+
+  .pgrid__scope {
+    margin-top: 6px;
+    font-size: 15px;
+    color: #c5cfdd;
+  }
+
+  .pgrid__status {
+    align-self: flex-start;
+    margin-top: auto;
+    padding: 5px 12px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 650;
+    letter-spacing: 0.04em;
+    background: rgba(132, 187, 57, 0.18);
+    color: #b6e07f;
+  }
+
+  .pgrid__status.is-ongoing {
+    background: rgba(243, 154, 47, 0.18);
+    color: var(--saffron-2);
+  }
+
+  .pgrid__card .pgrid__status {
+    margin-top: 14px;
+  }
+
+  @media (max-width: 1100px) {
+    .pgrid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 680px) {
+    .pgrid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+</style>

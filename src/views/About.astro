@@ -1,14 +1,21 @@
 ---
 import { Image } from 'astro:assets';
 import Base from '../layouts/Base.astro';
-import PageHero from '../components/PageHero.astro';
+import IndexHero from '../components/IndexHero.astro';
+import ProjectCards from '../components/ProjectCards.astro';
 import ClientWall from '../components/ClientWall.astro';
 import CtaBand from '../components/CtaBand.astro';
-import { figures, footprint } from '../data/site';
+import Count from '../components/Count.astro';
+import Icon from '../components/Icon.astro';
+import { figures, footprint, site } from '../data/site';
+import { completedBiomining, machineSupply, ongoingBiomining, plantProjects, plantsInstalled } from '../data/projects';
 import type { Lang } from '../i18n/ui';
 
-import storyImage from '../assets/photos/trommel-and-baler.jpg';
-import siteImage from '../assets/photos/biomining-conveyor.jpg';
+import heroA from '../assets/photos/trommel-and-baler.jpg';
+import heroB from '../assets/photos/biomining-conveyor.jpg';
+import heroC from '../assets/photos/mrf-balers.jpg';
+import storyImage from '../assets/photos/biomining-site-wide.jpg';
+import siteImage from '../assets/photos/twin-trommels.jpg';
 
 interface Props {
   lang: Lang;
@@ -16,15 +23,44 @@ interface Props {
 
 const { lang } = Astro.props;
 
+const volume = (v: string) => Number(v.replace(/[^\d]/g, ''));
+const clearedTotal = completedBiomining.reduce((sum, r) => sum + volume(r.volume), 0);
+const installedCount = plantsInstalled.reduce((n, s) => n + s.sites.length, 0);
+
+const stateNames: Record<Lang, Record<string, string>> = {
+  en: {},
+  hi: {
+    Maharashtra: 'महाराष्ट्र',
+    Rajasthan: 'राजस्थान',
+    'Uttar Pradesh': 'उत्तर प्रदेश',
+    Delhi: 'दिल्ली',
+    'Himachal Pradesh': 'हिमाचल प्रदेश',
+    Punjab: 'पंजाब',
+    Telangana: 'तेलंगाना',
+  },
+  mr: {
+    Maharashtra: 'महाराष्ट्र',
+    Rajasthan: 'राजस्थान',
+    'Uttar Pradesh': 'उत्तर प्रदेश',
+    Delhi: 'दिल्ली',
+    'Himachal Pradesh': 'हिमाचल प्रदेश',
+    Punjab: 'पंजाब',
+    Telangana: 'तेलंगणा',
+  },
+};
+const stateName = (s: string) => stateNames[lang][s] ?? s;
+
 const copy = {
   en: {
-    title: 'About Us | Hind Zero Waste Management Pvt. Ltd.',
+    title: 'About Us & Projects | Hind Zero Waste Management Pvt. Ltd.',
     description:
-      'Founded in 2017 in Kolhapur as Hind Agro and Chemicals, Hind Zero Waste Management designs and manufactures waste-processing machinery and turnkey plants. ISO 9001:2015 certified, GeM registered OEM.',
+      'Founded in 2017 in Kolhapur, Hind Zero Waste Management designs and manufactures waste-processing machinery and turnkey plants, with bio-mining projects from Pimpri Chinchwad to Bhalaswa, Delhi.',
     crumbs: ['Home', 'About us'],
     eyebrow: 'About us',
     heroTitle: 'Precision-engineered machines for <em>smarter</em> waste management.',
     lead: 'We design and manufacture advanced waste-processing systems, and deliver turnkey solutions for material recovery, recycling, RDF production and integrated waste management.',
+    heroBtn: 'See our projects',
+    profile: 'Company profile',
     storyEyebrow: 'Our story',
     storyTitle: 'From Kolhapur, <em>for all of India</em>.',
     story: [
@@ -32,7 +68,31 @@ const copy = {
       'We design, manufacture and supply energy-efficient, low-maintenance waste-processing equipment: balers, organic waste and vessel composters, shredders, trommels, separators and conveyor systems. Around them we build complete plants for municipal, industrial, institutional and residential clients.',
       'Our work is not just a service but a responsibility: conserving natural resources and significantly reducing environmental impact, for cleaner cities and a greener planet.',
     ],
-    figures: figures.map((f) => f.label),
+    figures: ['Bio-mining projects', 'Balers supplied', 'Clients in India & South Africa'],
+    projEyebrow: 'Project record',
+    projTitle: 'A record built on <em>cleared ground</em>.',
+    projIntro: 'From municipal councils in Maharashtra to the Bhalaswa dumping ground in Delhi, our machinery and teams have cleared legacy waste and built processing plants across India.',
+    stats: [
+      'm³ of legacy waste cleared in completed bio-mining projects',
+      'Bio-mining projects completed',
+      'Large bio-mining projects in progress',
+      'Bio-mining processing plants installed',
+      'States and union territories with our plants',
+      'Years of O&M contracted in Rajasthan',
+    ],
+    landmarkEyebrow: 'Landmark projects',
+    landmarkTitle: 'Six projects that <em>define</em> us',
+    completed: 'Completed bio-mining',
+    ongoing: 'Bio-mining in progress',
+    plants: 'Processing plants and O&M',
+    site: 'Site',
+    volumeLabel: 'Volume',
+    scaleLabel: 'Scale',
+    installedEyebrow: 'Installed base',
+    installedTitle: `Bio-mining plants installed in <em>${plantsInstalled.length} states</em> and union territories`,
+    plantsWord: 'plants',
+    plantWord: 'plant',
+    supply: 'Machine supply',
     visionTitle: 'Vision',
     vision:
       'To maintain our reputation and leadership by embracing change and professional management, making the best use of resources for continual growth, and delivering services that preserve the environment for the next generation.',
@@ -57,20 +117,22 @@ const copy = {
     credEyebrow: 'Credentials',
     credTitle: 'Certified, registered, <em>proven</em>.',
     creds: ['ISO 9001:2015 certified', 'GeM registered OEM', 'Compliant with SWM Rules 2016 and CPCB norms'],
-    footprintLabel: 'States with our plants and projects',
+    footprintLabel: `Projects in ${footprint.length} states`,
     states: [...footprint],
     clientsEyebrow: 'Clients',
-    clientsTitle: 'In good <em>company</em>.',
-    siteCaption: 'A Hind Zero Waste bio-mining line stacking segregated fractions on site.',
+    clientsTitle: 'Our clients and <em>partners</em>',
+    siteCaption: 'Twin bio-mining trommels built by Hind Zero Waste.',
   },
   hi: {
-    title: 'हमारे बारे में | हिंद ज़ीरो वेस्ट मैनेजमेंट प्रा. लि.',
+    title: 'हमारे बारे में और परियोजनाएँ | हिंद ज़ीरो वेस्ट मैनेजमेंट प्रा. लि.',
     description:
-      '2017 में कोल्हापुर में हिंद एग्रो एंड केमिकल्स के रूप में स्थापित, हिंद ज़ीरो वेस्ट मैनेजमेंट कचरा प्रसंस्करण मशीनरी और टर्नकी प्लांट का डिज़ाइन और निर्माण करता है।',
+      '2017 में कोल्हापुर में स्थापित, हिंद ज़ीरो वेस्ट मैनेजमेंट कचरा प्रसंस्करण मशीनरी और टर्नकी प्लांट का डिज़ाइन और निर्माण करता है।',
     crumbs: ['होम', 'हमारे बारे में'],
     eyebrow: 'हमारे बारे में',
     heroTitle: 'स्मार्ट कचरा प्रबंधन के लिए <em>सटीक</em> इंजीनियरिंग वाली मशीनें।',
     lead: 'हम उन्नत कचरा प्रसंस्करण प्रणालियों का डिज़ाइन और निर्माण करते हैं, और सामग्री पुनर्प्राप्ति, रीसाइक्लिंग, RDF उत्पादन और एकीकृत कचरा प्रबंधन के लिए टर्नकी समाधान देते हैं।',
+    heroBtn: 'हमारी परियोजनाएँ देखें',
+    profile: 'कंपनी प्रोफ़ाइल',
     storyEyebrow: 'हमारी कहानी',
     storyTitle: 'कोल्हापुर से, <em>पूरे भारत</em> के लिए।',
     story: [
@@ -78,12 +140,31 @@ const copy = {
       'हम ऊर्जा-कुशल और कम रखरखाव वाले कचरा प्रसंस्करण उपकरणों का डिज़ाइन, निर्माण और आपूर्ति करते हैं: बेलर, ऑर्गेनिक वेस्ट कम्पोस्टर और वेसल कम्पोस्टर, श्रेडर, ट्रॉमेल, सेपरेटर और कन्वेयर सिस्टम। इन्हीं के आधार पर हम नगरपालिका, औद्योगिक, संस्थागत और आवासीय ग्राहकों के लिए पूर्ण प्लांट बनाते हैं।',
       'हमारा काम केवल सेवा नहीं, बल्कि ज़िम्मेदारी है: प्राकृतिक संसाधनों का संरक्षण और पर्यावरण पर प्रभाव में उल्लेखनीय कमी, स्वच्छ शहरों और हरित धरती के लिए।',
     ],
-    figures: [
-      'भारत भर में बायो-माइनिंग परियोजनाएँ',
-      'बेलिंग मशीनें आपूर्ति और कमीशन की गईं',
-      'भारत और दक्षिण अफ़्रीका में ग्राहक',
-      'कोल्हापुर, महाराष्ट्र में स्थापना',
+    figures: ['बायो-माइनिंग परियोजनाएँ', 'बेलिंग मशीनें आपूर्ति', 'ग्राहक, भारत और दक्षिण अफ़्रीका'],
+    projEyebrow: 'परियोजना रिकॉर्ड',
+    projTitle: 'साफ़ की गई ज़मीन पर बना <em>रिकॉर्ड</em>।',
+    projIntro: 'महाराष्ट्र की नगर परिषदों से लेकर दिल्ली के भलस्वा डंपिंग ग्राउंड तक, हमारी मशीनरी और टीमों ने पूरे भारत में पुराना कचरा साफ़ किया है और प्रसंस्करण प्लांट बनाए हैं।',
+    stats: [
+      'm³ पुराना कचरा पूर्ण बायो-माइनिंग परियोजनाओं में साफ़',
+      'पूर्ण बायो-माइनिंग परियोजनाएँ',
+      'जारी बड़ी बायो-माइनिंग परियोजनाएँ',
+      'स्थापित बायो-माइनिंग प्लांट',
+      'हमारे प्लांट वाले राज्य और केंद्रशासित प्रदेश',
+      'राजस्थान में O&M अनुबंध (वर्ष)',
     ],
+    landmarkEyebrow: 'प्रमुख परियोजनाएँ',
+    landmarkTitle: 'हमारी पहचान बनी <em>छह परियोजनाएँ</em>',
+    completed: '',
+    ongoing: '',
+    plants: '',
+    site: '',
+    volumeLabel: '',
+    scaleLabel: '',
+    installedEyebrow: 'स्थापित प्लांट',
+    installedTitle: `<em>${plantsInstalled.length} राज्यों</em> और केंद्रशासित प्रदेशों में बायो-माइनिंग प्लांट`,
+    plantsWord: 'प्लांट',
+    plantWord: 'प्लांट',
+    supply: 'मशीन आपूर्ति',
     visionTitle: 'दृष्टि',
     vision:
       'परिवर्तन और पेशेवर प्रबंधन को अपनाकर, संसाधनों के सर्वोत्तम उपयोग से निरंतर विकास करते हुए, और आने वाली पीढ़ी के लिए पर्यावरण की रक्षा करने वाली सेवाएँ देकर अपनी प्रतिष्ठा और नेतृत्व बनाए रखना।',
@@ -108,20 +189,22 @@ const copy = {
     credEyebrow: 'प्रमाणन',
     credTitle: 'प्रमाणित, पंजीकृत, <em>सिद्ध</em>।',
     creds: ['ISO 9001:2015 प्रमाणित', 'GeM पंजीकृत OEM', 'SWM नियम 2016 और CPCB मानदंडों के अनुरूप'],
-    footprintLabel: 'हमारे प्लांट और परियोजनाओं वाले राज्य',
+    footprintLabel: `${footprint.length} राज्यों में परियोजनाएँ`,
     states: ['महाराष्ट्र', 'राजस्थान', 'तेलंगाना', 'दिल्ली', 'उत्तर प्रदेश', 'हिमाचल प्रदेश', 'पंजाब', 'कर्नाटक', 'गोवा', 'गुजरात', 'आंध्र प्रदेश', 'मध्य प्रदेश'],
     clientsEyebrow: 'ग्राहक',
-    clientsTitle: 'भरोसेमंद <em>साथ</em>।',
-    siteCaption: 'साइट पर अलग किए गए अंशों का ढेर लगाती हिंद ज़ीरो वेस्ट की बायो-माइनिंग लाइन।',
+    clientsTitle: 'हमारे ग्राहक और <em>साझेदार</em>',
+    siteCaption: 'हिंद ज़ीरो वेस्ट द्वारा निर्मित जुड़वाँ बायो-माइनिंग ट्रॉमेल।',
   },
   mr: {
-    title: 'आमच्याबद्दल | हिंद झिरो वेस्ट मॅनेजमेंट प्रा. लि.',
+    title: 'आमच्याबद्दल व प्रकल्प | हिंद झिरो वेस्ट मॅनेजमेंट प्रा. लि.',
     description:
-      '2017 मध्ये कोल्हापूर येथे हिंद ॲग्रो अँड केमिकल्स म्हणून स्थापन झालेली हिंद झिरो वेस्ट मॅनेजमेंट कचरा प्रक्रिया यंत्रसामग्री व टर्नकी प्लांटचे डिझाइन व निर्मिती करते.',
+      '2017 मध्ये कोल्हापूर येथे स्थापन झालेली हिंद झिरो वेस्ट मॅनेजमेंट कचरा प्रक्रिया यंत्रसामग्री व टर्नकी प्लांटचे डिझाइन व निर्मिती करते.',
     crumbs: ['होम', 'आमच्याबद्दल'],
     eyebrow: 'आमच्याबद्दल',
     heroTitle: 'स्मार्ट कचरा व्यवस्थापनासाठी <em>अचूक</em> अभियांत्रिकीची यंत्रे.',
     lead: 'आम्ही प्रगत कचरा प्रक्रिया प्रणालींचे डिझाइन व निर्मिती करतो, आणि साहित्य पुनर्प्राप्ती, पुनर्वापर, RDF निर्मिती व एकात्मिक कचरा व्यवस्थापनासाठी टर्नकी उपाय देतो.',
+    heroBtn: 'आमचे प्रकल्प पाहा',
+    profile: 'कंपनी प्रोफाइल',
     storyEyebrow: 'आमची वाटचाल',
     storyTitle: 'कोल्हापूरपासून, <em>संपूर्ण भारतासाठी</em>.',
     story: [
@@ -129,12 +212,31 @@ const copy = {
       'आम्ही ऊर्जा-कार्यक्षम व कमी देखभालीच्या कचरा प्रक्रिया उपकरणांचे डिझाइन, निर्मिती व पुरवठा करतो: बेलर, ऑरगॅनिक वेस्ट कंपोस्टर व व्हेसल कंपोस्टर, श्रेडर, ट्रॉमेल, सेपरेटर आणि कन्व्हेयर सिस्टीम. याच आधारावर आम्ही नागरी, औद्योगिक, संस्थात्मक व निवासी ग्राहकांसाठी संपूर्ण प्लांट उभारतो.',
       'आमचे काम केवळ सेवा नाही, तर जबाबदारी आहे: नैसर्गिक संसाधनांचे संवर्धन आणि पर्यावरणावरील परिणामात लक्षणीय घट, स्वच्छ शहरे आणि हरित पृथ्वीसाठी.',
     ],
-    figures: [
-      'भारतभर बायो-मायनिंग प्रकल्प',
-      'बेलिंग मशीन पुरवल्या व कार्यान्वित केल्या',
-      'भारत व दक्षिण आफ्रिकेतील ग्राहक',
-      'कोल्हापूर, महाराष्ट्र येथे स्थापना',
+    figures: ['बायो-मायनिंग प्रकल्प', 'बेलिंग मशीन पुरवल्या', 'ग्राहक, भारत व दक्षिण आफ्रिका'],
+    projEyebrow: 'प्रकल्पांचा आढावा',
+    projTitle: 'स्वच्छ केलेल्या जमिनीवर उभा <em>आढावा</em>.',
+    projIntro: 'महाराष्ट्रातील नगर परिषदांपासून दिल्लीच्या भलस्वा कचरा डेपोपर्यंत, आमची यंत्रसामग्री व टीमने संपूर्ण भारतात जुना कचरा साफ केला आहे आणि प्रक्रिया प्लांट उभारले आहेत.',
+    stats: [
+      'm³ जुना कचरा पूर्ण बायो-मायनिंग प्रकल्पांत साफ',
+      'पूर्ण बायो-मायनिंग प्रकल्प',
+      'सुरू असलेले मोठे बायो-मायनिंग प्रकल्प',
+      'उभारलेले बायो-मायनिंग प्लांट',
+      'आमचे प्लांट असलेली राज्ये व केंद्रशासित प्रदेश',
+      'राजस्थानमधील O&M करार (वर्षे)',
     ],
+    landmarkEyebrow: 'महत्त्वाचे प्रकल्प',
+    landmarkTitle: 'आमची ओळख ठरलेले <em>सहा प्रकल्प</em>',
+    completed: '',
+    ongoing: '',
+    plants: '',
+    site: '',
+    volumeLabel: '',
+    scaleLabel: '',
+    installedEyebrow: 'उभारलेले प्लांट',
+    installedTitle: `<em>${plantsInstalled.length} राज्ये</em> व केंद्रशासित प्रदेशांमध्ये बायो-मायनिंग प्लांट`,
+    plantsWord: 'प्लांट',
+    plantWord: 'प्लांट',
+    supply: 'यंत्र पुरवठा',
     visionTitle: 'दृष्टिकोन',
     vision:
       'बदल आणि व्यावसायिक व्यवस्थापन स्वीकारून, संसाधनांचा सर्वोत्तम वापर करत सातत्यपूर्ण प्रगती साधणे, आणि पुढील पिढीसाठी पर्यावरणाचे रक्षण करणाऱ्या सेवा देऊन आमची प्रतिष्ठा व नेतृत्व टिकवणे.',
@@ -159,59 +261,194 @@ const copy = {
     credEyebrow: 'प्रमाणपत्रे',
     credTitle: 'प्रमाणित, नोंदणीकृत, <em>सिद्ध</em>.',
     creds: ['ISO 9001:2015 प्रमाणित', 'GeM नोंदणीकृत OEM', 'SWM नियम 2016 व CPCB निकषांचे पालन'],
-    footprintLabel: 'आमचे प्लांट व प्रकल्प असलेली राज्ये',
+    footprintLabel: `${footprint.length} राज्यांमध्ये प्रकल्प`,
     states: ['महाराष्ट्र', 'राजस्थान', 'तेलंगणा', 'दिल्ली', 'उत्तर प्रदेश', 'हिमाचल प्रदेश', 'पंजाब', 'कर्नाटक', 'गोवा', 'गुजरात', 'आंध्र प्रदेश', 'मध्य प्रदेश'],
     clientsEyebrow: 'ग्राहक',
-    clientsTitle: 'विश्वासार्ह <em>सोबत</em>.',
-    siteCaption: 'साइटवर विलग केलेल्या घटकांचे ढीग लावणारी हिंद झिरो वेस्टची बायो-मायनिंग लाइन.',
+    clientsTitle: 'आमचे ग्राहक व <em>भागीदार</em>',
+    siteCaption: 'हिंद झिरो वेस्टने तयार केलेले जुळे बायो-मायनिंग ट्रॉमेल.',
   },
 }[lang];
 
+const stats = [
+  { value: clearedTotal, format: 'en-IN' },
+  { value: completedBiomining.length },
+  { value: ongoingBiomining.length },
+  { value: installedCount, suffix: '+' },
+  { value: plantsInstalled.length },
+  { value: 30 },
+];
+
+const whyIcons = ['biomining', 'design', 'operate', 'factory'] as const;
 const home = lang === 'en' ? '/' : `/${lang}/`;
 const alternates = { en: '/about-us', hi: '/hi/about-us', mr: '/mr/about-us' };
 ---
 
 <Base title={copy.title} description={copy.description} lang={lang} alternates={alternates}>
-  <PageHero
+  <IndexHero
     eyebrow={copy.eyebrow}
     title={copy.heroTitle}
     lead={copy.lead}
     crumbs={[{ label: copy.crumbs[0], href: home }, { label: copy.crumbs[1] }]}
-  />
+    images={[
+      { src: heroA, alt: 'Trommel drums and a horizontal baler in the Hind Zero Waste workshop' },
+      { src: heroB, alt: 'Discharge conveyor stacking segregated fractions at a bio-mining site' },
+      { src: heroC, alt: 'Balers installed at a material recovery facility' },
+    ]}
+    stats={figures.slice(0, 3).map((f, i) => ({ value: f.count, suffix: f.suffix, label: copy.figures[i] }))}
+  >
+    <a class="btn btn--accent" href="#projects">{copy.heroBtn} <span class="arrow">↓</span></a>
+    <a class="btn btn--ghost" href={site.downloads.profile} target="_blank" rel="noopener">{copy.profile} <span class="arrow">↗</span></a>
+  </IndexHero>
 
-  <section class="bg-paper">
-    <div class="container">
-      <div class="frame wide">
-        <Image src={storyImage} alt="Trommel drums and a horizontal baler in the Hind Zero Waste workshop" widths={[800, 1200, 1684]} sizes="(min-width: 1320px) 1240px, 94vw" loading="eager" />
+  <!-- Story -->
+  <section class="section bg-paper">
+    <div class="container story">
+      <div data-reveal="left">
+        <p class="eyebrow">{copy.storyEyebrow}</p>
+        <h2 class="h2 story__title" set:html={copy.storyTitle} />
+        <div class="story__body">
+          {copy.story.map((p, i) => <p class={i === 0 ? 'lead' : ''}>{p}</p>)}
+        </div>
+      </div>
+      <div class="story__media" data-reveal="right">
+        <Image src={storyImage} alt="Bio-mining plant working across a legacy dumpsite" widths={[600, 900, 1280]} sizes="(min-width: 900px) 45vw, 92vw" loading="lazy" />
+        <span class="story__badge">
+          <strong class="tabular">2017</strong>
+          <span>Kolhapur</span>
+        </span>
       </div>
     </div>
   </section>
 
-  <section class="section">
-    <div class="container story" data-reveal>
-      <div>
-        <p class="eyebrow">{copy.storyEyebrow}</p>
-        <h2 class="h2 story__title" set:html={copy.storyTitle} />
-      </div>
-      <div class="story__body">
-        {copy.story.map((p, i) => <p class={i === 0 ? 'lead' : ''}>{p}</p>)}
-      </div>
-    </div>
+  <!-- Projects -->
+  <section class="section bg-ink on-dark proj" id="projects">
     <div class="container">
-      <dl class="figures" data-reveal>
+      <div class="section-head section-head--center" data-reveal>
+        <p class="eyebrow">{copy.projEyebrow}</p>
+        <h2 class="h2" set:html={copy.projTitle} />
+        <p class="muted proj__intro">{copy.projIntro}</p>
+      </div>
+
+      <dl class="pstats">
         {
-          figures.map((f, i) => (
-            <div>
-              <dt class="tabular">{f.value}</dt>
-              <dd>{copy.figures[i]}</dd>
+          stats.map((s, i) => (
+            <div class="pstats__item" data-reveal style={`--d:${i % 3}`}>
+              <dt>
+                <Count value={s.value} suffix={s.suffix} format={s.format} />
+              </dt>
+              <dd>{copy.stats[i]}</dd>
             </div>
           ))
         }
       </dl>
+
+      <div class="section-head section-head--center proj__landmark" data-reveal>
+        <p class="eyebrow">{copy.landmarkEyebrow}</p>
+        <h3 class="h2" set:html={copy.landmarkTitle} />
+      </div>
+      <ProjectCards lang={lang} />
     </div>
   </section>
 
-  <section class="section bg-ink on-dark">
+  {
+    lang === 'en' && (
+      <section class="section bg-white">
+        <div class="container tables">
+          <div data-reveal>
+            <h3 class="tables__title">
+              <span class="tables__count tabular">{completedBiomining.length}</span> {copy.completed}
+            </h3>
+            <ul class="rows">
+              {completedBiomining.map((r) => (
+                <li class="rows__item">
+                  <span class="rows__site">
+                    {r.site}
+                    {r.note && <span class="rows__note">{r.note}</span>}
+                  </span>
+                  <span class="rows__value tabular">{r.volume}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div data-reveal>
+            <h3 class="tables__title">
+              <span class="tables__count tabular">{ongoingBiomining.length}</span> {copy.ongoing}
+            </h3>
+            <ul class="rows">
+              {ongoingBiomining.map((r) => (
+                <li class="rows__item">
+                  <span class="rows__site">
+                    {r.site}
+                    {r.note && <span class="rows__note">{r.note}</span>}
+                  </span>
+                  <span class="rows__value tabular">{r.volume}</span>
+                </li>
+              ))}
+            </ul>
+
+            <h3 class="tables__title tables__gap">
+              <span class="tables__count tabular">{plantProjects.length}</span> {copy.plants}
+            </h3>
+            <ul class="rows">
+              {plantProjects.map((p) => (
+                <li class="rows__item rows__item--text">
+                  <span class="rows__site">{p}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  <!-- Installed base -->
+  <section class="section bg-sky">
+    <div class="container">
+      <div class="section-head section-head--center" data-reveal>
+        <p class="eyebrow">{copy.installedEyebrow}</p>
+        <h2 class="h2" set:html={copy.installedTitle} />
+      </div>
+      <ul class="states-grid">
+        {
+          plantsInstalled.map((s, i) => (
+            <li class="state" data-reveal style={`--d:${i % 4}`}>
+              <div class="state__head">
+                <h3 class="state__name">{stateName(s.state)}</h3>
+                <span class="state__count tabular">
+                  {s.sites.length} {s.sites.length === 1 ? copy.plantWord : copy.plantsWord}
+                </span>
+              </div>
+              {lang === 'en' && (
+                <ul class="state__sites">
+                  {s.sites.map((site) => (
+                    <li>{site}</li>
+                  ))}
+                </ul>
+              )}
+            </li>
+          ))
+        }
+        {
+          lang === 'en' && (
+            <li class="state state--supply" data-reveal style="--d:3">
+              <div class="state__head">
+                <h3 class="state__name">{copy.supply}</h3>
+              </div>
+              <ul class="state__sites">
+                {machineSupply.map((m) => (
+                  <li>{m}</li>
+                ))}
+              </ul>
+            </li>
+          )
+        }
+      </ul>
+    </div>
+  </section>
+
+  <!-- Vision, mission, values -->
+  <section class="section bg-navy-deep on-dark">
     <div class="container vmv">
       <div class="vmv__vision" data-reveal>
         <p class="eyebrow">{copy.visionTitle}</p>
@@ -224,7 +461,7 @@ const alternates = { en: '/about-us', hi: '/hi/about-us', mr: '/mr/about-us' };
             {copy.mission.map((m) => <li>{m}</li>)}
           </ol>
         </div>
-        <div data-reveal>
+        <div data-reveal style="--d: 1">
           <h2 class="vmv__title">{copy.valuesTitle}</h2>
           <p class="vmv__values">{copy.values}</p>
         </div>
@@ -232,17 +469,20 @@ const alternates = { en: '/about-us', hi: '/hi/about-us', mr: '/mr/about-us' };
     </div>
   </section>
 
-  <section class="section bg-white">
+  <!-- Why us -->
+  <section class="section bg-sage">
     <div class="container">
-      <div class="section-head" data-reveal>
+      <div class="section-head section-head--center" data-reveal>
         <p class="eyebrow">{copy.whyEyebrow}</p>
         <h2 class="h2" set:html={copy.whyTitle} />
       </div>
       <ul class="why">
         {
           copy.why.map(([title, text], i) => (
-            <li data-reveal>
-              <span class="why__num tabular">{String(i + 1).padStart(2, '0')}</span>
+            <li class="why__card" data-reveal style={`--d:${i}`}>
+              <span class="why__icon">
+                <Icon name={whyIcons[i]} size={28} />
+              </span>
               <h3 class="h4">{title}</h3>
               <p class="muted">{text}</p>
             </li>
@@ -252,97 +492,338 @@ const alternates = { en: '/about-us', hi: '/hi/about-us', mr: '/mr/about-us' };
     </div>
   </section>
 
-  <section class="section">
+  <!-- Credentials -->
+  <section class="section bg-white">
     <div class="container cred">
-      <div data-reveal>
+      <div data-reveal="left">
         <p class="eyebrow">{copy.credEyebrow}</p>
         <h2 class="h2 cred__title" set:html={copy.credTitle} />
         <ul class="cred__list">
           {copy.creds.map((c) => <li>{c}</li>)}
         </ul>
         <p class="cred__label">{copy.footprintLabel}</p>
-        <ul class="states">
+        <ul class="statechips">
           {copy.states.map((s) => <li>{s}</li>)}
         </ul>
       </div>
-      <figure class="cred__media" data-reveal>
+      <figure class="cred__media" data-reveal="right">
         <div class="frame cred__frame">
-          <Image src={siteImage} alt="" widths={[600, 900, 1280]} sizes="(min-width: 900px) 45vw, 92vw" loading="lazy" />
+          <Image src={siteImage} alt="" widths={[600, 900]} sizes="(min-width: 900px) 45vw, 92vw" loading="lazy" />
         </div>
         <figcaption class="caption">{copy.siteCaption}</figcaption>
       </figure>
     </div>
   </section>
 
-  <section class="section bg-white">
+  <!-- Clients -->
+  <section class="section bg-paper clients-sec">
     <div class="container">
-      <div class="section-head" data-reveal>
+      <div class="section-head section-head--center" data-reveal>
         <p class="eyebrow">{copy.clientsEyebrow}</p>
         <h2 class="h2" set:html={copy.clientsTitle} />
       </div>
-      <div data-reveal><ClientWall /></div>
     </div>
+    <div data-reveal><ClientWall /></div>
   </section>
 
   <CtaBand lang={lang} />
 </Base>
 
 <style>
-  .wide {
-    aspect-ratio: 16 / 7;
-  }
-
+  /* Story */
   .story {
     display: grid;
-    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
-    gap: 32px 72px;
+    grid-template-columns: minmax(0, 6fr) minmax(0, 6fr);
+    gap: 48px 72px;
+    align-items: center;
   }
 
   .story__title {
-    margin-top: 18px;
+    margin: 16px 0 28px;
   }
 
   .story__body {
     display: flex;
     flex-direction: column;
-    gap: 20px;
-    color: var(--text);
+    gap: 18px;
   }
 
-  .figures {
+  .story__media {
+    position: relative;
+    aspect-ratio: 4 / 4.4;
+    border-radius: var(--radius-lg);
+    overflow: visible;
+  }
+
+  .story__media :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .story__badge {
+    position: absolute;
+    left: -28px;
+    bottom: 36px;
+    display: flex;
+    flex-direction: column;
+    padding: 20px 24px;
+    border-radius: 12px;
+    background: var(--saffron);
+    color: var(--ink);
+    box-shadow: var(--shadow-md);
+    animation: bob 5s ease-in-out infinite alternate;
+  }
+
+  .story__badge strong {
+    font: 800 2.4rem/1 var(--sans);
+    letter-spacing: -0.03em;
+  }
+
+  .story__badge span {
+    font-weight: 650;
+    font-size: 15px;
+  }
+
+  @keyframes bob {
+    to {
+      transform: translateY(-10px);
+    }
+  }
+
+  /* Projects */
+  .proj {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .proj::before {
+    content: '';
+    position: absolute;
+    inset: -20% auto auto -15%;
+    width: 60vw;
+    height: 60vw;
+    background: radial-gradient(circle, rgba(11, 75, 176, 0.35), transparent 60%);
+    pointer-events: none;
+  }
+
+  .proj .container {
+    position: relative;
+  }
+
+  .proj__intro {
+    font-size: 17px;
+  }
+
+  .pstats {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+    margin: 0 0 clamp(64px, 8vw, 104px);
+  }
+
+  .pstats__item {
+    padding: 30px 30px 28px;
+    border-radius: var(--radius-lg);
+    background: linear-gradient(160deg, rgba(246, 243, 236, 0.07), rgba(246, 243, 236, 0.02));
+    border: 1px solid var(--line-on-dark);
+    transition:
+      transform 0.45s var(--ease-out),
+      border-color 0.45s var(--ease-out),
+      background-color 0.45s var(--ease-out);
+  }
+
+  .pstats__item:hover {
+    transform: translateY(-6px) scale(1.02);
+    border-color: var(--saffron);
+  }
+
+  .pstats__item dt {
+    font: 800 clamp(2.6rem, 4.4vw, 4rem) / 1 var(--sans);
+    letter-spacing: -0.04em;
+    color: var(--saffron-2);
+  }
+
+  .pstats__item:first-child dt {
+    color: var(--lime);
+  }
+
+  .pstats__item dd {
+    margin: 12px 0 0;
+    font-size: 16px;
+    color: #c8d1de;
+    max-width: 22em;
+  }
+
+  .proj__landmark {
+    margin-bottom: 40px;
+  }
+
+  /* Tables as hoverable rows */
+  .tables {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 48px 56px;
+  }
+
+  .tables__title {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 18px;
+    font-family: var(--serif);
+    font-size: clamp(1.8rem, 2.6vw, 2.3rem);
+    line-height: 1.1;
+  }
+
+  .tables__count {
+    display: grid;
+    place-items: center;
+    min-width: 48px;
+    height: 48px;
+    padding: 0 10px;
+    border-radius: 12px;
+    background: var(--navy);
+    color: var(--white);
+    font: 800 20px/1 var(--sans);
+  }
+
+  .tables__gap {
+    margin-top: 56px;
+  }
+
+  .rows {
+    list-style: none;
+    display: grid;
+    gap: 6px;
+  }
+
+  .rows__item {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 16px;
+    padding: 13px 18px;
+    border-radius: 10px;
+    background: var(--paper);
+    transition:
+      transform 0.35s var(--ease-out),
+      background-color 0.35s var(--ease-out),
+      box-shadow 0.35s var(--ease-out);
+  }
+
+  .rows__site {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    font-weight: 550;
+    color: var(--ink);
+    transition: color 0.3s var(--ease);
+  }
+
+  .rows__note {
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--muted);
+  }
+
+  .rows__value {
+    flex: none;
+    font: 750 18px/1.2 var(--sans);
+    color: var(--navy-2);
+    transition: color 0.3s var(--ease);
+  }
+
+  .rows__item:hover {
+    transform: scale(1.03);
+    background: #fff4e5;
+    box-shadow: 0 14px 30px -18px rgba(166, 90, 0, 0.45);
+  }
+
+  .rows__item:hover .rows__value,
+  .rows__item:hover .rows__site {
+    color: var(--saffron-ink);
+  }
+
+  .rows__item--text .rows__site {
+    font-weight: 450;
+    font-size: 16px;
+  }
+
+  /* Installed base */
+  .states-grid {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    margin: clamp(56px, 7vw, 88px) 0 0;
-    border-top: 1px solid var(--line-strong);
+    gap: 18px;
+    list-style: none;
   }
 
-  .figures div {
-    padding: 28px 24px 0 0;
+  .state {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 24px 24px 26px;
+    border-radius: var(--radius-lg);
+    background: var(--white);
+    border-top: 4px solid var(--navy);
+    transition:
+      transform 0.45s var(--ease-out),
+      box-shadow 0.45s var(--ease-out),
+      border-color 0.45s var(--ease-out);
   }
 
-  .figures div + div {
-    padding-left: 24px;
-    border-left: 1px solid var(--line);
+  .state:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--saffron);
   }
 
-  .figures dt {
+  .state--supply {
+    border-top-color: var(--green);
+  }
+
+  .state__head {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .state__name {
     font-family: var(--serif);
-    font-size: clamp(2.6rem, 4.6vw, 4rem);
-    line-height: 1;
+    font-size: 1.8rem;
+    line-height: 1.1;
+  }
+
+  .state__count {
+    align-self: flex-start;
+    padding: 4px 12px;
+    border-radius: 999px;
+    background: var(--sky);
+    color: var(--navy);
+    font-size: 14px;
+    font-weight: 700;
+  }
+
+  .state:hover .state__count {
+    background: var(--saffron);
     color: var(--ink);
   }
 
-  .figures dd {
-    margin: 12px 0 0;
-    font-size: 14px;
+  .state__sites {
+    list-style: none;
+    display: grid;
+    gap: 7px;
+    font-size: 15px;
     color: var(--muted);
-    max-width: 16em;
   }
 
+  /* Vision, mission, values */
   .vmv__quote {
     margin-top: 24px;
     font-family: var(--serif);
-    font-size: clamp(1.8rem, 3.4vw, 2.9rem);
+    font-size: clamp(1.9rem, 3.4vw, 3rem);
     line-height: 1.18;
     color: var(--paper);
     max-width: 22em;
@@ -352,16 +833,16 @@ const alternates = { en: '/about-us', hi: '/hi/about-us', mr: '/mr/about-us' };
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 48px 72px;
-    margin-top: clamp(56px, 7vw, 88px);
+    margin-top: clamp(48px, 6vw, 80px);
     padding-top: 40px;
     border-top: 1px solid var(--line-on-dark);
   }
 
   .vmv__title {
-    font: 600 12px/1 var(--sans);
+    font: 700 14px/1 var(--sans);
     letter-spacing: 0.16em;
     text-transform: uppercase;
-    color: var(--lime) !important;
+    color: var(--saffron-2) !important;
     margin-bottom: 20px;
   }
 
@@ -373,51 +854,73 @@ const alternates = { en: '/about-us', hi: '/hi/about-us', mr: '/mr/about-us' };
   .vmv__list li {
     counter-increment: m;
     display: grid;
-    grid-template-columns: 40px minmax(0, 1fr);
-    padding: 12px 0;
+    grid-template-columns: 44px minmax(0, 1fr);
+    padding: 13px 0;
     border-bottom: 1px solid var(--line-on-dark);
-    color: #d3dbe7;
+    color: #d6deea;
   }
 
   .vmv__list li::before {
     content: counter(m, decimal-leading-zero);
-    font-family: var(--serif);
-    color: var(--muted-on-dark);
+    font-weight: 800;
+    color: var(--lime);
   }
 
   .vmv__values {
-    color: #d3dbe7;
-    font-size: 1.1rem;
+    color: #d6deea;
+    font-size: 1.15rem;
     line-height: 1.7;
   }
 
+  /* Why us */
   .why {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 20px;
     list-style: none;
-    border-top: 1px solid var(--line-strong);
   }
 
-  .why li {
+  .why__card {
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    padding: 28px 28px 8px 0;
+    gap: 12px;
+    padding: 30px 26px;
+    border-radius: var(--radius-lg);
+    background: rgba(255, 255, 255, 0.6);
+    transition:
+      transform 0.45s var(--ease-out),
+      background-color 0.45s var(--ease-out),
+      box-shadow 0.45s var(--ease-out);
   }
 
-  .why li + li {
-    padding-left: 28px;
-    border-left: 1px solid var(--line);
+  .why__icon {
+    display: grid;
+    place-items: center;
+    width: 60px;
+    height: 60px;
+    margin-bottom: 6px;
+    border-radius: 16px;
+    background: var(--navy);
+    color: var(--white);
+    transition:
+      background-color 0.3s var(--ease),
+      color 0.3s var(--ease),
+      transform 0.45s var(--ease-out);
   }
 
-  .why__num {
-    font-family: var(--serif);
-    font-size: 2rem;
-    line-height: 1;
-    color: var(--navy);
-    margin-bottom: 8px;
+  .why__card:hover {
+    transform: translateY(-8px);
+    background: var(--white);
+    box-shadow: var(--shadow-lg);
   }
 
+  .why__card:hover .why__icon {
+    background: var(--saffron);
+    color: var(--ink);
+    transform: rotate(-6deg) scale(1.06);
+  }
+
+  /* Credentials */
   .cred {
     display: grid;
     grid-template-columns: minmax(0, 6fr) minmax(0, 6fr);
@@ -426,55 +929,71 @@ const alternates = { en: '/about-us', hi: '/hi/about-us', mr: '/mr/about-us' };
   }
 
   .cred__title {
-    margin-top: 18px;
+    margin-top: 16px;
   }
 
   .cred__list {
     list-style: none;
-    margin-top: 32px;
-    border-top: 1px solid var(--line-strong);
+    margin-top: 28px;
+    display: grid;
+    gap: 10px;
   }
 
   .cred__list li {
     display: flex;
+    align-items: center;
     gap: 14px;
-    padding: 16px 0;
-    border-bottom: 1px solid var(--line);
-    font-weight: 600;
-    color: var(--ink);
+    padding: 14px 18px;
+    border-radius: 10px;
+    background: var(--sky);
+    font-weight: 650;
+    color: var(--navy);
   }
 
   .cred__list li::before {
-    content: '';
-    width: 8px;
-    height: 8px;
-    margin-top: 0.55em;
-    background: var(--lime);
-    box-shadow: 0 0 0 3px color-mix(in srgb, var(--lime) 25%, transparent);
+    content: '✓';
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--navy);
+    color: var(--white);
+    font-size: 14px;
     flex: none;
   }
 
   .cred__label {
-    margin: 36px 0 14px;
-    font: 600 12px/1.4 var(--sans);
-    letter-spacing: 0.16em;
+    margin: 34px 0 14px;
+    font: 700 14px/1.4 var(--sans);
+    letter-spacing: 0.12em;
     text-transform: uppercase;
-    color: var(--muted);
+    color: var(--green-ink);
   }
 
-  .states {
+  .statechips {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
     list-style: none;
   }
 
-  .states li {
-    padding: 6px 12px;
-    border: 1px solid var(--line-strong);
+  .statechips li {
+    padding: 7px 14px;
     border-radius: 999px;
-    font-size: 14px;
+    border: 1px solid var(--line-strong);
+    font-size: 15px;
     color: var(--ink);
+    transition:
+      background-color 0.25s var(--ease),
+      color 0.25s var(--ease),
+      transform 0.25s var(--ease);
+  }
+
+  .statechips li:hover {
+    background: var(--saffron);
+    border-color: var(--saffron);
+    transform: translateY(-2px);
   }
 
   .cred__media {
@@ -483,40 +1002,47 @@ const alternates = { en: '/about-us', hi: '/hi/about-us', mr: '/mr/about-us' };
 
   .cred__frame {
     aspect-ratio: 4 / 3;
+    border-radius: var(--radius-lg);
   }
 
-  @media (max-width: 960px) {
-    .story,
-    .cred,
-    .vmv__cols {
-      grid-template-columns: minmax(0, 1fr);
-    }
+  .clients-sec {
+    overflow: hidden;
+  }
 
-    .why,
-    .figures {
+  @media (max-width: 1100px) {
+    .states-grid,
+    .why {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
-    .why li + li:nth-child(3),
-    .figures div + div:nth-child(3) {
-      padding-left: 0;
-      border-left: 0;
+    .pstats {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 900px) {
+    .story,
+    .cred,
+    .vmv__cols,
+    .tables {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .story__media {
+      aspect-ratio: 16 / 11;
+    }
+
+    .story__badge {
+      left: 16px;
+      bottom: 16px;
     }
   }
 
   @media (max-width: 600px) {
-    .wide {
-      aspect-ratio: 4 / 3;
-    }
-
-    .why {
+    .states-grid,
+    .why,
+    .pstats {
       grid-template-columns: minmax(0, 1fr);
-    }
-
-    .why li + li {
-      padding-left: 0;
-      border-left: 0;
-      border-top: 1px solid var(--line);
     }
   }
 </style>

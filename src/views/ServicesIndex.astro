@@ -2,16 +2,22 @@
 import { Image } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
 import Base from '../layouts/Base.astro';
-import PageHero from '../components/PageHero.astro';
+import IndexHero from '../components/IndexHero.astro';
+import AccordionControls from '../components/AccordionControls.astro';
+import Steps from '../components/Steps.astro';
+import Icon from '../components/Icon.astro';
 import CtaBand from '../components/CtaBand.astro';
 import { services } from '../data/services';
-import { localName, type Lang } from '../i18n/ui';
-import { approachSteps, consultancyCopy, inEnglish, serviceHighlights, serviceShorts } from '../i18n/content';
+import { localName, localePath, t, type Lang } from '../i18n/ui';
+import { consultancyCopy, inEnglish, serviceHighlights, serviceShorts } from '../i18n/content';
 
 import bioImg from '../assets/photos/biomining-trommel-site.jpg';
 import mswImg from '../assets/photos/plant-line-wide.jpg';
 import mrfImg from '../assets/photos/mrf-sorting-floor.jpg';
 import rdfImg from '../assets/photos/shredder-ads-line.jpg';
+import heroA from '../assets/photos/biomining-excavator.jpg';
+import heroB from '../assets/photos/sorting-conveyor.jpg';
+import heroC from '../assets/photos/hero-plant-shed.jpg';
 
 interface Props {
   lang: Lang;
@@ -24,6 +30,12 @@ const images: Record<string, ImageMetadata> = {
   'material-recovery-facility-mrf-plant': mrfImg,
   'rdf-afr-plant': rdfImg,
 };
+const icons = {
+  'bio-mining-and-legacy-waste-management': 'biomining',
+  'msw-processing-plant': 'msw',
+  'material-recovery-facility-mrf-plant': 'mrf',
+  'rdf-afr-plant': 'rdf',
+} as const;
 
 const copy = {
   en: {
@@ -33,7 +45,12 @@ const copy = {
     eyebrow: 'Services',
     heroTitle: 'Turnkey plants, <em>end to end</em>.',
     lead: 'We design, manufacture, install, commission and operate complete waste-processing plants, and take responsibility for their performance from the first survey to daily operation.',
+    stats: ['Plant types', 'Bio-mining projects', 'Years of O&M contracted'],
+    browse: 'See our services',
+    listEyebrow: 'Our services',
+    listTitle: 'Four plants, <em>one partner</em>',
     explore: 'Explore',
+    discuss: 'Discuss your project',
     consEyebrow: 'Consultancy',
     apprEyebrow: 'How we work',
     apprTitle: 'One partner, from drawing board to <em>daily operation</em>.',
@@ -46,7 +63,12 @@ const copy = {
     eyebrow: 'सेवाएँ',
     heroTitle: 'शुरुआत से अंत तक, <em>टर्नकी</em> प्लांट।',
     lead: 'हम पूर्ण कचरा प्रसंस्करण प्लांट का डिज़ाइन, निर्माण, स्थापना, कमीशनिंग और संचालन करते हैं, और पहले सर्वेक्षण से लेकर दैनिक संचालन तक उनके प्रदर्शन की ज़िम्मेदारी लेते हैं।',
+    stats: ['प्लांट के प्रकार', 'बायो-माइनिंग परियोजनाएँ', 'वर्ष का O&M अनुबंध'],
+    browse: 'हमारी सेवाएँ देखें',
+    listEyebrow: 'हमारी सेवाएँ',
+    listTitle: 'चार प्लांट, <em>एक साझेदार</em>',
     explore: 'विस्तार से देखें',
+    discuss: 'अपनी परियोजना पर बात करें',
     consEyebrow: 'परामर्श',
     apprEyebrow: 'हमारी कार्यप्रणाली',
     apprTitle: 'डिज़ाइन से <em>दैनिक संचालन</em> तक, एक ही साझेदार।',
@@ -59,7 +81,12 @@ const copy = {
     eyebrow: 'सेवा',
     heroTitle: 'सुरुवातीपासून शेवटपर्यंत, <em>टर्नकी</em> प्लांट.',
     lead: 'आम्ही संपूर्ण कचरा प्रक्रिया प्लांटचे डिझाइन, निर्मिती, उभारणी, कमिशनिंग आणि संचालन करतो, आणि पहिल्या सर्वेक्षणापासून दैनंदिन संचालनापर्यंत त्यांच्या कामगिरीची जबाबदारी घेतो.',
+    stats: ['प्लांटचे प्रकार', 'बायो-मायनिंग प्रकल्प', 'वर्षांचे O&M करार'],
+    browse: 'आमच्या सेवा पाहा',
+    listEyebrow: 'आमच्या सेवा',
+    listTitle: 'चार प्लांट, <em>एक भागीदार</em>',
     explore: 'सविस्तर पाहा',
+    discuss: 'तुमच्या प्रकल्पाबद्दल बोला',
     consEyebrow: 'सल्ला',
     apprEyebrow: 'आमची कार्यपद्धती',
     apprTitle: 'डिझाइनपासून <em>दैनंदिन संचालनापर्यंत</em>, एकच भागीदार.',
@@ -69,68 +96,83 @@ const copy = {
 
 const home = lang === 'en' ? '/' : `/${lang}/`;
 const alternates = { en: '/services', hi: '/hi/services', mr: '/mr/services' };
+const contact = localePath(lang, '/contact-us');
 ---
 
 <Base title={copy.title} description={copy.description} lang={lang} alternates={alternates}>
-  <PageHero
+  <IndexHero
+    tone="sky"
     eyebrow={copy.eyebrow}
     title={copy.heroTitle}
     lead={copy.lead}
     crumbs={[{ label: copy.crumbs[0], href: home }, { label: copy.crumbs[1] }]}
-  />
+    images={[
+      { src: heroA, alt: 'Excavator feeding legacy waste to a screening conveyor' },
+      { src: heroB, alt: 'Workers recovering recyclables on a sorting conveyor' },
+      { src: heroC, alt: 'Segregation and RDF line in a steel shed' },
+    ]}
+    stats={[
+      { value: services.length, label: copy.stats[0] },
+      { value: 87, suffix: '+', label: copy.stats[1] },
+      { value: 30, label: copy.stats[2] },
+    ]}
+  >
+    <a class="btn" href="#plants">{copy.browse} <span class="arrow">↓</span></a>
+    <a class="btn btn--ghost" href={`${contact}#enquiry`}>{t(lang, 'cta.quote')} <span class="arrow">→</span></a>
+  </IndexHero>
 
-  <section class="svc-list">
-    {
-      services.map((s, i) => (
-        <article class:list={['svc', i % 2 === 0 ? 'bg-white' : 'bg-paper']}>
-          <div class:list={['container', 'svc__inner', { 'is-flipped': i % 2 === 1 }]}>
-            <div class="frame svc__media" data-reveal>
-              <Image src={images[s.slug]} alt={s.images[0].alt} widths={[640, 960, 1280]} sizes="(min-width: 1000px) 640px, 92vw" loading={i === 0 ? 'eager' : 'lazy'} />
-            </div>
-            <div class="svc__body" data-reveal>
-              <p class="svc__num tabular">
-                {String(i + 1).padStart(2, '0')} <span>{s.range}</span>
-              </p>
-              <h2 class="h2">{localName(lang, s.slug, s.name)}</h2>
-              <p class="lead">{serviceShorts[lang][s.slug]}</p>
-              <ul class="svc__points">
-                {serviceHighlights[lang][s.slug].map((h) => (
-                  <li>{h}</li>
-                ))}
-              </ul>
-              <a class="link-arrow" href={`/${s.slug}`}>
-                {copy.explore} {inEnglish[lang]} <span class="arrow">→</span>
-              </a>
-            </div>
-          </div>
-        </article>
-      ))
-    }
-  </section>
-
-  <section class="section--tight bg-ink on-dark" id="consultancy">
-    <div class="container cons" data-reveal>
-      <p class="eyebrow">{copy.consEyebrow}</p>
-      <div class="cons__body">
-        <h2 class="h3">{consultancyCopy[lang].name}</h2>
-        <p class="muted">{consultancyCopy[lang].text}</p>
-      </div>
-    </div>
-  </section>
-
-  <section class="section bg-white">
+  <section class="section bg-paper" id="plants">
     <div class="container">
-      <div class="section-head" data-reveal>
-        <p class="eyebrow">{copy.apprEyebrow}</p>
-        <h2 class="h2" set:html={copy.apprTitle} />
+      <div class="cat-head" data-reveal>
+        <div>
+          <p class="eyebrow">{copy.listEyebrow}</p>
+          <h2 class="h2" set:html={copy.listTitle} />
+        </div>
+        <AccordionControls target="services" lang={lang} />
       </div>
-      <ol class="appr">
+
+      <ol class="acc" data-accordion="services">
         {
-          approachSteps[lang].map(([title, text], i) => (
-            <li data-reveal>
-              <span class="appr__num tabular">{String(i + 1).padStart(2, '0')}</span>
-              <h3 class="h4">{title}</h3>
-              <p class="muted">{text}</p>
+          services.map((s, i) => (
+            <li data-reveal style={`--d:${i}`}>
+              <details open={i === 0}>
+                <summary>
+                  <span class="acc__num tabular">{String(i + 1).padStart(2, '0')}</span>
+                  <span class="acc__title">
+                    <span class="acc__name">{localName(lang, s.slug, s.name)}</span>
+                    <span class="acc__sub">{serviceShorts[lang][s.slug]}</span>
+                  </span>
+                  <span class="acc__meta">
+                    <span class="svc-icon">
+                      <Icon name={icons[s.slug as keyof typeof icons]} size={26} />
+                    </span>
+                    <span class="chip tabular">{s.range}</span>
+                  </span>
+                  <span class="acc__toggle" aria-hidden="true" />
+                </summary>
+                <div class="acc__panel">
+                  <div class="svc-panel">
+                    <div class="svc-panel__media">
+                      <Image src={images[s.slug]} alt={s.images[0].alt} widths={[480, 720, 960]} sizes="(min-width: 900px) 45vw, 92vw" loading="lazy" />
+                    </div>
+                    <div class="svc-panel__body">
+                      <ul class="svc-panel__points">
+                        {serviceHighlights[lang][s.slug].map((h) => (
+                          <li>{h}</li>
+                        ))}
+                      </ul>
+                      <div class="btn-row">
+                        <a class="btn" href={`/${s.slug}`}>
+                          {copy.explore} {inEnglish[lang]} <span class="arrow">→</span>
+                        </a>
+                        <a class="link-arrow" href={`${contact}?subject=${encodeURIComponent(s.name)}#enquiry`}>
+                          {copy.discuss} <span class="arrow">→</span>
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </details>
             </li>
           ))
         }
@@ -138,146 +180,146 @@ const alternates = { en: '/services', hi: '/hi/services', mr: '/mr/services' };
     </div>
   </section>
 
+  <section class="section--tight bg-ink on-dark" id="consultancy">
+    <div class="container cons" data-reveal>
+      <span class="cons__icon"><Icon name="consult" size={34} /></span>
+      <div class="cons__body">
+        <p class="eyebrow">{copy.consEyebrow}</p>
+        <h2 class="h3">{consultancyCopy[lang].name}</h2>
+        <p class="muted">{consultancyCopy[lang].text}</p>
+      </div>
+      <a class="btn btn--accent" href={`${contact}#enquiry`}>{t(lang, 'cta.quote')} <span class="arrow">→</span></a>
+    </div>
+  </section>
+
+  <section class="section bg-sage">
+    <div class="container">
+      <div class="section-head section-head--center" data-reveal>
+        <p class="eyebrow">{copy.apprEyebrow}</p>
+        <h2 class="h2" set:html={copy.apprTitle} />
+      </div>
+      <Steps lang={lang} />
+    </div>
+  </section>
+
   <CtaBand lang={lang} />
 </Base>
 
 <style>
-  .svc {
-    padding-block: clamp(64px, 8vw, 112px);
+  .cat-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 36px;
   }
 
-  .svc__inner {
+  .cat-head .h2 {
+    margin-top: 14px;
+  }
+
+  .svc-icon {
     display: grid;
-    grid-template-columns: minmax(0, 6fr) minmax(0, 5fr);
-    gap: 40px 72px;
-    align-items: center;
-  }
-
-  .svc__inner.is-flipped .svc__media {
-    order: 2;
-  }
-
-  .svc__media {
-    aspect-ratio: 4 / 3;
-  }
-
-  .svc__body {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 22px;
-  }
-
-  .svc__num {
-    display: flex;
-    align-items: baseline;
-    gap: 16px;
-    font-family: var(--serif);
-    font-size: 1.5rem;
+    place-items: center;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: var(--sky);
     color: var(--navy);
   }
 
-  .svc__num span {
-    font-family: var(--sans);
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--muted);
-  }
-
-  .svc__points {
-    list-style: none;
-    width: 100%;
-    border-top: 1px solid var(--line-strong);
-  }
-
-  .svc__points li {
-    display: flex;
-    gap: 14px;
-    padding: 13px 0;
-    border-bottom: 1px solid var(--line);
-    font-size: 15px;
+  details[open] .svc-icon {
+    background: var(--saffron);
     color: var(--ink);
   }
 
-  .svc__points li::before {
+  .svc-panel {
+    display: grid;
+    grid-template-columns: minmax(0, 6fr) minmax(0, 5fr);
+    gap: 32px 48px;
+    align-items: center;
+  }
+
+  .svc-panel__media {
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+    border-radius: 12px;
+  }
+
+  .svc-panel__media :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 1.2s var(--ease-out);
+  }
+
+  .svc-panel__media:hover :global(img) {
+    transform: scale(1.06);
+  }
+
+  .svc-panel__body {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+  }
+
+  .svc-panel__points {
+    list-style: none;
+    border-top: 1px solid var(--line-strong);
+  }
+
+  .svc-panel__points li {
+    display: flex;
+    gap: 14px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--line);
+    font-size: 17px;
+    font-weight: 500;
+    color: var(--ink);
+  }
+
+  .svc-panel__points li::before {
     content: '';
-    width: 7px;
-    height: 7px;
-    margin-top: 0.6em;
+    width: 9px;
+    height: 9px;
+    margin-top: 0.55em;
+    border-radius: 2px;
     background: var(--green);
     flex: none;
   }
 
   .cons {
     display: grid;
-    grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
-    gap: 24px 72px;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: 28px 40px;
+    align-items: center;
+  }
+
+  .cons__icon {
+    display: grid;
+    place-items: center;
+    width: 76px;
+    height: 76px;
+    border-radius: 50%;
+    background: rgba(243, 154, 47, 0.16);
+    color: var(--saffron-2);
   }
 
   .cons__body {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 12px;
   }
 
-  .appr {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    list-style: none;
-    border-top: 1px solid var(--line-strong);
-  }
-
-  .appr li {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    padding: 28px 28px 8px 0;
-  }
-
-  .appr li + li {
-    padding-left: 28px;
-    border-left: 1px solid var(--line);
-  }
-
-  .appr__num {
-    font-family: var(--serif);
-    font-size: 2rem;
-    line-height: 1;
-    color: var(--navy);
-    margin-bottom: 8px;
-  }
-
-  @media (max-width: 960px) {
-    .svc__inner,
+  @media (max-width: 900px) {
+    .svc-panel,
     .cons {
       grid-template-columns: minmax(0, 1fr);
     }
 
-    .svc__inner.is-flipped .svc__media {
-      order: 0;
-    }
-
-    .appr {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-    .appr li + li:nth-child(3) {
-      padding-left: 0;
-      border-left: 0;
-    }
-  }
-
-  @media (max-width: 600px) {
-    .appr {
-      grid-template-columns: minmax(0, 1fr);
-    }
-
-    .appr li + li {
-      padding-left: 0;
-      border-left: 0;
-      border-top: 1px solid var(--line);
+    .cons__icon {
+      display: none;
     }
   }
 </style>

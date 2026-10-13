@@ -8,18 +8,16 @@ import ClientWall from '../components/ClientWall.astro';
 import CtaBand from '../components/CtaBand.astro';
 import Count from '../components/Count.astro';
 import Icon from '../components/Icon.astro';
+import Steps from '../components/Steps.astro';
+import ProjectCards from '../components/ProjectCards.astro';
 import { products } from '../data/products';
 import { services } from '../data/services';
-import { featuredProjects, type Project } from '../data/projects';
 import { figures, site } from '../data/site';
 import { localName, localePath, t, type Lang } from '../i18n/ui';
 import {
-  approachSteps,
   categoryName,
   consultancyCopy,
-  featuredProjectsLocal,
   serviceShorts,
-  statusLabels,
 } from '../i18n/content';
 
 import slideBio from '../assets/photos/biomining-trommel-site.jpg';
@@ -50,7 +48,6 @@ const serviceIcons = {
   'material-recovery-facility-mrf-plant': 'mrf',
   'rdf-afr-plant': 'rdf',
 } as const;
-const stepIcons = ['design', 'factory', 'commission', 'operate'] as const;
 
 const slides = [
   { src: slideBio, alt: 'Hind Zero Waste trommel and conveyor line at a legacy dumpsite' },
@@ -216,10 +213,6 @@ const copy = {
   },
 }[lang];
 
-const projects: Project[] =
-  lang === 'en'
-    ? featuredProjects
-    : featuredProjects.map((p, i) => ({ ...p, ...(featuredProjectsLocal[lang][i] as Partial<Project>) }));
 
 const categories = [...new Set(products.map((p) => p.category))];
 const catKey = (c: string) => c.toLowerCase().replace(/[^a-z]+/g, '-');
@@ -332,24 +325,7 @@ const aboutHref = localePath(lang, '/about-us');
         <h2 class="h2" set:html={copy.projTitle} />
         <p class="muted projects__intro">{copy.projIntro}</p>
       </div>
-      <ul class="pgrid">
-        {
-          projects.map((p, i) => (
-            <li class="pgrid__card" data-reveal style={`--d:${i % 3}`}>
-              <p class="pgrid__num">
-                <Count value={p.count.value} prefix={p.count.prefix} suffix={p.count.suffix} format={p.count.format} />
-              </p>
-              <p class="pgrid__client">{p.client}</p>
-              <p class="pgrid__loc">{p.location}</p>
-              <p class="pgrid__scope">
-                {p.scope}
-                {p.note && <span> · {p.note}</span>}
-              </p>
-              <span class:list={['pgrid__status', `is-${p.status.toLowerCase()}`]}>{statusLabels[lang][p.status]}</span>
-            </li>
-          ))
-        }
-      </ul>
+      <ProjectCards lang={lang} />
       <div class="projects__foot" data-reveal>
         <a class="btn btn--accent" href={`${aboutHref}#projects`}>{copy.projAll} <span class="arrow">→</span></a>
       </div>
@@ -467,20 +443,7 @@ const aboutHref = localePath(lang, '/about-us');
         <h2 class="h2" set:html={copy.apprTitle} />
         <p class="muted">{copy.apprIntro}</p>
       </div>
-      <ol class="steps" data-reveal>
-        {
-          approachSteps[lang].map(([title, text], i) => (
-            <li class="steps__item" data-reveal style={`--d:${i + 1}`}>
-              <span class="steps__dot">
-                <Icon name={stepIcons[i]} size={28} />
-              </span>
-              <span class="steps__num tabular">{String(i + 1).padStart(2, '0')}</span>
-              <h3 class="h4">{title}</h3>
-              <p class="muted">{text}</p>
-            </li>
-          ))
-        }
-      </ol>
+      <Steps lang={lang} />
     </div>
   </section>
 
@@ -917,82 +880,6 @@ const aboutHref = localePath(lang, '/about-us');
     font-size: 17px;
   }
 
-  .pgrid {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 20px;
-    list-style: none;
-  }
-
-  .pgrid__card {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    padding: 30px 28px 28px;
-    border-radius: var(--radius-lg);
-    background: rgba(246, 243, 236, 0.04);
-    border: 1px solid var(--line-on-dark);
-    transition:
-      transform 0.45s var(--ease-out),
-      background-color 0.45s var(--ease-out),
-      border-color 0.45s var(--ease-out),
-      box-shadow 0.45s var(--ease-out);
-  }
-
-  .pgrid__card:hover {
-    transform: translateY(-8px) scale(1.015);
-    background: rgba(246, 243, 236, 0.08);
-    border-color: var(--saffron);
-    box-shadow: 0 30px 60px -30px rgba(0, 0, 0, 0.7);
-  }
-
-  .pgrid__num {
-    font: 800 clamp(2.2rem, 3.4vw, 3.1rem) / 1.05 var(--sans);
-    letter-spacing: -0.03em;
-    color: var(--saffron-2);
-    margin-bottom: 10px;
-  }
-
-  .pgrid__client {
-    font-size: 18px;
-    font-weight: 650;
-    color: var(--paper);
-    line-height: 1.35;
-  }
-
-  .pgrid__loc {
-    font-size: 15px;
-    color: var(--muted-on-dark);
-  }
-
-  .pgrid__scope {
-    margin-top: 6px;
-    font-size: 15px;
-    color: #c5cfdd;
-  }
-
-  .pgrid__status {
-    align-self: flex-start;
-    margin-top: auto;
-    padding: 5px 12px;
-    border-radius: 999px;
-    font-size: 13px;
-    font-weight: 650;
-    letter-spacing: 0.04em;
-    background: rgba(132, 187, 57, 0.18);
-    color: #b6e07f;
-  }
-
-  .pgrid__status.is-ongoing {
-    background: rgba(243, 154, 47, 0.18);
-    color: var(--saffron-2);
-  }
-
-  .pgrid__card .pgrid__status {
-    margin-top: 14px;
-  }
-
   .projects__foot {
     display: flex;
     justify-content: center;
@@ -1351,86 +1238,6 @@ const aboutHref = localePath(lang, '/about-us');
     }
   }
 
-  /* ---------- Approach ---------- */
-  .steps {
-    position: relative;
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 22px;
-    list-style: none;
-  }
-
-  /* A connecting line that draws itself across the four steps. */
-  .steps::before {
-    content: '';
-    position: absolute;
-    top: 64px;
-    left: 12%;
-    right: 12%;
-    height: 2px;
-    background: linear-gradient(90deg, var(--navy), var(--green-2), var(--saffron));
-    transform: scaleX(0);
-    transform-origin: left;
-    transition: transform 1.8s var(--ease-out) 0.3s;
-  }
-
-  :global(.js) .steps.is-visible::before,
-  :global(html:not(.js)) .steps::before {
-    transform: scaleX(1);
-  }
-
-  .steps__item {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-    padding: 30px 24px 32px;
-    border-radius: var(--radius-lg);
-    background: rgba(255, 255, 255, 0.55);
-    text-align: center;
-    transition:
-      transform 0.45s var(--ease-out),
-      background-color 0.45s var(--ease-out),
-      box-shadow 0.45s var(--ease-out);
-  }
-
-  .steps__dot {
-    position: relative;
-    z-index: 1;
-    display: grid;
-    place-items: center;
-    width: 68px;
-    height: 68px;
-    border-radius: 50%;
-    background: var(--navy);
-    color: var(--white);
-    box-shadow: 0 0 0 8px var(--sage);
-    transition:
-      background-color 0.35s var(--ease),
-      color 0.35s var(--ease),
-      transform 0.45s var(--ease-out);
-  }
-
-  .steps__num {
-    margin-top: 8px;
-    font: 800 15px/1 var(--sans);
-    letter-spacing: 0.1em;
-    color: var(--green-ink);
-  }
-
-  .steps__item:hover {
-    transform: translateY(-8px);
-    background: var(--white);
-    box-shadow: var(--shadow-lg);
-  }
-
-  .steps__item:hover .steps__dot {
-    background: var(--saffron);
-    color: var(--ink);
-    transform: scale(1.08);
-  }
-
   /* ---------- Clients ---------- */
   .clients-sec {
     overflow: hidden;
@@ -1563,18 +1370,10 @@ const aboutHref = localePath(lang, '/about-us');
       display: none;
     }
 
-    .mach-grid,
-    .pgrid {
+    .mach-grid {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
-    .steps {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-    .steps::before {
-      display: none;
-    }
   }
 
   @media (max-width: 899px) {
@@ -1661,9 +1460,7 @@ const aboutHref = localePath(lang, '/about-us');
       transform: scale(1.01);
     }
 
-    .mach-grid,
-    .pgrid,
-    .steps {
+    .mach-grid {
       grid-template-columns: minmax(0, 1fr);
     }
   }

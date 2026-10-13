@@ -1,0 +1,128 @@
+---
+// The four-step delivery model as a timeline with a line that draws itself in.
+import Icon from './Icon.astro';
+import { approachSteps } from '../i18n/content';
+import type { Lang } from '../i18n/ui';
+
+interface Props {
+  lang?: Lang;
+  /** Background the dots are cut out from (matches the section background). */
+  bg?: string;
+}
+
+const { lang = 'en', bg = 'var(--sage)' } = Astro.props;
+const stepIcons = ['design', 'factory', 'commission', 'operate'] as const;
+---
+
+<ol class="steps" data-reveal style={`--steps-bg: ${bg}`}>
+  {
+    approachSteps[lang].map(([title, text], i) => (
+      <li class="steps__item" data-reveal style={`--d:${i + 1}`}>
+        <span class="steps__dot">
+          <Icon name={stepIcons[i]} size={28} />
+        </span>
+        <span class="steps__num tabular">{String(i + 1).padStart(2, '0')}</span>
+        <h3 class="h4">{title}</h3>
+        <p class="muted">{text}</p>
+      </li>
+    ))
+  }
+</ol>
+
+<style>
+  .steps {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 22px;
+    list-style: none;
+  }
+
+  /* A connecting line that draws itself across the four steps. */
+  .steps::before {
+    content: '';
+    position: absolute;
+    top: 64px;
+    left: 12%;
+    right: 12%;
+    height: 2px;
+    background: linear-gradient(90deg, var(--navy), var(--green-2), var(--saffron));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 1.8s var(--ease-out) 0.3s;
+  }
+
+  :global(.js) .steps.is-visible::before,
+  :global(html:not(.js)) .steps::before {
+    transform: scaleX(1);
+  }
+
+  .steps__item {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 30px 24px 32px;
+    border-radius: var(--radius-lg);
+    background: rgba(255, 255, 255, 0.55);
+    text-align: center;
+    transition:
+      transform 0.45s var(--ease-out),
+      background-color 0.45s var(--ease-out),
+      box-shadow 0.45s var(--ease-out);
+  }
+
+  .steps__dot {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    place-items: center;
+    width: 68px;
+    height: 68px;
+    border-radius: 50%;
+    background: var(--navy);
+    color: var(--white);
+    box-shadow: 0 0 0 8px var(--steps-bg);
+    transition:
+      background-color 0.35s var(--ease),
+      color 0.35s var(--ease),
+      transform 0.45s var(--ease-out);
+  }
+
+  .steps__num {
+    margin-top: 8px;
+    font: 800 15px/1 var(--sans);
+    letter-spacing: 0.1em;
+    color: var(--green-ink);
+  }
+
+  .steps__item:hover {
+    transform: translateY(-8px);
+    background: var(--white);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .steps__item:hover .steps__dot {
+    background: var(--saffron);
+    color: var(--ink);
+    transform: scale(1.08);
+  }
+
+
+  @media (max-width: 1100px) {
+    .steps {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .steps::before {
+      display: none;
+    }
+  }
+
+  @media (max-width: 680px) {
+    .steps {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+</style>

@@ -7,6 +7,10 @@ export default defineConfig({
   // Page addresses match the current site (e.g. /rotary-trommel-machines) so
   // existing Google rankings and shared links keep working after launch.
   trailingSlash: 'ignore',
+  // The project record now lives on the About page.
+  redirects: {
+    '/projects': '/about-us#projects',
+  },
   i18n: {
     defaultLocale: 'en',
     locales: ['en', 'hi', 'mr'],
