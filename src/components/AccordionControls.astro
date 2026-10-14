@@ -1,5 +1,6 @@
 ---
 // "Expand all" / "Collapse all" for every <details> inside the element with data-accordion={target}.
+// Sections also open one by one as they scroll into view.
 import type { Lang } from '../i18n/ui';
 
 interface Props {
@@ -30,12 +31,39 @@ const labels = {
   document.querySelectorAll<HTMLElement>('[data-accordion-controls]').forEach((ctrl) => {
     const root = document.querySelector<HTMLElement>(`[data-accordion="${ctrl.dataset.accordionControls}"]`);
     if (!root) return;
+    const items = [...root.querySelectorAll<HTMLDetailsElement>('details')];
+    let auto = true;
+
     ctrl.querySelectorAll<HTMLButtonElement>('[data-action]').forEach((btn) =>
       btn.addEventListener('click', () => {
         const open = btn.dataset.action === 'open';
-        root.querySelectorAll('details').forEach((d) => (d.open = open));
+        items.forEach((d) => (d.open = open));
+        // After "Collapse all", stop opening sections on scroll.
+        if (!open) auto = false;
       }),
     );
+
+    // Each section opens by itself as it scrolls into view, once, unless the
+    // visitor has already opened or closed it by hand.
+    items.forEach((d) =>
+      d.querySelector('summary')?.addEventListener('click', () => (d.dataset.touched = '')),
+    );
+    if (!('IntersectionObserver' in window)) return;
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+          const d = entry.target.closest('details') as HTMLDetailsElement;
+          io.unobserve(entry.target);
+          if (auto && !('touched' in d.dataset)) d.open = true;
+        }
+      },
+      { rootMargin: '0px 0px -38% 0px' },
+    );
+    items.forEach((d) => {
+      const summary = d.querySelector('summary');
+      if (!d.open && summary) io.observe(summary);
+    });
   });
 </script>
 

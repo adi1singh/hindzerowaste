@@ -7,6 +7,7 @@ import ClientWall from '../components/ClientWall.astro';
 import CtaBand from '../components/CtaBand.astro';
 import Count from '../components/Count.astro';
 import Icon from '../components/Icon.astro';
+import StateMark from '../components/StateMark.astro';
 import { figures, footprint, site } from '../data/site';
 import { completedBiomining, machineSupply, ongoingBiomining, plantProjects, plantsInstalled } from '../data/projects';
 import type { Lang } from '../i18n/ui';
@@ -82,9 +83,12 @@ const copy = {
     ],
     landmarkEyebrow: 'Landmark projects',
     landmarkTitle: 'Six projects that <em>define</em> us',
-    completed: 'Completed bio-mining',
-    ongoing: 'Bio-mining in progress',
-    plants: 'Processing plants and O&M',
+    completed: 'Completed bio‑mining projects',
+    completedSub: `${clearedTotal.toLocaleString('en-IN')} m³ of legacy waste cleared`,
+    ongoing: 'Bio‑mining projects in progress',
+    ongoingSub: 'In Maharashtra, Himachal Pradesh and Telangana',
+    plants: 'Processing plant and O&M projects',
+    plantsSub: 'In Rajasthan, Delhi and Telangana',
     site: 'Site',
     volumeLabel: 'Volume',
     scaleLabel: 'Scale',
@@ -155,8 +159,11 @@ const copy = {
     landmarkEyebrow: 'प्रमुख परियोजनाएँ',
     landmarkTitle: 'हमारी पहचान बनी <em>छह परियोजनाएँ</em>',
     completed: '',
+    completedSub: '',
     ongoing: '',
+    ongoingSub: '',
     plants: '',
+    plantsSub: '',
     site: '',
     volumeLabel: '',
     scaleLabel: '',
@@ -227,8 +234,11 @@ const copy = {
     landmarkEyebrow: 'महत्त्वाचे प्रकल्प',
     landmarkTitle: 'आमची ओळख ठरलेले <em>सहा प्रकल्प</em>',
     completed: '',
+    completedSub: '',
     ongoing: '',
+    ongoingSub: '',
     plants: '',
+    plantsSub: '',
     site: '',
     volumeLabel: '',
     scaleLabel: '',
@@ -300,35 +310,20 @@ const alternates = { en: '/about-us', hi: '/hi/about-us', mr: '/mr/about-us' };
     <a class="btn btn--ghost" href={site.downloads.profile} target="_blank" rel="noopener">{copy.profile} <span class="arrow">↗</span></a>
   </IndexHero>
 
-  <!-- Story -->
-  <section class="section bg-paper">
-    <div class="container story">
-      <div data-reveal="left">
-        <p class="eyebrow">{copy.storyEyebrow}</p>
-        <h2 class="h2 story__title" set:html={copy.storyTitle} />
-        <div class="story__body">
-          {copy.story.map((p, i) => <p class={i === 0 ? 'lead' : ''}>{p}</p>)}
-        </div>
-      </div>
-      <div class="story__media" data-reveal="right">
-        <Image src={storyImage} alt="Bio-mining plant working across a legacy dumpsite" widths={[600, 900, 1280]} sizes="(min-width: 900px) 45vw, 92vw" loading="lazy" />
-        <span class="story__badge">
-          <strong class="tabular">2017</strong>
-          <span>Kolhapur</span>
-        </span>
-      </div>
-    </div>
-  </section>
-
-  <!-- Projects -->
+  <!-- Projects: the six landmark projects first, then the overall record -->
   <section class="section bg-ink on-dark proj" id="projects">
     <div class="container">
-      <div class="section-head section-head--center" data-reveal>
-        <p class="eyebrow">{copy.projEyebrow}</p>
-        <h2 class="h2" set:html={copy.projTitle} />
+      <div class="section-head section-head--center proj__head" data-reveal>
+        <p class="eyebrow">{copy.landmarkEyebrow}</p>
+        <h2 class="h2 proj__title" set:html={copy.landmarkTitle} />
         <p class="muted proj__intro">{copy.projIntro}</p>
       </div>
+      <ProjectCards lang={lang} />
 
+      <div class="section-head section-head--center proj__record" data-reveal>
+        <p class="eyebrow">{copy.projEyebrow}</p>
+        <h3 class="h2" set:html={copy.projTitle} />
+      </div>
       <dl class="pstats">
         {
           stats.map((s, i) => (
@@ -341,12 +336,6 @@ const alternates = { en: '/about-us', hi: '/hi/about-us', mr: '/mr/about-us' };
           ))
         }
       </dl>
-
-      <div class="section-head section-head--center proj__landmark" data-reveal>
-        <p class="eyebrow">{copy.landmarkEyebrow}</p>
-        <h3 class="h2" set:html={copy.landmarkTitle} />
-      </div>
-      <ProjectCards lang={lang} />
     </div>
   </section>
 
@@ -354,9 +343,13 @@ const alternates = { en: '/about-us', hi: '/hi/about-us', mr: '/mr/about-us' };
     lang === 'en' && (
       <section class="section bg-white">
         <div class="container tables">
-          <div data-reveal>
-            <h3 class="tables__title">
-              <span class="tables__count tabular">{completedBiomining.length}</span> {copy.completed}
+          <div class="rec rec--done" data-reveal>
+            <h3 class="rec__head">
+              <span class="rec__num tabular">{completedBiomining.length}</span>
+              <span class="rec__text">
+                <span class="rec__label">{copy.completed}</span>
+                <span class="rec__sub">{copy.completedSub}</span>
+              </span>
             </h3>
             <ul class="rows">
               {completedBiomining.map((r) => (
@@ -370,9 +363,14 @@ const alternates = { en: '/about-us', hi: '/hi/about-us', mr: '/mr/about-us' };
               ))}
             </ul>
           </div>
-          <div data-reveal>
-            <h3 class="tables__title">
-              <span class="tables__count tabular">{ongoingBiomining.length}</span> {copy.ongoing}
+          <div class="tables__col">
+          <div class="rec rec--live" data-reveal>
+            <h3 class="rec__head">
+              <span class="rec__num tabular">{ongoingBiomining.length}</span>
+              <span class="rec__text">
+                <span class="rec__label">{copy.ongoing}</span>
+                <span class="rec__sub">{copy.ongoingSub}</span>
+              </span>
             </h3>
             <ul class="rows">
               {ongoingBiomining.map((r) => (
@@ -385,9 +383,15 @@ const alternates = { en: '/about-us', hi: '/hi/about-us', mr: '/mr/about-us' };
                 </li>
               ))}
             </ul>
+          </div>
 
-            <h3 class="tables__title tables__gap">
-              <span class="tables__count tabular">{plantProjects.length}</span> {copy.plants}
+          <div class="rec rec--plant" data-reveal>
+            <h3 class="rec__head">
+              <span class="rec__num tabular">{plantProjects.length}</span>
+              <span class="rec__text">
+                <span class="rec__label">{copy.plants}</span>
+                <span class="rec__sub">{copy.plantsSub}</span>
+              </span>
             </h3>
             <ul class="rows">
               {plantProjects.map((p) => (
@@ -396,6 +400,7 @@ const alternates = { en: '/about-us', hi: '/hi/about-us', mr: '/mr/about-us' };
                 </li>
               ))}
             </ul>
+          </div>
           </div>
         </div>
       </section>
@@ -414,10 +419,13 @@ const alternates = { en: '/about-us', hi: '/hi/about-us', mr: '/mr/about-us' };
           plantsInstalled.map((s, i) => (
             <li class="state" data-reveal style={`--d:${i % 4}`}>
               <div class="state__head">
-                <h3 class="state__name">{stateName(s.state)}</h3>
-                <span class="state__count tabular">
-                  {s.sites.length} {s.sites.length === 1 ? copy.plantWord : copy.plantsWord}
-                </span>
+                <div class="state__title">
+                  <h3 class="state__name">{stateName(s.state)}</h3>
+                  <span class="state__count tabular">
+                    {s.sites.length} {s.sites.length === 1 ? copy.plantWord : copy.plantsWord}
+                  </span>
+                </div>
+                <StateMark state={s.state} class="state__mark" />
               </div>
               {lang === 'en' && (
                 <ul class="state__sites">
@@ -447,6 +455,26 @@ const alternates = { en: '/about-us', hi: '/hi/about-us', mr: '/mr/about-us' };
     </div>
   </section>
 
+  <!-- Story -->
+  <section class="section bg-paper">
+    <div class="container story">
+      <div data-reveal="left">
+        <p class="eyebrow">{copy.storyEyebrow}</p>
+        <h2 class="h2 story__title" set:html={copy.storyTitle} />
+        <div class="story__body">
+          {copy.story.map((p, i) => <p class={i === 0 ? 'lead' : ''}>{p}</p>)}
+        </div>
+      </div>
+      <div class="story__media" data-reveal="right">
+        <Image src={storyImage} alt="Bio-mining plant working across a legacy dumpsite" widths={[600, 900, 1280]} sizes="(min-width: 900px) 45vw, 92vw" loading="lazy" />
+        <span class="story__badge">
+          <strong class="tabular">2017</strong>
+          <span>Kolhapur</span>
+        </span>
+      </div>
+    </div>
+  </section>
+
   <!-- Vision, mission, values -->
   <section class="section bg-navy-deep on-dark">
     <div class="container vmv">
@@ -473,13 +501,13 @@ const alternates = { en: '/about-us', hi: '/hi/about-us', mr: '/mr/about-us' };
   <section class="section bg-sage">
     <div class="container">
       <div class="section-head section-head--center" data-reveal>
-        <p class="eyebrow">{copy.whyEyebrow}</p>
-        <h2 class="h2" set:html={copy.whyTitle} />
+        <p class="eyebrow why__eyebrow">{copy.whyEyebrow}</p>
+        <h2 class="h2 why__title" set:html={copy.whyTitle} />
       </div>
-      <ul class="why">
+      <ul class="why" data-spotlight>
         {
           copy.why.map(([title, text], i) => (
-            <li class="why__card" data-reveal style={`--d:${i}`}>
+            <li class:list={['why__card', { 'is-lit': i === 0 }]} data-reveal style={`--d:${i}`}>
               <span class="why__icon">
                 <Icon name={whyIcons[i]} size={28} />
               </span>
@@ -528,6 +556,37 @@ const alternates = { en: '/about-us', hi: '/hi/about-us', mr: '/mr/about-us' };
 
   <CtaBand lang={lang} />
 </Base>
+
+<script>
+  // "Why clients choose us": the spotlight moves from card to card so each point
+  // gets a moment of attention. It pauses while the visitor points at a card.
+  const why = document.querySelector<HTMLElement>('[data-spotlight]');
+  if (why) {
+    const cards = [...why.querySelectorAll<HTMLElement>('.why__card')];
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let current = 0;
+    let timer: number | undefined;
+    const light = (n: number) => {
+      current = n % cards.length;
+      cards.forEach((c, i) => c.classList.toggle('is-lit', i === current));
+    };
+    const start = () => {
+      window.clearInterval(timer);
+      if (!reduce) timer = window.setInterval(() => light(current + 1), 2600);
+    };
+    cards.forEach((card, i) => {
+      card.addEventListener('mouseenter', () => {
+        window.clearInterval(timer);
+        light(i);
+      });
+      card.addEventListener('mouseleave', start);
+    });
+    // Only cycle while the section is on screen.
+    new IntersectionObserver(([entry]) => (entry.isIntersecting ? start() : window.clearInterval(timer)), {
+      threshold: 0.3,
+    }).observe(why);
+  }
+</script>
 
 <style>
   /* Story */
@@ -617,11 +676,19 @@ const alternates = { en: '/about-us', hi: '/hi/about-us', mr: '/mr/about-us' };
     font-size: 17px;
   }
 
+  .proj__title {
+    font-size: clamp(2.6rem, 5vw, 4.6rem);
+  }
+
+  .proj__record {
+    margin-top: clamp(64px, 8vw, 104px);
+  }
+
   .pstats {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 18px;
-    margin: 0 0 clamp(64px, 8vw, 104px);
+    margin: 0;
   }
 
   .pstats__item {
@@ -657,10 +724,6 @@ const alternates = { en: '/about-us', hi: '/hi/about-us', mr: '/mr/about-us' };
     max-width: 22em;
   }
 
-  .proj__landmark {
-    margin-bottom: 40px;
-  }
-
   /* Tables as hoverable rows */
   .tables {
     display: grid;
@@ -668,30 +731,74 @@ const alternates = { en: '/about-us', hi: '/hi/about-us', mr: '/mr/about-us' };
     gap: 48px 56px;
   }
 
-  .tables__title {
+  .tables__col {
+    display: grid;
+    align-content: start;
+    gap: 32px;
+  }
+
+  /* Each group opens with a big figure and a plain label, so the count reads first. */
+  .rec {
+    --rec: var(--green-ink);
+    --rec-tint: color-mix(in srgb, var(--green-ink) 10%, var(--white));
+    padding: 10px;
+    border-radius: 20px;
+    background: var(--paper);
+    border: 1px solid var(--line);
+  }
+
+  .rec--live {
+    --rec: var(--saffron);
+    --rec-tint: color-mix(in srgb, var(--saffron) 10%, var(--white));
+  }
+
+  .rec--plant {
+    --rec: var(--navy);
+    --rec-tint: color-mix(in srgb, var(--navy) 8%, var(--white));
+  }
+
+  .rec__head {
     display: flex;
     align-items: center;
-    gap: 14px;
-    margin-bottom: 18px;
-    font-family: var(--serif);
-    font-size: clamp(1.8rem, 2.6vw, 2.3rem);
-    line-height: 1.1;
+    gap: 22px;
+    margin-bottom: 10px;
+    padding: 22px 24px;
+    border-radius: 14px;
+    background: var(--rec-tint);
+    border-left: 6px solid var(--rec);
   }
 
-  .tables__count {
-    display: grid;
-    place-items: center;
-    min-width: 48px;
-    height: 48px;
-    padding: 0 10px;
-    border-radius: 12px;
-    background: var(--navy);
-    color: var(--white);
-    font: 800 20px/1 var(--sans);
+  .rec__num {
+    flex: none;
+    font: 800 clamp(3.4rem, 5.4vw, 4.8rem) / 0.9 var(--sans);
+    letter-spacing: -0.05em;
+    color: var(--rec);
   }
 
-  .tables__gap {
-    margin-top: 56px;
+  .rec__text {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .rec__label {
+    font: 700 clamp(1.2rem, 1.7vw, 1.45rem) / 1.2 var(--sans);
+    letter-spacing: -0.01em;
+    color: var(--ink);
+  }
+
+  .rec__sub {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--muted);
+  }
+
+  .rec .rows {
+    padding: 4px;
+  }
+
+  .rec .rows__item {
+    background: var(--white);
   }
 
   .rows {
@@ -786,8 +893,32 @@ const alternates = { en: '/about-us', hi: '/hi/about-us', mr: '/mr/about-us' };
 
   .state__head {
     display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .state__title {
+    display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 10px;
+  }
+
+  .state :global(.state__mark) {
+    flex: none;
+    width: 92px;
+    height: auto;
+    margin: -6px -6px 0 0;
+    color: var(--saffron);
+    opacity: 0.55;
+    transition:
+      opacity 0.4s var(--ease),
+      transform 0.5s var(--ease-out);
+  }
+
+  .state:hover :global(.state__mark) {
+    opacity: 1;
+    transform: scale(1.06);
   }
 
   .state__name {
@@ -873,6 +1004,21 @@ const alternates = { en: '/about-us', hi: '/hi/about-us', mr: '/mr/about-us' };
   }
 
   /* Why us */
+  .why__eyebrow {
+    font-size: clamp(16px, 1.4vw, 19px);
+  }
+
+  .why__eyebrow::before {
+    width: 11px;
+    height: 11px;
+    box-shadow: 0 13px 0 var(--green);
+    transform: translateY(-6px);
+  }
+
+  .why__title {
+    font-size: clamp(2.6rem, 4.8vw, 4.4rem);
+  }
+
   .why {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -888,9 +1034,10 @@ const alternates = { en: '/about-us', hi: '/hi/about-us', mr: '/mr/about-us' };
     border-radius: var(--radius-lg);
     background: rgba(255, 255, 255, 0.6);
     transition:
-      transform 0.45s var(--ease-out),
-      background-color 0.45s var(--ease-out),
-      box-shadow 0.45s var(--ease-out);
+      transform 0.5s var(--ease-out),
+      background-color 0.5s var(--ease-out),
+      border-color 0.5s var(--ease-out),
+      box-shadow 0.5s var(--ease-out);
   }
 
   .why__icon {
@@ -908,16 +1055,27 @@ const alternates = { en: '/about-us', hi: '/hi/about-us', mr: '/mr/about-us' };
       transform 0.45s var(--ease-out);
   }
 
-  .why__card:hover {
-    transform: translateY(-8px);
+  .why__card {
+    border: 2px solid transparent;
+  }
+
+  .why__card:hover,
+  .why__card.is-lit {
+    transform: translateY(-10px) scale(1.03);
     background: var(--white);
+    border-color: var(--saffron);
     box-shadow: var(--shadow-lg);
   }
 
-  .why__card:hover .why__icon {
+  .why__card:hover .why__icon,
+  .why__card.is-lit .why__icon {
     background: var(--saffron);
     color: var(--white);
-    transform: rotate(-6deg) scale(1.06);
+    transform: rotate(-6deg) scale(1.1);
+  }
+
+  .why__card.is-lit :global(.h4) {
+    color: var(--saffron-ink);
   }
 
   /* Credentials */
@@ -981,9 +1139,11 @@ const alternates = { en: '/about-us', hi: '/hi/about-us', mr: '/mr/about-us' };
   .statechips li {
     padding: 7px 14px;
     border-radius: 999px;
-    border: 1px solid var(--line-strong);
+    border: 1px solid color-mix(in srgb, var(--saffron) 22%, transparent);
+    background: color-mix(in srgb, var(--saffron) 11%, var(--white));
     font-size: 15px;
-    color: var(--ink);
+    font-weight: 550;
+    color: var(--saffron-ink);
     transition:
       background-color 0.25s var(--ease),
       color 0.25s var(--ease),
@@ -993,6 +1153,7 @@ const alternates = { en: '/about-us', hi: '/hi/about-us', mr: '/mr/about-us' };
   .statechips li:hover {
     background: var(--saffron);
     border-color: var(--saffron);
+    color: var(--white);
     transform: translateY(-2px);
   }
 

@@ -91,7 +91,7 @@ const copy = {
     svcIntro:
       'We take responsibility for the whole system: engineering, machinery, installation, commissioning and long-term operation and maintenance.',
     machEyebrow: 'Machinery',
-    machTitle: 'Engineered in-house, for <em>24×7</em> duty.',
+    machTitle: 'Engineered <span class="nowrap">in-house</span>, for <em>24×7</em> duty.',
     machIntro:
       'Every machine is designed and fabricated by our own team for efficiency, durability and long service life.',
     machAll: 'View all machinery',
@@ -690,13 +690,25 @@ const aboutHref = localePath(lang, '/about-us');
   }
 
   .hero__content {
+    position: relative;
+    z-index: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 26px;
-    max-width: 980px;
+    max-width: 1040px;
     margin-inline: auto;
     text-align: center;
+  }
+
+  /* A soft dark halo behind the text block so the headline stands clear of any photo. */
+  .hero__content::before {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    inset: -14% -18% -10%;
+    background: radial-gradient(closest-side, rgba(var(--shade), 0.62), rgba(var(--shade), 0.32) 55%, transparent);
+    pointer-events: none;
   }
 
   .hero__content .btn-row {
@@ -705,9 +717,12 @@ const aboutHref = localePath(lang, '/about-us');
 
   .hero__title {
     color: var(--white);
-    font-size: clamp(3.4rem, 7.8vw, 7.4rem);
+    font-size: clamp(3.9rem, 8.8vw, 8.6rem);
     letter-spacing: -0.015em;
-    text-shadow: 0 2px 30px rgba(var(--shade), 0.45);
+    /* Warm glow around the letters plus a dark shadow for contrast. */
+    text-shadow:
+      0 0 46px rgba(255, 236, 214, 0.32),
+      0 2px 30px rgba(var(--shade), 0.6);
   }
 
   /* Words settle in from a soft blur rather than just sliding up. */
@@ -734,6 +749,7 @@ const aboutHref = localePath(lang, '/about-us');
     z-index: 0;
     padding-inline: 0.08em 0.14em;
     color: #fff6ec;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
   }
 
   .hero__title :global(em)::before {
@@ -779,8 +795,9 @@ const aboutHref = localePath(lang, '/about-us');
   }
 
   .hero__sub {
-    font-size: 15px;
+    font-size: clamp(16px, 1.5vw, 19px);
     text-wrap: balance;
+    text-shadow: 0 1px 16px rgba(var(--shade), 0.7);
   }
 
   @media (max-width: 600px) {
@@ -1298,6 +1315,10 @@ const aboutHref = localePath(lang, '/about-us');
   }
 
   /* ---------- Machinery ---------- */
+  .mach .h2 {
+    font-size: clamp(2.6rem, 4.9vw, 4.5rem);
+  }
+
   .mach__side {
     display: flex;
     flex-direction: column;
