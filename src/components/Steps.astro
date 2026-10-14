@@ -1,5 +1,7 @@
 ---
-// The four-step delivery model as a timeline with a line that draws itself in.
+// The four-step delivery model. Arrows draw in one after another, 01 → 02 → 03 → 04,
+// so the direction of the work reads at a glance. Below 1100px it becomes a
+// vertical timeline with arrows pointing down.
 import Icon from './Icon.astro';
 import { approachSteps } from '../i18n/content';
 import type { Lang } from '../i18n/ui';
@@ -17,13 +19,14 @@ const stepIcons = ['design', 'factory', 'commission', 'operate'] as const;
 <ol class="steps" data-reveal style={`--steps-bg: ${bg}`}>
   {
     approachSteps[lang].map(([title, text], i) => (
-      <li class="steps__item" data-reveal style={`--d:${i + 1}`}>
+      <li class="steps__item" data-reveal style={`--d:${i + 1}; --i:${i}`}>
         <span class="steps__dot">
           <Icon name={stepIcons[i]} size={28} />
         </span>
         <span class="steps__num tabular">{String(i + 1).padStart(2, '0')}</span>
         <h3 class="h4">{title}</h3>
         <p class="muted">{text}</p>
+        {i < approachSteps[lang].length - 1 && <span class="steps__arrow" aria-hidden="true" />}
       </li>
     ))
   }
@@ -38,23 +41,36 @@ const stepIcons = ['design', 'factory', 'commission', 'operate'] as const;
     list-style: none;
   }
 
-  /* A connecting line that draws itself across the four steps. */
-  .steps::before {
-    content: '';
+  /* The arrow from this step's dot to the next one. It draws in once the
+     timeline scrolls into view, each arrow a beat after the one before. */
+  .steps__arrow {
     position: absolute;
-    top: 64px;
-    left: 12%;
-    right: 12%;
-    height: 2px;
-    background: linear-gradient(90deg, var(--navy), var(--green-2), var(--saffron));
-    transform: scaleX(0);
-    transform-origin: left;
-    transition: transform 1.8s var(--ease-out) 0.3s;
+    z-index: 2;
+    top: 57px;
+    left: calc(50% + 44px);
+    width: calc(100% - 66px);
+    height: 14px;
+    background: linear-gradient(90deg, rgba(46, 42, 39, 0.35), var(--saffron)) center / calc(100% - 4px) 2px no-repeat;
+    clip-path: inset(0 100% 0 0);
+    transition: clip-path 0.6s var(--ease-out) calc(0.5s + var(--i) * 0.45s);
+    pointer-events: none;
   }
 
-  :global(.js) .steps.is-visible::before,
-  :global(html:not(.js)) .steps::before {
-    transform: scaleX(1);
+  .steps__arrow::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    right: 3px;
+    width: 10px;
+    height: 10px;
+    border-top: 2px solid var(--saffron);
+    border-right: 2px solid var(--saffron);
+    transform: rotate(45deg);
+  }
+
+  :global(.js) .steps.is-visible .steps__arrow,
+  :global(html:not(.js)) .steps__arrow {
+    clip-path: inset(0 0 0 0);
   }
 
   .steps__item {
@@ -110,19 +126,49 @@ const stepIcons = ['design', 'factory', 'commission', 'operate'] as const;
   }
 
 
+  /* Tablets and phones: a vertical timeline, dot on the left, arrows pointing down. */
   @media (max-width: 1100px) {
     .steps {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-    .steps::before {
-      display: none;
-    }
-  }
-
-  @media (max-width: 680px) {
-    .steps {
       grid-template-columns: minmax(0, 1fr);
+    }
+
+    .steps__item {
+      display: grid;
+      grid-template-columns: 68px minmax(0, 1fr);
+      column-gap: 20px;
+      row-gap: 4px;
+      align-items: start;
+      padding: 22px;
+      text-align: left;
+    }
+
+    .steps__dot {
+      grid-row: span 3;
+    }
+
+    .steps__num {
+      margin-top: 6px;
+    }
+
+    .steps__item:hover {
+      transform: none;
+    }
+
+    .steps__arrow {
+      top: 96px;
+      left: 49px;
+      width: 14px;
+      height: calc(100% - 58px);
+      background: linear-gradient(180deg, rgba(46, 42, 39, 0.35), var(--saffron)) center / 2px calc(100% - 4px) no-repeat;
+      clip-path: inset(0 0 100% 0);
+    }
+
+    .steps__arrow::after {
+      top: auto;
+      right: auto;
+      bottom: 3px;
+      left: 2px;
+      transform: rotate(135deg);
     }
   }
 </style>
