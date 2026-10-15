@@ -82,7 +82,7 @@ const copy = {
       'Years of O&M contracted in Rajasthan',
     ],
     landmarkEyebrow: 'Landmark projects',
-    landmarkTitle: 'Six projects that <em>define</em> us',
+    landmarkTitle: '<u>Six projects</u> that <em>define</em> us',
     completed: 'Completed bio‑mining projects',
     completedSub: `${clearedTotal.toLocaleString('en-IN')} m³ of legacy waste cleared`,
     ongoing: 'Bio‑mining projects in progress',
@@ -93,7 +93,7 @@ const copy = {
     volumeLabel: 'Volume',
     scaleLabel: 'Scale',
     installedEyebrow: 'Installed base',
-    installedTitle: `Bio-mining plants installed in <em>${plantsInstalled.length} states</em> and union territories`,
+    installedTitle: `Bio-mining plants installed in <em class="tricolor-underline">${plantsInstalled.length} states and union territories</em>`,
     plantsWord: 'plants',
     plantWord: 'plant',
     supply: 'Machine supply',
@@ -157,7 +157,7 @@ const copy = {
       'राजस्थान में O&M अनुबंध (वर्ष)',
     ],
     landmarkEyebrow: 'प्रमुख परियोजनाएँ',
-    landmarkTitle: 'हमारी पहचान बनी <em>छह परियोजनाएँ</em>',
+    landmarkTitle: 'हमारी पहचान बनी <em><u>छह परियोजनाएँ</u></em>',
     completed: '',
     completedSub: '',
     ongoing: '',
@@ -168,7 +168,7 @@ const copy = {
     volumeLabel: '',
     scaleLabel: '',
     installedEyebrow: 'स्थापित प्लांट',
-    installedTitle: `<em>${plantsInstalled.length} राज्यों</em> और केंद्रशासित प्रदेशों में बायो-माइनिंग प्लांट`,
+    installedTitle: `<em class="tricolor-underline">${plantsInstalled.length} राज्यों और केंद्रशासित प्रदेशों</em> में बायो-माइनिंग प्लांट`,
     plantsWord: 'प्लांट',
     plantWord: 'प्लांट',
     supply: 'मशीन आपूर्ति',
@@ -232,7 +232,7 @@ const copy = {
       'राजस्थानमधील O&M करार (वर्षे)',
     ],
     landmarkEyebrow: 'महत्त्वाचे प्रकल्प',
-    landmarkTitle: 'आमची ओळख ठरलेले <em>सहा प्रकल्प</em>',
+    landmarkTitle: 'आमची ओळख ठरलेले <em><u>सहा प्रकल्प</u></em>',
     completed: '',
     completedSub: '',
     ongoing: '',
@@ -243,7 +243,7 @@ const copy = {
     volumeLabel: '',
     scaleLabel: '',
     installedEyebrow: 'उभारलेले प्लांट',
-    installedTitle: `<em>${plantsInstalled.length} राज्ये</em> व केंद्रशासित प्रदेशांमध्ये बायो-मायनिंग प्लांट`,
+    installedTitle: `<em class="tricolor-underline">${plantsInstalled.length} राज्ये व केंद्रशासित प्रदेशांमध्ये</em> बायो-मायनिंग प्लांट`,
     plantsWord: 'प्लांट',
     plantWord: 'प्लांट',
     supply: 'यंत्र पुरवठा',
@@ -321,7 +321,7 @@ const alternates = { en: '/about-us', hi: '/hi/about-us', mr: '/mr/about-us' };
       <ProjectCards lang={lang} />
 
       <div class="section-head section-head--center proj__record" data-reveal>
-        <p class="eyebrow">{copy.projEyebrow}</p>
+        <p class="eyebrow">{{ en: "Our achievements", hi: "हमारी उपलब्धियाँ", mr: "आमची कामगिरी" }[lang]}</p>
         <h3 class="h2" set:html={copy.projTitle} />
       </div>
       <dl class="pstats">
@@ -342,10 +342,12 @@ const alternates = { en: '/about-us', hi: '/hi/about-us', mr: '/mr/about-us' };
   {
     lang === 'en' && (
       <section class="section bg-white">
-        <div class="container tables">
+        <div class="container">
+          <div class="section-head section-head--center" data-reveal><p class="eyebrow">Our project journey</p><h2 class="h2">Achievements <em>on the ground</em></h2></div>
+          <div class="tables">
           <div class="rec rec--done" data-reveal>
             <h3 class="rec__head">
-              <span class="rec__num tabular">{completedBiomining.length}</span>
+              <span class="rec__num tabular"><Count value={completedBiomining.length} /></span>
               <span class="rec__text">
                 <span class="rec__label">{copy.completed}</span>
                 <span class="rec__sub">{copy.completedSub}</span>
@@ -366,7 +368,7 @@ const alternates = { en: '/about-us', hi: '/hi/about-us', mr: '/mr/about-us' };
           <div class="tables__col">
           <div class="rec rec--live" data-reveal>
             <h3 class="rec__head">
-              <span class="rec__num tabular">{ongoingBiomining.length}</span>
+              <span class="rec__num tabular"><Count value={ongoingBiomining.length} /></span>
               <span class="rec__text">
                 <span class="rec__label">{copy.ongoing}</span>
                 <span class="rec__sub">{copy.ongoingSub}</span>
@@ -387,7 +389,7 @@ const alternates = { en: '/about-us', hi: '/hi/about-us', mr: '/mr/about-us' };
 
           <div class="rec rec--plant" data-reveal>
             <h3 class="rec__head">
-              <span class="rec__num tabular">{plantProjects.length}</span>
+              <span class="rec__num tabular"><Count value={plantProjects.length} /></span>
               <span class="rec__text">
                 <span class="rec__label">{copy.plants}</span>
                 <span class="rec__sub">{copy.plantsSub}</span>
@@ -400,6 +402,7 @@ const alternates = { en: '/about-us', hi: '/hi/about-us', mr: '/mr/about-us' };
                 </li>
               ))}
             </ul>
+          </div>
           </div>
           </div>
         </div>
@@ -554,6 +557,9 @@ const alternates = { en: '/about-us', hi: '/hi/about-us', mr: '/mr/about-us' };
     <div data-reveal><ClientWall /></div>
   </section>
 
+  <section class="jobgen-section bg-sky" aria-label="Website partner">
+    <div class="container"><p class="eyebrow">{{ en: 'Website partner', hi: 'वेबसाइट साझेदार', mr: 'वेबसाइट भागीदार' }[lang]}</p><p class="jobgen-credit">POWERED BY <strong>JOB GEN</strong></p></div>
+  </section>
   <CtaBand lang={lang} />
 </Base>
 
@@ -1206,4 +1212,16 @@ const alternates = { en: '/about-us', hi: '/hi/about-us', mr: '/mr/about-us' };
       grid-template-columns: minmax(0, 1fr);
     }
   }
+
+  .proj__title :global(u) { text-underline-offset: .16em; text-decoration-thickness: 2px; text-decoration-color: var(--saffron-2); }
+  .pstats__item { position: relative; overflow: hidden; border-top: 3px solid var(--saffron-2); background: linear-gradient(135deg, #e08a621c, #ffffff08); }
+  .pstats__item:nth-child(3n + 2) { border-top-color: #a6bd80; }
+  .tables { align-items: start; }
+  .rec { box-shadow: 0 18px 45px -30px #3338; border-top: 3px solid var(--rec); }
+  .rec__head { padding-block: 30px; }
+  .rec__num { font-size: clamp(4rem, 6vw, 5.5rem); }
+  @media (prefers-reduced-motion: no-preference) {
+    .pstats__item.is-visible dt, .rec.is-visible .rec__num { animation: achievement-pop .85s var(--ease-out) both; animation-delay: calc(var(--d, 0) * .1s); }
+  }
+  @keyframes achievement-pop { from { opacity: .2; transform: translateY(15px) scale(.9); } to { opacity: 1; transform: none; } }
 </style>

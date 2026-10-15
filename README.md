@@ -79,7 +79,7 @@ A "Request a quote" button on any machine or service page opens the form with th
 
 - **Palette:** ivory paper, deep ink and the navy of the logo. The logo's lime and green are reserved for small accents, such as the square markers that echo the four squares of the mark.
 - **Type:** Instrument Serif for headings and Inter for text. Devanagari uses Tiro Devanagari Hindi or Marathi for headings and Noto Sans Devanagari for text. All fonts are self-hosted, with no Google Fonts requests.
-- **Logo:** cut from the original artwork. `logo-horizontal.png` uses the same mark and lettering in a side-by-side arrangement for the header; the stacked original is used in the footer. A vector (SVG or AI) logo file from the client would make both even sharper.
+- **Logo:** the shared vector component `src/components/BrandLogo.astro` uses a recovery loop and leaf. Run `node scripts/brand-assets.mjs` after changing the mark to refresh public SVG, PNG and app icons. Original brand artwork is retained in `src/assets/brand/`.
 - **Motion:** a rotating photo slideshow in the home hero, figures that count up as they scroll into view, philosophy words that fill with a Pune skyline as you scroll, sections that rise into view, hover growth on rows and cards, and a scrolling client-logo marquee. All of it is switched off for visitors who ask their device for reduced motion.
 - **Navigation:** Machinery and Services in the menu link to their pages; their dropdowns open on hover, or from the small arrow button by keyboard or touch. The machinery and services pages list categories as numbered accordions with Expand all / Collapse all.
 - **Video:** product videos load from YouTube only when a visitor presses play.

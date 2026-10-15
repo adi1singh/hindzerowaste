@@ -18,6 +18,7 @@ const stepIcons = ['design', 'factory', 'commission', 'operate'] as const;
   {
     approachSteps[lang].map(([title, text], i) => (
       <li class="steps__item" data-reveal style={`--d:${i + 1}`}>
+        {i < 3 && <svg class:list={['steps__connector', { 'steps__connector--drop': i === 1 }]} viewBox="0 0 100 52" preserveAspectRatio="none" aria-hidden="true"><path class="steps__track" d={i === 1 ? 'M0 7 C50 7 50 45 94 45' : 'M0 7 H94'} /><path class="steps__travel" d={i === 1 ? 'M0 7 C50 7 50 45 94 45' : 'M0 7 H94'} /><path class="steps__arrow" d={i === 1 ? 'M88 39 L95 45 L88 51' : 'M88 1 L95 7 L88 13'} /></svg>}
         <span class="steps__dot">
           <Icon name={stepIcons[i]} size={28} />
         </span>
@@ -124,5 +125,27 @@ const stepIcons = ['design', 'factory', 'commission', 'operate'] as const;
     .steps {
       grid-template-columns: minmax(0, 1fr);
     }
+  }
+
+  .steps { padding-bottom: 38px; gap: 30px; }
+  .steps::before { display: none; }
+  .steps__item:nth-child(n + 3) { top: 38px; }
+  .steps__connector { position: absolute; left: calc(100% - 2px); top: 56px; width: 34px; height: 52px; overflow: visible; z-index: 2; pointer-events: none; }
+  .steps__connector path { fill: none; stroke-width: 2; vector-effect: non-scaling-stroke; }
+  .steps__track { stroke: var(--line-strong); }
+  .steps__travel, .steps__arrow { stroke: var(--saffron); }
+  .steps__travel { stroke-dasharray: 9 9; }
+  @media (prefers-reduced-motion: no-preference) { .steps.is-visible .steps__travel { animation: travel 1.8s linear infinite; } }
+  @keyframes travel { to { stroke-dashoffset: -36; } }
+  @media (max-width: 1100px) {
+    .steps { padding-bottom: 0; }
+    .steps__item:nth-child(n + 3) { top: 0; }
+    .steps__connector--drop { display: none; }
+  }
+  @media (max-width: 680px) {
+    .steps { gap: 36px; }
+    .steps__connector, .steps__connector--drop { display: block; top: calc(100% + 4px); left: calc(50% - 15px); width: 30px; height: 28px; transform: rotate(90deg); }
+    .steps__connector--drop { display: none; }
+    .steps__item:nth-child(2)::after { content: '↓'; position: absolute; top: calc(100% + 3px); color: var(--saffron); font-size: 24px; }
   }
 </style>

@@ -1,0 +1,25 @@
+---
+interface Props { light?: boolean; }
+const { light = false } = Astro.props;
+---
+<svg class:list={['brand-logo', { 'brand-logo--light': light }]} viewBox="0 0 360 88" role="img" aria-label="Hind Zero Waste Management">
+ <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M62 18A31 31 0 0 0 15 55" stroke="#718d42" stroke-width="9" />
+  <path d="M12 44L15 57L28 53" stroke="#718d42" stroke-width="7" />
+  <path d="M23 71A31 31 0 0 0 75 35" stroke="#ce7543" stroke-width="9" />
+  <path d="M63 37L76 33L79 46" stroke="#ce7543" stroke-width="7" />
+  <path d="M32 57C27 40 37 29 57 28C59 48 49 61 32 57Z" fill="#718d42" stroke="none" />
+  <path d="M32 57L49 38" stroke="#fff8ed" stroke-width="2.5" />
+ </g>
+ <text x="99" y="35" class="brand-logo__hind">HIND</text>
+ <text x="99" y="61" class="brand-logo__name">ZERO WASTE</text>
+ <text x="100" y="78" class="brand-logo__sub">MANAGEMENT PVT. LTD.</text>
+</svg>
+<style>
+ .brand-logo { width: 262px; max-width: 100%; height: auto; display: block; color: var(--ink); }
+ .brand-logo--light { color: #fff8ed; }
+ text { fill: currentColor; font-family: var(--sans); }
+ .brand-logo__hind { font-size: 30px; font-weight: 850; letter-spacing: 5px; }
+ .brand-logo__name { font-size: 24px; font-weight: 750; letter-spacing: 1px; }
+ .brand-logo__sub { font-size: 10px; font-weight: 600; letter-spacing: 1.35px; }
+</style>

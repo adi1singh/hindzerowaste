@@ -1,6 +1,6 @@
 ---
 import { Image } from 'astro:assets';
-import logo from '../assets/brand/logo-horizontal.png';
+import BrandLogo from './BrandLogo.astro';
 import { site, telHref } from '../data/site';
 import { products } from '../data/products';
 import { services } from '../data/services';
@@ -71,7 +71,7 @@ const chevron =
 <header class="site-header" data-header>
   <div class="container bar">
     <a class="brand" href={home} aria-label={`${site.name}, home`}>
-      <Image src={logo} alt="" height={64} densities={[1, 2]} loading="eager" />
+      <BrandLogo />
     </a>
 
     <nav class="nav" aria-label="Main">
@@ -499,7 +499,7 @@ const chevron =
     flex: none;
   }
 
-  .brand img {
+  .brand :global(.brand-logo) {
     height: 64px;
     width: auto;
   }
@@ -863,7 +863,7 @@ const chevron =
       font-size: 16px;
     }
 
-    .brand img {
+    .brand :global(.brand-logo) {
       height: 56px;
     }
   }
@@ -890,7 +890,7 @@ const chevron =
       display: inline;
     }
 
-    .brand img {
+    .brand :global(.brand-logo) {
       height: 52px;
     }
   }
@@ -926,7 +926,7 @@ const chevron =
       padding: 0 6px;
     }
 
-    .brand img {
+    .brand :global(.brand-logo) {
       height: 42px;
     }
   }

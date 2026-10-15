@@ -81,7 +81,7 @@ const intro: Record<string, string> = {
                         {items.length} {items.length === 1 ? 'machine' : 'machines'}
                       </span>
                     </span>
-                    <span class="acc__toggle" aria-hidden="true" />
+                    <span class="acc__action"><span class="acc__hint">{'Click to expand'}</span><span class="acc__toggle" aria-hidden="true" /></span>
                   </summary>
                   <div class="acc__panel">
                     <ul class:list={['cat-grid', { 'cat-grid--single': items.length === 1 }]}>

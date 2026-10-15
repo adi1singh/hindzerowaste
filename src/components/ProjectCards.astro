@@ -1,8 +1,8 @@
 ---
-// The six featured projects as cards (home and about pages). Figures are shown
-// as written, not counted up, so the scale of each project reads immediately.
+// Shared featured projects with on-entry number animation and preserved units.
 import { featuredProjects, type Project } from '../data/projects';
 import { featuredProjectsLocal, statusLabels } from '../i18n/content';
+import Count from './Count.astro';
 import type { Lang } from '../i18n/ui';
 
 interface Props {
@@ -24,7 +24,7 @@ const projects: Project[] =
           <span class="pgrid__idx tabular">{String(i + 1).padStart(2, '0')}</span>
           <span class:list={['pgrid__status', `is-${p.status.toLowerCase()}`]}>{statusLabels[lang][p.status]}</span>
         </div>
-        <p class="pgrid__num tabular">{p.scale}</p>
+        <p class="pgrid__num tabular"><Count {...p.count} /></p>
         <h3 class="pgrid__client">{p.client}</h3>
         <p class="pgrid__loc">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
@@ -177,4 +177,14 @@ const projects: Project[] =
       padding: 22px 22px 24px;
     }
   }
+
+  .pgrid__card { border-top: 3px solid var(--saffron-2); background: linear-gradient(145deg, #e08a621c, #ffffff08); }
+  .pgrid__card:nth-child(even) { border-top-color: #a6bd80; }
+  .pgrid__card::before { top: auto; bottom: 0; height: 3px; }
+  @media (prefers-reduced-motion: no-preference) {
+    .pgrid__card.is-visible .pgrid__num { animation: project-value .9s var(--ease-out) both; animation-delay: calc(var(--d, 0) * .12s); }
+    .pgrid__card.is-visible::before { animation: project-rule 1.2s var(--ease-out) both; animation-delay: calc(var(--d, 0) * .15s); }
+  }
+  @keyframes project-value { from { opacity: 0; transform: translateY(16px) scale(.94); } to { opacity: 1; transform: none; } }
+  @keyframes project-rule { from { width: 0; } to { width: 100%; } }
 </style>

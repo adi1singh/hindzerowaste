@@ -16,7 +16,6 @@ import { figures, site } from '../data/site';
 import { localName, localePath, t, type Lang } from '../i18n/ui';
 import {
   categoryName,
-  consultancyCopy,
   serviceShorts,
 } from '../i18n/content';
 
@@ -98,7 +97,7 @@ const copy = {
     machAllN: 'See all {n} machines',
     filterAll: 'Featured',
     apprEyebrow: 'How we work',
-    apprTitle: 'One partner, from drawing board to <em>daily operation</em>.',
+    apprTitle: 'We design, build and <em>run your plant</em>.',
     apprIntro: 'One team is accountable from the first site survey to everyday operation of the plant.',
     clientsEyebrow: 'Clients',
     clientsTitle: 'Our clients and <em>partners</em>',
@@ -153,7 +152,7 @@ const copy = {
     machAllN: 'सभी {n} मशीनें देखें',
     filterAll: 'चुनिंदा',
     apprEyebrow: 'हमारी कार्यप्रणाली',
-    apprTitle: 'डिज़ाइन से <em>दैनिक संचालन</em> तक, एक ही साझेदार।',
+    apprTitle: 'हम आपका प्लांट डिज़ाइन करते हैं, बनाते हैं और <em>चलाते हैं</em>।',
     apprIntro: 'पहले साइट सर्वेक्षण से लेकर प्लांट के रोज़मर्रा के संचालन तक, एक ही टीम ज़िम्मेदार।',
     clientsEyebrow: 'ग्राहक',
     clientsTitle: 'हमारे ग्राहक और <em>साझेदार</em>',
@@ -207,7 +206,7 @@ const copy = {
     machAllN: 'सर्व {n} यंत्रे पाहा',
     filterAll: 'निवडक',
     apprEyebrow: 'आमची कार्यपद्धती',
-    apprTitle: 'डिझाइनपासून <em>दैनंदिन संचालनापर्यंत</em>, एकच भागीदार.',
+    apprTitle: 'आम्ही तुमचा प्लांट डिझाइन करतो, उभारतो आणि <em>चालवतो</em>.',
     apprIntro: 'पहिल्या साइट सर्वेक्षणापासून प्लांटच्या दैनंदिन संचालनापर्यंत, एकच टीम जबाबदार.',
     clientsEyebrow: 'ग्राहक',
     clientsTitle: 'आमचे ग्राहक व <em>भागीदार</em>',
@@ -272,16 +271,12 @@ const aboutHref = localePath(lang, '/about-us');
           {
             copy.heroWords.map(([word, em], i) => (
               <>
-                <span style={`--i:${i}`}>{em ? <em>{word}</em> : word}</span>{' '}
+                <span class:list={{ "india-word": /India|भारत/.test(word) }} style={`--i:${i}`}>{em ? <em>{word}</em> : word}</span>{' '}
               </>
             ))
           }
         </h1>
         <p class="eyebrow hero__sub" data-reveal style="--d: 4">{copy.heroSub}</p>
-        <p class="hero__lead" data-reveal style="--d: 5">
-          <span class="hero__lead-full">{copy.heroLead}</span>
-          <span class="hero__lead-short">{copy.heroLeadShort}</span>
-        </p>
         <div class="btn-row" data-reveal style="--d: 6">
           <a class="btn btn--accent" href={localePath(lang, '/contact-us') + '#enquiry'}>{t(lang, 'cta.quote')} <span class="arrow">→</span></a>
           <a class="btn btn--ghost" href="/product">{t(lang, 'cta.explore')} <span class="arrow">→</span></a>
@@ -345,7 +340,7 @@ const aboutHref = localePath(lang, '/about-us');
     <div class="container">
       <div class="section-head section-head--center" data-reveal>
         <p class="eyebrow">{copy.projEyebrow}</p>
-        <h2 class="h2" set:html={copy.projTitle} />
+        <h2 class="h2 projects__title" set:html={copy.projTitle} />
         <p class="muted projects__intro">{copy.projIntro}</p>
       </div>
       <ProjectCards lang={lang} />
@@ -388,10 +383,6 @@ const aboutHref = localePath(lang, '/about-us');
           ))
         }
       </ol>
-      <p class="svc__note" data-reveal>
-        <span class="svc__note-icon"><Icon name="consult" size={22} /></span>
-        <span><strong>{consultancyCopy[lang].name}.</strong> {consultancyCopy[lang].text}</span>
-      </p>
     </div>
   </section>
 
@@ -1316,7 +1307,7 @@ const aboutHref = localePath(lang, '/about-us');
 
   /* ---------- Machinery ---------- */
   .mach .h2 {
-    font-size: clamp(2.6rem, 4.9vw, 4.5rem);
+    font-size: clamp(2.9rem, 5.3vw, 4.9rem);
   }
 
   .mach__side {
@@ -1670,4 +1661,23 @@ const aboutHref = localePath(lang, '/about-us');
       margin-top: 32px;
     }
   }
+
+  .hero__title .india-word {
+    background: linear-gradient(180deg, #ffad61 0% 32%, #fff8ed 34% 65%, #91ce8c 68% 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    padding-bottom: .08em;
+  }
+  .projects__title { font-size: clamp(2.8rem, 5.4vw, 5rem); color: var(--saffron-2); }
+  .projects__title :global(em) { color: var(--white); }
+  .projects__intro {
+    font-size: clamp(1.1rem, 1.6vw, 1.3rem);
+    color: #f0c3a8;
+    text-decoration: underline;
+    text-decoration-color: var(--saffron-2);
+    text-underline-offset: .3em;
+    text-decoration-thickness: 2px;
+  }
+  .mach .eyebrow { font-size: clamp(1.1rem, 1.7vw, 1.4rem); }
 </style>

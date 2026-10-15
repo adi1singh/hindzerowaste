@@ -1,6 +1,5 @@
 ---
-import { Image } from 'astro:assets';
-import logoLight from '../assets/brand/logo-stacked-light.png';
+import BrandLogo from './BrandLogo.astro';
 import { site, telHref } from '../data/site';
 import { products } from '../data/products';
 import { services } from '../data/services';
@@ -26,7 +25,7 @@ const company = [
     <div class="footer__top">
       <div class="footer__brand">
         <a href={localePath(lang, '/')} aria-label={`${site.name}, home`}>
-          <Image src={logoLight} alt="" height={92} densities={[1, 2]} />
+          <BrandLogo light />
         </a>
         <p class="footer__blurb">{t(lang, 'footer.blurb')}</p>
         <div class="footer__downloads">
@@ -98,6 +97,7 @@ const company = [
       </div>
     </div>
 
+    <p class="jobgen-credit footer__credit">POWERED BY <strong>JOB GEN</strong></p>
     <div class="footer__bottom">
       <p>© {year} {site.name} {t(lang, 'footer.rights')}</p>
       <ul class="footer__legal">
