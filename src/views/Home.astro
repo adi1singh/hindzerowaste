@@ -19,10 +19,8 @@ import {
   serviceShorts,
 } from '../i18n/content';
 
-import slideBio from '../assets/photos/biomining-trommel-site.jpg';
-import slidePlant from '../assets/photos/hero-plant-shed.jpg';
-import slideMrf from '../assets/photos/mrf-sorting-floor.jpg';
-import slideDig from '../assets/photos/biomining-excavator.jpg';
+import slideCity from '../assets/photos/stock/green-pune.jpg';
+import slideGreen from '../assets/photos/stock/green-neighbourhood.jpg';
 import pune from '../assets/photos/pune-city.jpg';
 import bioImg from '../assets/photos/biomining-trommel-site.jpg';
 import mswImg from '../assets/photos/plant-line-wide.jpg';
@@ -49,10 +47,8 @@ const serviceIcons = {
 } as const;
 
 const slides = [
-  { src: slideBio, alt: 'Hind Zero Waste trommel and conveyor line at a legacy dumpsite' },
-  { src: slidePlant, alt: 'Segregation and RDF line inside a pre-engineered steel shed' },
-  { src: slideMrf, alt: 'Material recovery facility with sorting platform and bagged recyclables' },
-  { src: slideDig, alt: 'Excavator feeding legacy waste to a screening conveyor' },
+  { src: slideCity, alt: 'Stock photograph of modern buildings and leafy trees in Pune, India' },
+  { src: slideGreen, alt: 'Stock photograph of an Indian neighbourhood surrounded by green trees' },
 ];
 
 const copy = {
@@ -66,10 +62,8 @@ const copy = {
       'Since 2017 we have designed, manufactured and commissioned the machinery and plants that clear legacy dumpsites, process municipal solid waste, and turn refuse into fuel and resources.',
     heroLeadShort: 'Machinery and turnkey plants that clear legacy dumpsites and turn municipal waste into fuel and resources, since 2017.',
     slides: [
-      'Bio-mining trommel line at a legacy dumpsite',
-      'Segregation and RDF line in a PEB shed',
-      'Material recovery facility in operation',
-      'Excavation and screening on a bio-mining site',
+      'Greener cities. Better places to live.',
+      'Cleaner communities. A shared future.',
     ],
     scroll: 'Scroll',
     figures: figures.map((f) => f.label),
@@ -118,10 +112,8 @@ const copy = {
       '2017 से हम पुराने कचरा डंपसाइट साफ़ करने, नगरपालिका ठोस कचरे के प्रसंस्करण और कचरे को ईंधन व संसाधनों में बदलने वाली मशीनरी और प्लांट का डिज़ाइन, निर्माण और कमीशनिंग कर रहे हैं।',
     heroLeadShort: '2017 से पुराने डंपसाइट साफ़ करने और नगरपालिका कचरे को ईंधन व संसाधनों में बदलने वाली मशीनरी और टर्नकी प्लांट।',
     slides: [
-      'पुराने डंपसाइट पर बायो-माइनिंग ट्रॉमेल लाइन',
-      'PEB शेड में पृथक्करण और RDF लाइन',
-      'संचालन में मटेरियल रिकवरी फ़ैसिलिटी',
-      'बायो-माइनिंग साइट पर खुदाई और स्क्रीनिंग',
+      'हरित शहर। बेहतर जीवन।',
+      'स्वच्छ समुदाय। बेहतर भविष्य।',
     ],
     scroll: 'नीचे देखें',
     figures: [
@@ -172,10 +164,8 @@ const copy = {
       '2017 पासून आम्ही जुने कचरा डेपो साफ करणारी, नागरी घनकचऱ्यावर प्रक्रिया करणारी आणि कचऱ्याचे इंधन व संसाधनांमध्ये रूपांतर करणारी यंत्रसामग्री आणि प्लांट डिझाइन, निर्मिती व कार्यान्वित करत आहोत.',
     heroLeadShort: '2017 पासून जुने कचरा डेपो साफ करणारी आणि नागरी कचऱ्याचे इंधन व संसाधनांमध्ये रूपांतर करणारी यंत्रसामग्री व टर्नकी प्लांट.',
     slides: [
-      'जुन्या कचरा डेपोवर बायो-मायनिंग ट्रॉमेल लाइन',
-      'PEB शेडमधील विलगीकरण व RDF लाइन',
-      'कार्यरत मटेरियल रिकव्हरी फॅसिलिटी',
-      'बायो-मायनिंग साइटवर उत्खनन व स्क्रीनिंग',
+      'हरित शहरे। उत्तम जीवन।',
+      'स्वच्छ समुदाय। उज्ज्वल भविष्य।',
     ],
     scroll: 'खाली पाहा',
     figures: [
@@ -336,7 +326,7 @@ const aboutHref = localePath(lang, '/about-us');
   </section>
 
   <!-- Projects -->
-  <section class="section bg-ink on-dark projects">
+  <section class="section bg-mineral projects">
     <div class="container">
       <div class="section-head section-head--center" data-reveal>
         <p class="eyebrow">{copy.projEyebrow}</p>
@@ -351,7 +341,7 @@ const aboutHref = localePath(lang, '/about-us');
   </section>
 
   <!-- Services -->
-  <section class="section bg-sky">
+  <section class="section bg-sky services-section">
     <div class="container">
       <div class="section-head section-head--split" data-reveal>
         <div>
@@ -387,7 +377,7 @@ const aboutHref = localePath(lang, '/about-us');
   </section>
 
   <!-- Machinery -->
-  <section class="section bg-navy-deep on-dark mach">
+  <section class="section bg-sage mach">
     <div class="container">
       <div class="section-head section-head--split" data-reveal>
         <div>
@@ -819,7 +809,7 @@ const aboutHref = localePath(lang, '/about-us');
 
   .hero__dots {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 16px;
     list-style: none;
     flex: 1;
@@ -1570,7 +1560,7 @@ const aboutHref = localePath(lang, '/about-us');
     }
 
     .hero__dots {
-      grid-template-columns: repeat(4, minmax(0, 1fr));
+      grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
     .hero__cap {
@@ -1680,4 +1670,20 @@ const aboutHref = localePath(lang, '/about-us');
     text-decoration-thickness: 2px;
   }
   .mach .eyebrow { font-size: clamp(1.1rem, 1.7vw, 1.4rem); }
+
+  .hero__shade { background: linear-gradient(180deg, rgba(var(--shade), .34), rgba(var(--shade), .48) 60%, rgba(var(--shade), .65)); }
+  .hero__content::before { background: radial-gradient(closest-side, rgba(var(--shade), .42), transparent); }
+  .hero__dots { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .projects::before { background: radial-gradient(circle, rgba(117, 150, 159, .13), transparent 65%); }
+  .projects__title { color: var(--saffron-ink); }
+  .projects__title :global(em) { color: var(--ink); }
+  .projects__intro { color: var(--muted); text-decoration-color: var(--saffron); }
+  .services-section .section-head--split { align-items: start; }
+  .services-section .section-head--split > .muted { margin-top: 40px; max-width: 30em; }
+  .filters__btn { color: var(--ink); border-color: var(--line-strong); }
+  .filters__btn span { background: rgba(var(--shade), .07); }
+  .filters__btn[aria-pressed='true'] { color: var(--white); }
+  .filters__btn[aria-pressed='true'] span { background: rgba(255,255,255,.16); }
+  @media (max-width: 899px) { .services-section .section-head--split > .muted { margin-top: 0; } }
+
 </style>

@@ -187,7 +187,7 @@ const schema = [
 ---
 
 <Base title={copy.title} description={copy.description} lang={lang} alternates={alternates} schema={schema}>
-  <section class="chero on-dark">
+  <section class="chero">
     <div class="container chero__inner">
       <nav class="chero__crumbs" aria-label="Breadcrumb">
         <ol>
@@ -324,7 +324,7 @@ const schema = [
         </div>
       </div>
 
-      <aside class="details on-dark" data-reveal style="--d: 1">
+      <aside class="details" data-reveal style="--d: 1">
         <figure class="trust">
           <Image src={trustPhoto} alt={copy.trustAlt} widths={[400, 640, 900]} sizes="(min-width: 1000px) 420px, 92vw" loading="lazy" />
           <figcaption>
@@ -1164,4 +1164,18 @@ const schema = [
       height: 46px;
     }
   }
+
+  .chero { background: var(--sky); color: var(--text); }
+  .chero__title { color: var(--ink); }
+  .quick__tile { background: var(--white); border-color: var(--line); color: var(--ink); }
+  .quick__label { color: var(--saffron-ink); }
+  .quick__tile:hover { background: var(--paper); }
+  .details { background: var(--mineral); color: var(--text); }
+  .details__block { border-color: var(--line); }
+  .details__label { color: var(--saffron-ink); }
+  .details__phones a, .details__mail a, address strong { color: var(--ink); }
+  address { color: var(--muted); }
+
+  .details__phone-label { color: var(--muted); }
+  .details__wa { color: var(--ink); border-color: var(--line-strong); }
 </style>

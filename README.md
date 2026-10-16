@@ -77,10 +77,10 @@ A "Request a quote" button on any machine or service page opens the form with th
 
 ## Design
 
-- **Palette:** ivory paper, deep ink and the navy of the logo. The logo's lime and green are reserved for small accents, such as the square markers that echo the four squares of the mark.
+- **Palette:** alternating ivory, sage, pale mineral blue and warm peach section surfaces. Charcoal text and clay accents provide contrast; consecutive sections use distinct backgrounds.
 - **Type:** Instrument Serif for headings and Inter for text. Devanagari uses Tiro Devanagari Hindi or Marathi for headings and Noto Sans Devanagari for text. All fonts are self-hosted, with no Google Fonts requests.
 - **Logo:** the shared vector component `src/components/BrandLogo.astro` uses a recovery loop and leaf. Run `node scripts/brand-assets.mjs` after changing the mark to refresh public SVG, PNG and app icons. Original brand artwork is retained in `src/assets/brand/`.
-- **Motion:** a rotating photo slideshow in the home hero, figures that count up as they scroll into view, philosophy words that fill with a Pune skyline as you scroll, sections that rise into view, hover growth on rows and cards, and a scrolling client-logo marquee. All of it is switched off for visitors who ask their device for reduced motion.
+- **Motion:** an external stock-photo slideshow of greener Indian cityscapes in the home hero (credits in `src/assets/photos/stock/CREDITS.md`), sequential highlights and connecting arrows through the four delivery steps, figures that count up as they scroll into view, philosophy words that fill with a Pune skyline as you scroll, sections that rise into view, hover growth on rows and cards, and a scrolling client-logo marquee. All of it is switched off for visitors who ask their device for reduced motion.
 - **Navigation:** Machinery and Services in the menu link to their pages; their dropdowns open on hover, or from the small arrow button by keyboard or touch. The machinery and services pages list categories as numbered accordions with Expand all / Collapse all.
 - **Video:** product videos load from YouTube only when a visitor presses play.
 - **Photo credit:** the Pune city photo (`src/assets/photos/pune-city.jpg`) is by Baikare Sandip, from the [WordPress Photo Directory](https://wordpress.org/photos/photo/18465d1037/), released under CC0 (no attribution required).

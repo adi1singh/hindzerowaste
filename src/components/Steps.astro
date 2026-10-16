@@ -1,151 +1,150 @@
 ---
-// The four-step delivery model as a timeline with a line that draws itself in.
 import Icon from './Icon.astro';
 import { approachSteps } from '../i18n/content';
 import type { Lang } from '../i18n/ui';
 
 interface Props {
   lang?: Lang;
-  /** Background the dots are cut out from (matches the section background). */
-  bg?: string;
 }
-
-const { lang = 'en', bg = 'var(--sage)' } = Astro.props;
+const { lang = 'en' } = Astro.props;
 const stepIcons = ['design', 'factory', 'commission', 'operate'] as const;
 ---
 
-<ol class="steps" data-reveal style={`--steps-bg: ${bg}`}>
+<ol class="steps" data-process>
   {
     approachSteps[lang].map(([title, text], i) => (
-      <li class="steps__item" data-reveal style={`--d:${i + 1}`}>
-        {i < 3 && <svg class:list={['steps__connector', { 'steps__connector--drop': i === 1 }]} viewBox="0 0 100 52" preserveAspectRatio="none" aria-hidden="true"><path class="steps__track" d={i === 1 ? 'M0 7 C50 7 50 45 94 45' : 'M0 7 H94'} /><path class="steps__travel" d={i === 1 ? 'M0 7 C50 7 50 45 94 45' : 'M0 7 H94'} /><path class="steps__arrow" d={i === 1 ? 'M88 39 L95 45 L88 51' : 'M88 1 L95 7 L88 13'} /></svg>}
-        <span class="steps__dot">
-          <Icon name={stepIcons[i]} size={28} />
-        </span>
-        <span class="steps__num tabular">{String(i + 1).padStart(2, '0')}</span>
-        <h3 class="h4">{title}</h3>
-        <p class="muted">{text}</p>
+      <li class="steps__item" data-reveal style={`--d:${i}`}>
+        <div class="steps__route" aria-hidden="true">
+          <span class="steps__number tabular">{String(i + 1).padStart(2, '0')}</span>
+          {i < 3 && <span class="steps__line"><svg viewBox="0 0 16 16" fill="none"><path d="m5 3 5 5-5 5" /></svg></span>}
+          {i === 3 && <span class="steps__finish"><svg viewBox="0 0 20 20" fill="none"><path d="m4 10 4 4 8-8" /></svg></span>}
+        </div>
+        <div class="steps__body">
+          <span class="steps__icon" aria-hidden="true"><Icon name={stepIcons[i]} size={30} /></span>
+          <h3 class="steps__title"><span class="visually-hidden">{i + 1}. </span>{title}</h3>
+          <p class="steps__text">{text}</p>
+        </div>
       </li>
     ))
   }
 </ol>
 
+
+<script>
+  document.querySelectorAll<HTMLOListElement>('[data-process]').forEach(root => {
+    const items = [...root.querySelectorAll<HTMLLIElement>('.steps__item')];
+    const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    let index = 0;
+    let inView = false;
+    let connectTimer: number | undefined;
+    let advanceTimer: number | undefined;
+    const stop = () => { window.clearTimeout(connectTimer); window.clearTimeout(advanceTimer); };
+    const show = () => {
+      root.dataset.currentStep = String(index + 1);
+      items.forEach((item, i) => {
+        item.classList.toggle('is-current', i === index);
+        item.classList.toggle('is-passed', i < index);
+        item.classList.remove('is-connecting');
+        if (i === index) item.setAttribute('aria-current', 'step');
+        else item.removeAttribute('aria-current');
+      });
+    };
+    const run = () => {
+      stop();
+      if (motion.matches || !inView || document.hidden) return;
+      root.classList.add('is-playing');
+      show();
+      if (index < items.length - 1) connectTimer = window.setTimeout(() => items[index].classList.add('is-connecting'), 900);
+      advanceTimer = window.setTimeout(() => { index = (index + 1) % items.length; run(); }, index === items.length - 1 ? 2600 : 1900);
+    };
+    if ('IntersectionObserver' in window) new IntersectionObserver(([entry]) => {
+      inView = entry.isIntersecting;
+      if (inView) run(); else stop();
+    }, { threshold: .18 }).observe(root);
+    motion.addEventListener('change', () => {
+      stop();
+      root.classList.remove('is-playing');
+      if (!motion.matches) run();
+    });
+    document.addEventListener('visibilitychange', () => document.hidden ? stop() : run());
+  });
+</script>
+
 <style>
   .steps {
-    position: relative;
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 22px;
     list-style: none;
+    padding: clamp(24px, 3vw, 40px);
+    border: 1px solid var(--line);
+    border-radius: 22px;
+    background: var(--paper);
+    box-shadow: 0 24px 60px -42px rgba(var(--shade), .35);
   }
-
-  /* A connecting line that draws itself across the four steps. */
-  .steps::before {
-    content: '';
-    position: absolute;
-    top: 64px;
-    left: 12%;
-    right: 12%;
-    height: 2px;
-    background: linear-gradient(90deg, var(--navy), var(--green-2), var(--saffron));
-    transform: scaleX(0);
-    transform-origin: left;
-    transition: transform 1.8s var(--ease-out) 0.3s;
-  }
-
-  :global(.js) .steps.is-visible::before,
-  :global(html:not(.js)) .steps::before {
-    transform: scaleX(1);
-  }
-
-  .steps__item {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-    padding: 30px 24px 32px;
-    border-radius: var(--radius-lg);
-    background: rgba(255, 255, 255, 0.55);
-    text-align: center;
-    transition:
-      transform 0.45s var(--ease-out),
-      background-color 0.45s var(--ease-out),
-      box-shadow 0.45s var(--ease-out);
-  }
-
-  .steps__dot {
-    position: relative;
-    z-index: 1;
+  .steps__item { position: relative; min-width: 0; }
+  .steps__route { display: flex; align-items: center; height: 54px; margin-bottom: 28px; }
+  .steps__number {
     display: grid;
     place-items: center;
-    width: 68px;
-    height: 68px;
+    flex: none;
+    width: 54px;
+    height: 54px;
     border-radius: 50%;
-    background: var(--navy);
-    color: var(--white);
-    box-shadow: 0 0 0 8px var(--steps-bg);
-    transition:
-      background-color 0.35s var(--ease),
-      color 0.35s var(--ease),
-      transform 0.45s var(--ease-out);
+    background: var(--ink);
+    color: var(--paper);
+    font: 750 18px/1 var(--sans);
+    letter-spacing: -.03em;
+    box-shadow: 0 0 0 7px var(--paper);
+    position: relative;
+    z-index: 1;
   }
-
-  .steps__num {
-    margin-top: 8px;
-    font: 800 15px/1 var(--sans);
-    letter-spacing: 0.1em;
-    color: var(--green-ink);
+  .steps__item:last-child .steps__number { background: var(--saffron); }
+  .steps__line { display: block; flex: 1; position: relative; height: 1px; background: color-mix(in srgb, var(--saffron) 42%, transparent); }
+  .steps__line::before { content: ''; position: absolute; inset: 0; background: var(--saffron); transform-origin: left; transform: scaleX(0); }
+  .steps__line svg { position: absolute; width: 18px; height: 18px; right: 19px; top: -9px; padding: 2px; background: var(--paper); stroke: var(--saffron); stroke-width: 1.8; }
+  .steps__finish { margin-left: auto; padding-right: 8px; color: var(--green-ink); }
+  .steps__finish svg { width: 25px; height: 25px; stroke: currentColor; stroke-width: 1.7; }
+  .steps__body { padding: 4px 26px 8px 0; }
+  .steps__item + .steps__item .steps__body { padding-left: 24px; border-left: 1px solid var(--line); }
+  .steps__icon { display: inline-grid; place-items: center; width: 48px; height: 48px; margin-bottom: 18px; border-radius: 12px; background: var(--paper-2); color: var(--saffron-ink); }
+  .steps__title { font: 700 clamp(1.15rem, 1.6vw, 1.4rem)/1.25 var(--sans); letter-spacing: -.025em; min-height: 2.5em; margin-bottom: 14px; text-wrap: balance; }
+  .steps__text { font-size: 15px; line-height: 1.7; color: var(--muted); max-width: 29em; }
+  @media (prefers-reduced-motion: no-preference) {
+    .steps__number, .steps__icon { transition: background-color .45s var(--ease), color .45s var(--ease), box-shadow .45s var(--ease), transform .45s var(--ease); }
+    .steps.is-playing .steps__number { background: var(--paper-2); color: var(--muted); }
+    .steps.is-playing .is-passed .steps__number { background: var(--green-ink); color: var(--white); }
+    .steps.is-playing .is-current .steps__number { background: var(--saffron); color: var(--white); box-shadow: 0 0 0 7px var(--paper), 0 0 0 10px #a84f3228; transform: scale(1.06); }
+    .steps.is-playing .is-current .steps__icon { background: var(--sky); color: var(--saffron-ink); }
+    .steps.is-playing .is-current .steps__title { color: var(--saffron-ink); }
+    .steps.is-playing .steps__line::before { transform: scaleX(0); transition: none; }
+    .steps.is-playing .is-passed .steps__line::before, .steps.is-playing .is-connecting .steps__line::before { transform: scaleX(1); }
+    .steps.is-playing .is-connecting .steps__line::before { transition: transform .85s linear; }
+    .steps.is-playing .steps__line svg { color: var(--muted); stroke: currentColor; transition: color .4s ease; }
+    .steps.is-playing .is-connecting .steps__line svg, .steps.is-playing .is-passed .steps__line svg { color: var(--saffron); }
   }
-
-  .steps__item:hover {
-    transform: translateY(-8px);
-    background: var(--white);
-    box-shadow: var(--shadow-lg);
+  @media (max-width: 1000px) {
+    .steps { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px 0; }
+    .steps__item:nth-child(3) .steps__body { padding-left: 0; border-left: 0; }
+    .steps__item:nth-child(2) .steps__line { margin-right: 24px; }
+    .steps__item:nth-child(2) .steps__line svg { right: 0; transform: rotate(90deg); }
   }
-
-  .steps__item:hover .steps__dot {
-    background: var(--saffron);
-    color: var(--white);
-    transform: scale(1.08);
-  }
-
-
-  @media (max-width: 1100px) {
-    .steps {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+  @media (max-width: 600px) {
+    .steps { grid-template-columns: minmax(0, 1fr); gap: 0; padding: 28px 22px; }
+    .steps__item { display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: 20px; }
+    .steps__route { height: 100%; display: block; margin: 0; position: relative; }
+    .steps__number { width: 40px; height: 40px; font-size: 15px; box-shadow: 0 0 0 6px var(--paper); }
+    .steps__line, .steps__item:nth-child(2) .steps__line { position: absolute; width: 1px; height: auto; top: 46px; bottom: 6px; left: 19px; margin: 0; }
+    .steps__line svg, .steps__item:nth-child(2) .steps__line svg { top: auto; bottom: 14px; right: -8px; transform: rotate(90deg); }
+    .steps__line::before { transform-origin: top; transform: scaleY(0); }
+    .steps__finish { display: none; }
+    .steps .steps__item .steps__body { padding: 0 0 32px; border: 0; }
+    .steps__item:last-child .steps__body { padding-bottom: 0; }
+    .steps__icon { display: none; }
+    .steps__title { min-height: 0; margin: 6px 0 10px; font-size: 19px; text-wrap: initial; }
+    .steps__text { font-size: 15px; }
+    @media (prefers-reduced-motion: no-preference) {
+      .steps.is-playing .steps__line::before { transform: scaleY(0); }
+      .steps.is-playing .is-passed .steps__line::before, .steps.is-playing .is-connecting .steps__line::before { transform: scaleY(1); }
     }
-
-    .steps::before {
-      display: none;
-    }
-  }
-
-  @media (max-width: 680px) {
-    .steps {
-      grid-template-columns: minmax(0, 1fr);
-    }
-  }
-
-  .steps { padding-bottom: 38px; gap: 30px; }
-  .steps::before { display: none; }
-  .steps__item:nth-child(n + 3) { top: 38px; }
-  .steps__connector { position: absolute; left: calc(100% - 2px); top: 56px; width: 34px; height: 52px; overflow: visible; z-index: 2; pointer-events: none; }
-  .steps__connector path { fill: none; stroke-width: 2; vector-effect: non-scaling-stroke; }
-  .steps__track { stroke: var(--line-strong); }
-  .steps__travel, .steps__arrow { stroke: var(--saffron); }
-  .steps__travel { stroke-dasharray: 9 9; }
-  @media (prefers-reduced-motion: no-preference) { .steps.is-visible .steps__travel { animation: travel 1.8s linear infinite; } }
-  @keyframes travel { to { stroke-dashoffset: -36; } }
-  @media (max-width: 1100px) {
-    .steps { padding-bottom: 0; }
-    .steps__item:nth-child(n + 3) { top: 0; }
-    .steps__connector--drop { display: none; }
-  }
-  @media (max-width: 680px) {
-    .steps { gap: 36px; }
-    .steps__connector, .steps__connector--drop { display: block; top: calc(100% + 4px); left: calc(50% - 15px); width: 30px; height: 28px; transform: rotate(90deg); }
-    .steps__connector--drop { display: none; }
-    .steps__item:nth-child(2)::after { content: '↓'; position: absolute; top: calc(100% + 3px); color: var(--saffron); font-size: 24px; }
   }
 </style>

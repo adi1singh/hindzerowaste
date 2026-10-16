@@ -187,4 +187,20 @@ const projects: Project[] =
   }
   @keyframes project-value { from { opacity: 0; transform: translateY(16px) scale(.94); } to { opacity: 1; transform: none; } }
   @keyframes project-rule { from { width: 0; } to { width: 100%; } }
+
+  .pgrid__card { background: var(--white); border: 1px solid var(--line); border-top: 3px solid var(--saffron); box-shadow: 0 8px 25px -20px rgba(var(--shade), .35); }
+  .pgrid__card:hover { border-color: color-mix(in srgb, var(--saffron) 35%, transparent); box-shadow: var(--shadow-md); }
+  .pgrid__idx { color: var(--muted); }
+  .pgrid__num { color: var(--saffron-ink); }
+  .pgrid__client, .pgrid__note { color: var(--ink); }
+  .pgrid__loc { color: var(--green-ink); }
+  .pgrid__scope { border-color: var(--line); color: var(--muted); }
+  .pgrid__status { --status-glow: 105, 145, 65; background: #edf3e5; color: #3d5b29; border: 1px solid #cfddc0; box-shadow: 0 0 14px 2px rgba(var(--status-glow), .16); }
+  .pgrid__status.is-ongoing { --status-glow: 190, 116, 66; background: #fff0e3; color: #87411d; border-color: #edcfb6; }
+  .pgrid__status.is-commissioned { --status-glow: 62, 127, 143; background: #e9f4f7; color: #285e6b; border-color: #c4dee5; }
+  @media (prefers-reduced-motion: no-preference) {
+    .pgrid__card.is-visible .pgrid__status { animation: status-glow 3.8s ease-in-out infinite alternate; animation-delay: calc(var(--d, 0) * .5s); }
+  }
+  @keyframes status-glow { from { box-shadow: 0 0 10px 1px rgba(var(--status-glow), .12); } to { box-shadow: 0 0 18px 4px rgba(var(--status-glow), .23); } }
+
 </style>
