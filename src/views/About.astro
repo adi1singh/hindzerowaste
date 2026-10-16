@@ -9,6 +9,7 @@ import Count from '../components/Count.astro';
 import ProjectRecord from '../components/ProjectRecord.astro';
 import JobGenCredit from '../components/JobGenCredit.astro';
 import Icon from '../components/Icon.astro';
+import Purpose from '../components/Purpose.astro';
 import StateMark from '../components/StateMark.astro';
 import { figures, footprint, site } from '../data/site';
 import { completedBiomining, machineSupply, ongoingBiomining, plantsInstalled } from '../data/projects';
@@ -68,7 +69,6 @@ const copy = {
     storyTitle: 'From Kolhapur, <em>for all of India</em>.',
     story: [
       'Founded in 2017 as Hind Agro and Chemicals in Kolhapur, Maharashtra, we have evolved with purpose and innovation into Hind Zero Waste Management Pvt. Ltd., a trusted name in integrated solid waste management across India.',
-      'We design, manufacture and supply energy-efficient, low-maintenance waste-processing equipment: balers, organic waste and vessel composters, shredders, trommels, separators and conveyor systems. Around them we build complete plants for municipal, industrial, institutional and residential clients.',
       'Our work is not just a service but a responsibility: conserving natural resources and significantly reducing environmental impact, for cleaner cities and a greener planet.',
     ],
     figures: ['Bio-mining projects', 'Balers supplied', 'Clients in India & South Africa'],
@@ -143,7 +143,6 @@ const copy = {
     storyTitle: 'कोल्हापुर से, <em>पूरे भारत</em> के लिए।',
     story: [
       '2017 में कोल्हापुर, महाराष्ट्र में हिंद एग्रो एंड केमिकल्स के रूप में स्थापित, हम उद्देश्य और नवाचार के साथ आगे बढ़ते हुए आज हिंद ज़ीरो वेस्ट मैनेजमेंट प्रा. लि. हैं, जो पूरे भारत में एकीकृत ठोस कचरा प्रबंधन का विश्वसनीय नाम है।',
-      'हम ऊर्जा-कुशल और कम रखरखाव वाले कचरा प्रसंस्करण उपकरणों का डिज़ाइन, निर्माण और आपूर्ति करते हैं: बेलर, ऑर्गेनिक वेस्ट कम्पोस्टर और वेसल कम्पोस्टर, श्रेडर, ट्रॉमेल, सेपरेटर और कन्वेयर सिस्टम। इन्हीं के आधार पर हम नगरपालिका, औद्योगिक, संस्थागत और आवासीय ग्राहकों के लिए पूर्ण प्लांट बनाते हैं।',
       'हमारा काम केवल सेवा नहीं, बल्कि ज़िम्मेदारी है: प्राकृतिक संसाधनों का संरक्षण और पर्यावरण पर प्रभाव में उल्लेखनीय कमी, स्वच्छ शहरों और हरित धरती के लिए।',
     ],
     figures: ['बायो-माइनिंग परियोजनाएँ', 'बेलिंग मशीनें आपूर्ति', 'ग्राहक, भारत और दक्षिण अफ़्रीका'],
@@ -218,7 +217,6 @@ const copy = {
     storyTitle: 'कोल्हापूरपासून, <em>संपूर्ण भारतासाठी</em>.',
     story: [
       '2017 मध्ये कोल्हापूर, महाराष्ट्र येथे हिंद ॲग्रो अँड केमिकल्स म्हणून स्थापन झालेली आमची कंपनी उद्दिष्ट आणि नावीन्यासह वाटचाल करत आज हिंद झिरो वेस्ट मॅनेजमेंट प्रा. लि. म्हणून संपूर्ण भारतात एकात्मिक घनकचरा व्यवस्थापनातील विश्वासार्ह नाव आहे.',
-      'आम्ही ऊर्जा-कार्यक्षम व कमी देखभालीच्या कचरा प्रक्रिया उपकरणांचे डिझाइन, निर्मिती व पुरवठा करतो: बेलर, ऑरगॅनिक वेस्ट कंपोस्टर व व्हेसल कंपोस्टर, श्रेडर, ट्रॉमेल, सेपरेटर आणि कन्व्हेयर सिस्टीम. याच आधारावर आम्ही नागरी, औद्योगिक, संस्थात्मक व निवासी ग्राहकांसाठी संपूर्ण प्लांट उभारतो.',
       'आमचे काम केवळ सेवा नाही, तर जबाबदारी आहे: नैसर्गिक संसाधनांचे संवर्धन आणि पर्यावरणावरील परिणामात लक्षणीय घट, स्वच्छ शहरे आणि हरित पृथ्वीसाठी.',
     ],
     figures: ['बायो-मायनिंग प्रकल्प', 'बेलिंग मशीन पुरवल्या', 'ग्राहक, भारत व दक्षिण आफ्रिका'],
@@ -314,7 +312,7 @@ const alternates = { en: '/about-us', hi: '/hi/about-us', mr: '/mr/about-us' };
   </IndexHero>
 
   <!-- Projects: the six landmark projects first, then the overall record -->
-  <section class="section bg-mineral proj" id="projects">
+  <section class="section bg-paper proj" id="projects">
     <div class="container">
       <div class="section-head section-head--center proj__head" data-reveal>
         <p class="eyebrow">{copy.landmarkEyebrow}</p>
@@ -322,10 +320,17 @@ const alternates = { en: '/about-us', hi: '/hi/about-us', mr: '/mr/about-us' };
         <p class="muted proj__intro">{copy.projIntro}</p>
       </div>
       <ProjectCards lang={lang} />
+    </div>
+  </section>
 
+  {
+    /* English shows these figures in the project record below, so only HI/MR keep this summary. */
+    lang !== 'en' && (
+  <section class="section on-dark achievements">
+    <div class="container">
       <div class="section-head section-head--center proj__record" data-reveal>
         <p class="eyebrow">{{ en: "Our achievements", hi: "हमारी उपलब्धियाँ", mr: "आमची कामगिरी" }[lang]}</p>
-        <h3 class="h2" set:html={copy.projTitle} />
+        <h3 class="h2 achievements__title" set:html={copy.projTitle} />
       </div>
       <dl class="pstats">
         {
@@ -341,11 +346,13 @@ const alternates = { en: '/about-us', hi: '/hi/about-us', mr: '/mr/about-us' };
       </dl>
     </div>
   </section>
+    )
+  }
 
   {lang === 'en' && <ProjectRecord />}
 
   <!-- Installed base -->
-  <section class="section bg-sky">
+  <section class="section installed">
     <div class="container">
       <div class="section-head section-head--center" data-reveal>
         <p class="eyebrow">{copy.installedEyebrow}</p>
@@ -393,7 +400,7 @@ const alternates = { en: '/about-us', hi: '/hi/about-us', mr: '/mr/about-us' };
   </section>
 
   <!-- Story -->
-  <section class="section bg-paper">
+  <section class="section bg-white">
     <div class="container story">
       <div data-reveal="left">
         <p class="eyebrow">{copy.storyEyebrow}</p>
@@ -413,26 +420,14 @@ const alternates = { en: '/about-us', hi: '/hi/about-us', mr: '/mr/about-us' };
   </section>
 
   <!-- Vision, mission, values -->
-  <section class="section bg-mineral">
-    <div class="container vmv">
-      <div class="vmv__vision" data-reveal>
-        <p class="eyebrow">{copy.visionTitle}</p>
-        <p class="vmv__quote">“{copy.vision}”</p>
-      </div>
-      <div class="vmv__cols">
-        <div data-reveal>
-          <h2 class="vmv__title">{copy.missionTitle}</h2>
-          <ol class="vmv__list">
-            {copy.mission.map((m) => <li>{m}</li>)}
-          </ol>
-        </div>
-        <div data-reveal style="--d: 1">
-          <h2 class="vmv__title">{copy.valuesTitle}</h2>
-          <p class="vmv__values">{copy.values}</p>
-        </div>
-      </div>
-    </div>
-  </section>
+  <Purpose
+    lang={lang}
+    visionTitle={copy.visionTitle}
+    vision={copy.vision}
+    missionTitle={copy.missionTitle}
+    mission={copy.mission}
+    valuesTitle={copy.valuesTitle}
+  />
 
   <!-- Why us -->
   <section class="section bg-sage">
@@ -753,58 +748,11 @@ const alternates = { en: '/about-us', hi: '/hi/about-us', mr: '/mr/about-us' };
     color: var(--muted);
   }
 
-  /* Vision, mission, values */
-  .vmv__quote {
-    margin-top: 24px;
-    font-family: var(--serif);
-    font-size: clamp(1.9rem, 3.4vw, 3rem);
-    line-height: 1.18;
-    color: var(--paper);
-    max-width: 22em;
-  }
 
-  .vmv__cols {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 48px 72px;
-    margin-top: clamp(48px, 6vw, 80px);
-    padding-top: 40px;
-    border-top: 1px solid var(--line-on-dark);
-  }
 
-  .vmv__title {
-    font: 700 14px/1 var(--sans);
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: var(--saffron-2) !important;
-    margin-bottom: 20px;
-  }
 
-  .vmv__list {
-    list-style: none;
-    counter-reset: m;
-  }
 
-  .vmv__list li {
-    counter-increment: m;
-    display: grid;
-    grid-template-columns: 44px minmax(0, 1fr);
-    padding: 13px 0;
-    border-bottom: 1px solid var(--line-on-dark);
-    color: #e2d9cf;
-  }
 
-  .vmv__list li::before {
-    content: counter(m, decimal-leading-zero);
-    font-weight: 800;
-    color: var(--lime);
-  }
-
-  .vmv__values {
-    color: #e2d9cf;
-    font-size: 1.15rem;
-    line-height: 1.7;
-  }
 
   /* Why us */
   .why__eyebrow {
@@ -986,9 +934,6 @@ const alternates = { en: '/about-us', hi: '/hi/about-us', mr: '/mr/about-us' };
   @media (max-width: 900px) {
     .story,
     .cred,
-    .vmv__cols {
-      grid-template-columns: minmax(0, 1fr);
-    }
 
     .story__media {
       aspect-ratio: 16 / 11;
@@ -1021,9 +966,43 @@ const alternates = { en: '/about-us', hi: '/hi/about-us', mr: '/mr/about-us' };
   .pstats__item dt { color: var(--saffron-ink); }
   .pstats__item:first-child dt { color: var(--green-ink); }
   .pstats__item dd { color: var(--muted); }
-  .vmv__quote, .vmv__values, .vmv__list li { color: var(--ink); }
-  .vmv__cols, .vmv__list li { border-color: var(--line-strong); }
-  .vmv__title { color: var(--saffron-ink) !important; }
-  .vmv__list li::before { color: var(--green-ink); }
 
+
+  .pstats__item { background: radial-gradient(ellipse at top right, var(--tile-tint), transparent 95%), #fffaf2; }
+  .why__card { background: linear-gradient(145deg, #fffaf2, var(--tile-tint)); }
+  .achievements__title :global(em) { text-decoration: underline; text-decoration-color: var(--saffron); text-underline-offset: .16em; text-decoration-thickness: 2px; }
+  .achievements .proj__record { margin-top: 0; }
+
+  /* Each block on the page gets its own surface: ivory projects, charcoal
+     achievements, sand record (ProjectRecord), sage installed base, white story. */
+  .achievements {
+    background: radial-gradient(120% 140% at 100% 0%, #3d2b20 0%, #1e1814 55%, #141110 100%);
+    color: #e8e0d6;
+  }
+
+  .achievements .pstats__item {
+    background: rgba(246, 243, 236, 0.05);
+    border: 1px solid var(--line-on-dark);
+    border-top: 3px solid var(--saffron-2);
+  }
+
+  .achievements .pstats__item:nth-child(3n + 2) {
+    border-top-color: #a6bd80;
+  }
+
+  .achievements .pstats__item dt {
+    color: var(--saffron-2);
+  }
+
+  .achievements .pstats__item:first-child dt {
+    color: #c9df8f;
+  }
+
+  .achievements .pstats__item dd {
+    color: #d6ccc1;
+  }
+
+  .installed {
+    background: #e3e9d5;
+  }
 </style>

@@ -34,39 +34,38 @@ const stepIcons = ['design', 'factory', 'commission', 'operate'] as const;
   document.querySelectorAll<HTMLOListElement>('[data-process]').forEach(root => {
     const items = [...root.querySelectorAll<HTMLLIElement>('.steps__item')];
     const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
-    let index = 0;
-    let inView = false;
-    let connectTimer: number | undefined;
-    let advanceTimer: number | undefined;
-    const stop = () => { window.clearTimeout(connectTimer); window.clearTimeout(advanceTimer); };
-    const show = () => {
+    const section = root.closest<HTMLElement>('[data-process-scroll]');
+    const desktop = window.matchMedia('(min-width: 1001px)');
+    let scheduled = false;
+    const update = () => {
+      scheduled = false;
+      if (motion.matches || !section) { root.classList.remove('is-playing'); return; }
+      root.classList.add('is-playing');
+      const rect = section.getBoundingClientRect();
+      const header = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--header-h')) || 92;
+      let progress: number;
+      if (desktop.matches) {
+        const travel = Math.max(1, section.offsetHeight - (window.innerHeight - header));
+        progress = Math.max(0, Math.min(1, (header - rect.top) / travel));
+      } else {
+        const r = root.getBoundingClientRect();
+        progress = Math.max(0, Math.min(1, (window.innerHeight * .55 - r.top) / Math.max(1, r.height * .85)));
+      }
+      const index = Math.min(items.length - 1, Math.floor(progress * items.length));
       root.dataset.currentStep = String(index + 1);
       items.forEach((item, i) => {
         item.classList.toggle('is-current', i === index);
         item.classList.toggle('is-passed', i < index);
-        item.classList.remove('is-connecting');
+        item.classList.toggle('is-connecting', i === index && progress * items.length - index > .5);
         if (i === index) item.setAttribute('aria-current', 'step');
         else item.removeAttribute('aria-current');
       });
     };
-    const run = () => {
-      stop();
-      if (motion.matches || !inView || document.hidden) return;
-      root.classList.add('is-playing');
-      show();
-      if (index < items.length - 1) connectTimer = window.setTimeout(() => items[index].classList.add('is-connecting'), 900);
-      advanceTimer = window.setTimeout(() => { index = (index + 1) % items.length; run(); }, index === items.length - 1 ? 2600 : 1900);
-    };
-    if ('IntersectionObserver' in window) new IntersectionObserver(([entry]) => {
-      inView = entry.isIntersecting;
-      if (inView) run(); else stop();
-    }, { threshold: .18 }).observe(root);
-    motion.addEventListener('change', () => {
-      stop();
-      root.classList.remove('is-playing');
-      if (!motion.matches) run();
-    });
-    document.addEventListener('visibilitychange', () => document.hidden ? stop() : run());
+    const requestUpdate = () => { if (!scheduled) { scheduled = true; requestAnimationFrame(update); } };
+    window.addEventListener('scroll', requestUpdate, { passive: true });
+    window.addEventListener('resize', requestUpdate);
+    motion.addEventListener('change', requestUpdate);
+    update();
   });
 </script>
 
@@ -118,7 +117,7 @@ const stepIcons = ['design', 'factory', 'commission', 'operate'] as const;
     .steps.is-playing .is-current .steps__title { color: var(--saffron-ink); }
     .steps.is-playing .steps__line::before { transform: scaleX(0); transition: none; }
     .steps.is-playing .is-passed .steps__line::before, .steps.is-playing .is-connecting .steps__line::before { transform: scaleX(1); }
-    .steps.is-playing .is-connecting .steps__line::before { transition: transform .85s linear; }
+    .steps.is-playing .is-connecting .steps__line::before { transition: transform .6s linear; }
     .steps.is-playing .steps__line svg { color: var(--muted); stroke: currentColor; transition: color .4s ease; }
     .steps.is-playing .is-connecting .steps__line svg, .steps.is-playing .is-passed .steps__line svg { color: var(--saffron); }
   }

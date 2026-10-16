@@ -28,12 +28,20 @@
   --saffron: #a84f32;
   --saffron-2: #e08a62;
   --saffron-ink: #8a3c22;
-  --paper: #f5efe6;
-  --paper-2: #ebe3d7;
-  --sage: #e5edd8;
-  --sky: #f1e5db;
-  --mineral: #ece4d8;
-  --clay-wash: #f3e3d4;
+  --paper: #f6f2ea;
+  --paper-2: #ebe4d8;
+  --sage: #eef0e6;
+  --sky: #f6ece3;
+  --mineral: #efe9df;
+  --clay-wash: #f6ece3;
+  --lavender: #f2eee6;
+  --honey: #f6ece3;
+  --tint-peach: #fdfaf6;
+  --tint-sage: #fbfcf8;
+  --tint-blue: #fbfaf7;
+  --tint-lilac: #fdfaf6;
+  --tint-sand: #fcf9f3;
+  --tint-rose: #fdfaf7;
   --white: #ffffff;
   --shade: 28, 22, 18;
   --text: #26211e;
@@ -835,7 +843,8 @@ ol {
 }
 
 .acc summary:hover {
-  background: var(--sky);
+  background: var(--white);
+  box-shadow: inset 0 0 0 2px var(--saffron);
 }
 
 .acc details:not([open]) summary:hover {
@@ -997,82 +1006,13 @@ ol {
 .bg-mineral { background: var(--mineral); color: var(--text); }
 .bg-clay-wash { background: var(--clay-wash); color: var(--text); }
 
-/* ---------- Tile grid variant: closed sections are photo tiles; a clicked tile opens full width ---------- */
-.acc--tiles {
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 270px), 1fr));
-  grid-auto-flow: dense;
-  gap: 22px;
-}
-.acc--tiles > li:has(details[open]) {
-  grid-column: 1 / -1;
-}
-.acc--tiles details {
-  height: 100%;
-  overflow: hidden;
-  scroll-margin-top: calc(var(--header-h) + 20px);
-}
-.acc--tiles details:not([open]) summary {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  grid-template-rows: auto auto 1fr auto auto;
-  grid-template-areas: 'cover cover' 'num num' 'title title' 'meta meta' 'action action';
-  gap: 10px 12px;
-  align-items: start;
-  height: 100%;
-  padding: 0 22px 22px;
-}
-.acc--tiles details:not([open]) .acc__cover {
-  grid-area: cover;
-  display: block;
-  margin: 0 -22px 6px;
-  aspect-ratio: 16 / 10;
-  overflow: hidden;
-}
-.acc--tiles .acc__cover img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.9s var(--ease-out);
-}
-.acc--tiles details:not([open]):hover .acc__cover img {
-  transform: scale(1.06);
-}
-.acc--tiles details:not([open]) .acc__num { grid-area: num; font-size: 1.1rem; letter-spacing: 0; color: var(--saffron); }
-.acc--tiles details:not([open]) .acc__title { grid-area: title; }
-.acc--tiles details:not([open]) .acc__name {
-  font: 700 1.25rem/1.25 var(--sans);
-  letter-spacing: -0.01em;
-}
-.acc--tiles details:not([open]) .acc__sub { font-size: 15px; }
-.acc--tiles details:not([open]) .acc__meta { grid-area: meta; align-self: end; display: flex; margin-top: 6px; }
-.acc--tiles details:not([open]) .acc__thumbs,
-.acc--tiles details:not([open]) .svc-icon { display: none; }
-.acc--tiles details:not([open]) .acc__action {
-  grid-area: action;
-  align-self: end;
-  flex-direction: row;
-  justify-content: space-between;
-  gap: 10px;
-  padding-top: 12px;
-  border-top: 1px solid var(--line);
-}
-.acc--tiles details:not([open]) .acc__hint {
-  position: static;
-  background: none;
-  box-shadow: none;
-  padding: 0;
-  color: var(--saffron-ink);
-  font-size: 13px;
-}
-.acc--tiles details:not([open]) .acc__toggle { width: 40px; height: 40px; }
-.acc--tiles details:not([open]):hover {
-  transform: translateY(-6px);
-  box-shadow: var(--shadow-lg);
-}
-.acc--tiles details[open] .acc__cover { display: none; }
-.acc--tiles details[open] { box-shadow: var(--shadow-lg); outline: 2px solid color-mix(in srgb, var(--saffron) 35%, transparent); }
-@media (max-width: 760px) {
-  .acc--tiles details:not([open]) summary { padding: 0 18px 18px; }
-  .acc--tiles details:not([open]) .acc__cover { margin: 0 -18px 4px; }
-  .acc--tiles details:not([open]) .acc__meta { display: flex; }
-}
+/* Softly coloured cards repeat a coordinated six-colour palette. */
+.bg-lavender { background: var(--lavender); }
+:is(.pgrid__card, .pstats__item, .record__project, .pcard, .svc > li, .why__card, .acc > li) { --tile-tint: var(--tint-peach); }
+:is(.pgrid__card, .pstats__item, .record__project, .pcard, .svc > li, .why__card, .acc > li):nth-child(6n + 2) { --tile-tint: var(--tint-sage); }
+:is(.pgrid__card, .pstats__item, .record__project, .pcard, .svc > li, .why__card, .acc > li):nth-child(6n + 3) { --tile-tint: var(--tint-blue); }
+:is(.pgrid__card, .pstats__item, .record__project, .pcard, .svc > li, .why__card, .acc > li):nth-child(6n + 4) { --tile-tint: var(--tint-lilac); }
+:is(.pgrid__card, .pstats__item, .record__project, .pcard, .svc > li, .why__card, .acc > li):nth-child(6n + 5) { --tile-tint: var(--tint-sand); }
+:is(.pgrid__card, .pstats__item, .record__project, .pcard, .svc > li, .why__card, .acc > li):nth-child(6n + 6) { --tile-tint: var(--tint-rose); }
+
+.acc > li { background: linear-gradient(120deg, color-mix(in srgb, var(--tile-tint) 65%, white), transparent); }

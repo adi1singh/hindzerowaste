@@ -16,10 +16,10 @@ const { lang, alternates } = Astro.props;
 const path = Astro.url.pathname.replace(/\/$/, '') || '/';
 
 const home = localePath(lang, '/');
+const isHome = path === (home.replace(/\/$/, '') || '/');
 const aboutHref = localePath(lang, '/about-us');
 const links = [
   { key: 'nav.about', href: aboutHref, current: path.endsWith('/about-us') },
-  { key: 'nav.insights', href: '/waste-management-blogs', current: path === '/waste-management-blogs' },
   { key: 'nav.contact', href: localePath(lang, '/contact-us'), current: path.endsWith('/contact-us') },
 ] as const;
 
@@ -76,6 +76,9 @@ const chevron =
 
     <nav class="nav" aria-label="Main">
       <ul class="nav__list">
+        <li class="nav__item">
+          <a class="nav__link" href={home} aria-current={isHome ? 'page' : undefined}>{t(lang, 'nav.home')}</a>
+        </li>
         <li class="nav__item" data-mega-item="mega-machinery">
           <a class="nav__link" href="/product" aria-current={inMachinery ? 'page' : undefined}>{t(lang, 'nav.machinery')}</a>
           <button
@@ -191,6 +194,9 @@ const chevron =
   <div class="mobile-nav" id="mobile-nav" hidden data-mobile-nav>
     <div class="container mobile-nav__inner">
       <ul class="mobile-nav__list">
+        <li>
+          <a class="mobile-nav__top" href={home}>{t(lang, 'nav.home')}</a>
+        </li>
         <li>
           <details>
             <summary>{t(lang, 'nav.machinery')}</summary>
@@ -502,6 +508,12 @@ const chevron =
   .brand :global(.brand-logo) {
     height: 64px;
     width: auto;
+  }
+
+  /* Sit the menu to the right of centre, closer to the quote button. */
+  .nav {
+    margin-left: auto;
+    margin-right: clamp(28px, 5vw, 84px);
   }
 
   .nav__list {

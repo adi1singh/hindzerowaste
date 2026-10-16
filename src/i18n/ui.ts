@@ -11,6 +11,7 @@ export type Lang = keyof typeof languages;
 
 export const ui = {
   en: {
+    'nav.home': 'Home',
     'nav.machinery': 'Machinery',
     'nav.services': 'Services',
     'nav.projects': 'Projects',
@@ -45,6 +46,7 @@ export const ui = {
     'skip': 'Skip to content',
   },
   hi: {
+    'nav.home': 'होम',
     'nav.machinery': 'मशीनरी',
     'nav.services': 'सेवाएँ',
     'nav.projects': 'परियोजनाएँ',
@@ -79,6 +81,7 @@ export const ui = {
     'skip': 'मुख्य सामग्री पर जाएँ',
   },
   mr: {
+    'nav.home': 'होम',
     'nav.machinery': 'यंत्रसामग्री',
     'nav.services': 'सेवा',
     'nav.projects': 'प्रकल्प',

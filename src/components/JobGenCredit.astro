@@ -1,7 +1,7 @@
 ---
 import type { Lang } from '../i18n/ui';
-interface Props { lang?: Lang; detailed?: boolean; }
-const { lang = 'en', detailed = false } = Astro.props;
+interface Props { lang?: Lang; detailed?: boolean; compact?: boolean; light?: boolean; }
+const { lang = 'en', detailed = false, compact = false, light = false } = Astro.props;
 const copy = {
   en: { label: 'Website partner', line: 'AI-powered workforces and automation for everyday business.', website: 'Visit website', linkedin: 'Find us on LinkedIn' },
   hi: { label: 'वेबसाइट साझेदार', line: 'कारोबार के रोज़मर्रा के कामों के लिए AI कार्यबल और ऑटोमेशन।', website: 'वेबसाइट देखें', linkedin: 'LinkedIn पर जुड़ें' },
@@ -34,7 +34,7 @@ const linkedin = 'https://www.linkedin.com/company/jobgenai/';
     </div>
   </section>
 ) : (
-  <p class="studio-credit">POWERED BY <a href={website} target="_blank" rel="noopener noreferrer">JOBGEN.AI <span aria-hidden="true">↗</span></a></p>
+  <p class:list={["studio-credit", { "studio-credit--compact": compact, "studio-credit--light": light }]}>POWERED BY <a href={website} target="_blank" rel="noopener noreferrer">JOBGEN.AI <span aria-hidden="true">↗</span></a></p>
 )}
 
 <style>
@@ -42,6 +42,11 @@ const linkedin = 'https://www.linkedin.com/company/jobgenai/';
   .studio-credit a { color: var(--ink); font-size: 13px; font-weight: 800; letter-spacing: .02em; text-decoration: none; white-space: nowrap; }
   .studio-credit a:hover { color: var(--saffron-2); }
   .studio-credit a span { margin-left: 3px; }
+  .studio-credit--compact { width: fit-content; padding: 0; border: 0; gap: 6px; font-size: 9px; letter-spacing: .1em; }
+  .studio-credit--compact a { font-size: 11px; }
+  .studio-credit--light { color: rgba(255,255,255,.8); }
+  .studio-credit--light a { color: white; }
+  .studio-credit--light a:hover { color: var(--saffron-2); }
   .studio { padding-block: 32px 56px; background: var(--white); }
   .studio__inner { display: grid; grid-template-columns: 1fr 1fr; align-items: center; gap: 32px 72px; padding: clamp(28px, 4vw, 52px); border: 1px solid var(--line-strong); border-radius: 18px; background: var(--paper-2); }
   .studio__eyebrow { margin-bottom: 24px; font: 600 11px/1.5 var(--sans); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
@@ -60,4 +65,13 @@ const linkedin = 'https://www.linkedin.com/company/jobgenai/';
     .studio__eyebrow { margin-bottom: 18px; }
     .studio__about > p { font-size: 16px; }
   }
+  .studio-credit a { background: #174baf; color: white; padding: 5px 9px; border-radius: 5px; }
+  .studio-credit a:hover { background: #123879; color: white; }
+  .studio-credit--light { font-size: 10px; }
+  .studio-credit--light a { font-size: 16px; padding: 7px 12px; }
+  .studio__inner { background: #164ba8; border-color: #164ba8; }
+  .studio__name, .studio__about > p, .studio__links a, .studio__name:hover, .studio__links a:hover { color: white; }
+  .studio__eyebrow, .studio__powered { color: #d7e6ff; }
+  .studio__name span { color: white; border-color: #ffffff66; }
+  .studio__about { border-color: #ffffff55; }
 </style>

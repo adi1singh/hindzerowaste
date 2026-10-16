@@ -1,0 +1,319 @@
+---
+// About page: vision, mission and values as one charcoal "purpose" section.
+// The vision is read word by word as it scrolls into view, the mission lands as
+// four numbered commitments, and the values run past in a slow band.
+import type { Lang } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+  visionTitle: string;
+  vision: string;
+  missionTitle: string;
+  mission: string[];
+  valuesTitle: string;
+}
+
+const { lang, visionTitle, vision, missionTitle, mission, valuesTitle } = Astro.props;
+
+// The six values named in the values statement, in each language.
+const valueWords = {
+  en: ['Integrity', 'Environmental responsibility', 'Customer-centricity', 'Innovation for sustainability', 'Safety first', 'Tailored solutions'],
+  hi: ['ईमानदारी', 'पर्यावरणीय ज़िम्मेदारी', 'ग्राहक-केंद्रितता', 'स्थिरता के लिए नवाचार', 'सुरक्षा को प्राथमिकता', 'अनुकूलित समाधान'],
+  mr: ['प्रामाणिकपणा', 'पर्यावरणीय जबाबदारी', 'ग्राहककेंद्रितता', 'शाश्वततेसाठी नावीन्य', 'सुरक्षिततेला प्राधान्य', 'गरजेनुसार उपाय'],
+}[lang];
+
+const words = vision.split(/\s+/);
+const pad = (n: number) => String(n).padStart(2, '0');
+---
+
+<section class="purpose on-dark" data-purpose>
+  <div class="container">
+    <div class="purpose__vision">
+      <p class="eyebrow" data-reveal>{visionTitle}</p>
+      <blockquote class="purpose__quote" data-quote>
+        <span class="purpose__mark" aria-hidden="true">“</span>
+        {words.map((w, i) => <span class="purpose__word" style={`--i:${i}`}>{w} </span>)}
+      </blockquote>
+    </div>
+
+    <div class="purpose__mission">
+      <h2 class="purpose__label" data-reveal>{missionTitle}</h2>
+      <ol class="purpose__list">
+        {
+          mission.map((m, i) => (
+            <li class="purpose__item" data-reveal style={`--d:${i}`}>
+              <span class="purpose__num tabular" aria-hidden="true">{pad(i + 1)}</span>
+              <p>{m}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </div>
+
+  <div class="purpose__values">
+    <div class="container">
+      <h2 class="purpose__label" data-reveal>{valuesTitle}</h2>
+    </div>
+    <div class="purpose__band" aria-hidden="true">
+      <div class="purpose__track">
+        {
+          [0, 1].map((copy) =>
+            valueWords.map((v, i) => (
+              <span class:list={['purpose__value', { 'is-alt': i % 2 === 1, 'purpose__dup': copy === 1 }]}>
+                {v}
+                <svg class="purpose__leaf" viewBox="0 0 24 24" width="22" height="22"><path d="M5 19c0-8 5-13 14-14-1 9-6 14-14 14Zm0 0 7-7" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" /></svg>
+              </span>
+            )),
+          )
+        }
+      </div>
+    </div>
+    <ul class="visually-hidden">
+      {valueWords.map((v) => <li>{v}</li>)}
+    </ul>
+  </div>
+</section>
+
+<script>
+  // Light the vision up word by word as it moves up the screen.
+  document.querySelectorAll<HTMLElement>('[data-quote]').forEach((quote) => {
+    const words = [...quote.querySelectorAll<HTMLElement>('.purpose__word')];
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      quote.classList.add('is-read');
+      return;
+    }
+    let queued = false;
+    const update = () => {
+      queued = false;
+      const r = quote.getBoundingClientRect();
+      const vh = window.innerHeight;
+      // 0 when the quote's top reaches 85% of the screen, 1 when its bottom reaches 45%.
+      const p = Math.min(1, Math.max(0, (vh * 0.85 - r.top) / (r.height + vh * 0.4)));
+      const lit = Math.round(p * words.length);
+      words.forEach((w, i) => w.classList.toggle('is-lit', i < lit));
+    };
+    const request = () => {
+      if (!queued) {
+        queued = true;
+        requestAnimationFrame(update);
+      }
+    };
+    window.addEventListener('scroll', request, { passive: true });
+    window.addEventListener('resize', request);
+    update();
+  });
+</script>
+
+<style>
+  .purpose {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    padding-block: var(--section) 0;
+    background: #171311;
+    color: #e8e0d6;
+  }
+
+  .purpose::before {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    top: -25%;
+    right: -15%;
+    width: 65vw;
+    height: 65vw;
+    background: radial-gradient(circle, rgba(168, 79, 50, 0.26), transparent 62%);
+    pointer-events: none;
+  }
+
+  /* Vision */
+  .purpose__vision {
+    max-width: 1080px;
+  }
+
+  .purpose__quote {
+    position: relative;
+    margin: 26px 0 0;
+    font: 400 clamp(2.1rem, 4.4vw, 4.1rem) / 1.14 var(--serif);
+    letter-spacing: -0.01em;
+    color: var(--white);
+    text-wrap: pretty;
+  }
+
+  .purpose__mark {
+    position: absolute;
+    left: -0.5em;
+    top: -0.12em;
+    color: var(--saffron-2);
+  }
+
+  .purpose__word {
+    color: rgba(246, 243, 236, 0.18);
+    transition: color 0.5s var(--ease);
+  }
+
+  .purpose__word.is-lit,
+  .is-read .purpose__word {
+    color: var(--white);
+  }
+
+  /* Mission */
+  .purpose__mission {
+    margin-top: clamp(56px, 6vw, 88px);
+  }
+
+  .purpose__label {
+    font: 700 13px/1 var(--sans);
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--saffron-2) !important;
+  }
+
+  .purpose__list {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0;
+    margin-top: 28px;
+    list-style: none;
+  }
+
+  .purpose__item {
+    position: relative;
+    padding: 30px 28px 8px 0;
+  }
+
+  .purpose__item + .purpose__item {
+    padding-left: 28px;
+    border-left: 1px solid var(--line-on-dark);
+  }
+
+  /* A clay rule that draws across the top of each commitment as it appears. */
+  .purpose__item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--saffron), var(--saffron-2));
+    transform-origin: left;
+    transform: scaleX(0);
+    transition: transform 1s var(--ease-out) calc(var(--d, 0) * 120ms + 150ms);
+  }
+
+  .purpose__item.is-visible::before,
+  :global(html:not(.js)) .purpose__item::before {
+    transform: scaleX(1);
+  }
+
+  .purpose__num {
+    display: block;
+    font: 400 clamp(3.6rem, 5vw, 4.8rem) / 1 var(--serif);
+    color: transparent;
+    -webkit-text-stroke: 1.2px var(--saffron-2);
+  }
+
+  .purpose__item p {
+    margin-top: 18px;
+    font-size: 17px;
+    line-height: 1.6;
+    color: #e2d9cf;
+  }
+
+  /* Values */
+  .purpose__values {
+    margin-top: clamp(56px, 6vw, 88px);
+    padding: clamp(36px, 4vw, 56px) 0 clamp(56px, 6vw, 88px);
+    border-top: 1px solid var(--line-on-dark);
+  }
+
+  .purpose__band {
+    margin-top: 28px;
+    overflow: hidden;
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  }
+
+  .purpose__track {
+    display: flex;
+    width: max-content;
+    animation: purpose-run 48s linear infinite;
+  }
+
+  .purpose__band:hover .purpose__track {
+    animation-play-state: paused;
+  }
+
+  @keyframes purpose-run {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  .purpose__value {
+    display: inline-flex;
+    align-items: center;
+    gap: clamp(22px, 2.6vw, 40px);
+    padding-right: clamp(22px, 2.6vw, 40px);
+    white-space: nowrap;
+    font: 400 clamp(2.4rem, 5vw, 4.6rem) / 1.2 var(--serif);
+    color: var(--white);
+  }
+
+  .purpose__value.is-alt {
+    font-style: italic;
+    color: var(--saffron-2);
+  }
+
+  .purpose__leaf {
+    flex: none;
+    color: var(--lime);
+    opacity: 0.8;
+  }
+
+
+  @media (prefers-reduced-motion: reduce) {
+    .purpose__track {
+      animation: none;
+      flex-wrap: wrap;
+      width: auto;
+      justify-content: center;
+    }
+
+    .purpose__item::before {
+      transform: scaleX(1);
+    }
+
+    .purpose__dup {
+      display: none;
+    }
+  }
+
+  @media (max-width: 1000px) {
+    .purpose__list {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .purpose__item:nth-child(3) {
+      padding-left: 0;
+      border-left: 0;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .purpose__list {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .purpose__item,
+    .purpose__item + .purpose__item {
+      padding: 24px 0 12px;
+      border-left: 0;
+    }
+
+    .purpose__mark {
+      position: static;
+    }
+  }
+</style>

@@ -39,7 +39,7 @@ const c = copy[lang];
 const href = localePath(lang, '/contact-us') + (subject ? `?subject=${encodeURIComponent(subject)}` : '') + '#enquiry';
 ---
 
-<section class="cta bg-clay-wash">
+<section class="cta on-dark">
   <div class="container cta__inner">
     <div>
       <p class="eyebrow">{c.eyebrow}</p>
@@ -60,7 +60,40 @@ const href = localePath(lang, '/contact-us') + (subject ? `?subject=${encodeURIC
 
 <style>
   .cta {
-    padding-block: clamp(72px, 9vw, 128px);
+    position: relative;
+    overflow: hidden;
+    padding-block: clamp(80px, 10vw, 140px);
+    background: radial-gradient(120% 140% at 100% 0%, #c0603d 0%, var(--saffron) 45%, #7d3519 100%);
+    color: #fbe9dd;
+  }
+
+  .cta :global(.eyebrow) {
+    color: #ffe1cf;
+  }
+
+  .cta :global(.eyebrow)::before {
+    background: var(--white);
+    box-shadow: 0 11px 0 #ffd2b8;
+  }
+
+  .cta :global(.h2) {
+    color: var(--white);
+  }
+
+  .cta :global(.h2 em) {
+    color: #ffd2b8;
+  }
+
+  .cta :global(.btn--accent) {
+    --btn-bg: var(--white);
+    --btn-fg: var(--saffron-ink);
+    border-color: var(--white);
+  }
+
+  .cta :global(.btn--accent:hover) {
+    --btn-bg: var(--ink);
+    --btn-fg: var(--white);
+    border-color: var(--ink);
   }
 
   .cta__inner {
@@ -82,7 +115,7 @@ const href = localePath(lang, '/contact-us') + (subject ? `?subject=${encodeURIC
   }
 
   .cta__text {
-    color: var(--muted);
+    color: #fbe2d3;
     font-size: 1.15rem;
     line-height: 1.6;
   }
@@ -92,21 +125,17 @@ const href = localePath(lang, '/contact-us') + (subject ? `?subject=${encodeURIC
     flex-wrap: wrap;
     gap: 6px 18px;
     font-size: 16px;
-    color: var(--muted);
+    color: #f6cdb6;
   }
 
   .cta__phones a {
-    color: var(--ink);
+    color: var(--white);
     text-decoration: none;
     font-variant-numeric: tabular-nums;
   }
 
   .cta__phones a:hover {
     text-decoration: underline;
-  }
-
-  .cta :global(.eyebrow::before) {
-    background: var(--lime);
   }
 
   @media (max-width: 900px) {
