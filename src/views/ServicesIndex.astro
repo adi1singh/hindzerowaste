@@ -17,6 +17,7 @@ import rdfImg from '../assets/photos/shredder-ads-line.jpg';
 import heroA from '../assets/photos/biomining-excavator.jpg';
 import heroB from '../assets/photos/sorting-conveyor.jpg';
 import heroC from '../assets/photos/hero-plant-shed.jpg';
+import consImg from '../assets/photos/plant-layout-render.jpg';
 
 interface Props {
   lang: Lang;
@@ -95,7 +96,7 @@ const contact = localePath(lang, '/contact-us');
 
 <Base title={copy.title} description={copy.description} lang={lang} alternates={alternates}>
   <IndexHero
-    tone="sky"
+    tone="olive"
     eyebrow={copy.eyebrow}
     title={copy.heroTitle}
     lead={copy.lead}
@@ -111,7 +112,7 @@ const contact = localePath(lang, '/contact-us');
       { value: 30, label: copy.stats[2] },
     ]}
   >
-    <a class="btn" href="#plants">{copy.browse} <span class="arrow">↓</span></a>
+    <a class="btn btn--accent" href="#plants">{copy.browse} <span class="arrow">↓</span></a>
     <a class="btn btn--ghost" href={`${contact}#enquiry`}>{t(lang, 'cta.quote')} <span class="arrow">→</span></a>
   </IndexHero>
 
@@ -142,7 +143,7 @@ const contact = localePath(lang, '/contact-us');
 
   <section class="section--tight bg-mineral" id="consultancy">
     <div class="container cons" data-reveal>
-      <span class="cons__icon"><Icon name="consult" size={34} /></span>
+      <div class="cons__media"><Image src={consImg} alt="Plant layout drawing for an integrated waste-processing facility" widths={[480, 800]} sizes="(min-width: 900px) 40vw, 92vw" loading="lazy" /></div>
       <div class="cons__body">
         <p class="eyebrow">{copy.consEyebrow}</p>
         <h2 class="h3">{consultancyCopy[lang].name}</h2>
@@ -251,8 +252,8 @@ const contact = localePath(lang, '/contact-us');
 
   .cons {
     display: grid;
-    grid-template-columns: auto minmax(0, 1fr) auto;
-    gap: 28px 40px;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 6fr) auto;
+    gap: 28px 48px;
     align-items: center;
   }
 
@@ -264,6 +265,19 @@ const contact = localePath(lang, '/contact-us');
     border-radius: 50%;
     background: rgba(200, 100, 59, 0.16);
     color: var(--saffron-2);
+  }
+
+  .cons__media {
+    overflow: hidden;
+    border-radius: var(--radius-lg);
+    aspect-ratio: 16 / 9;
+    box-shadow: var(--shadow-md);
+  }
+
+  .cons__media :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
 
   .cons__body {

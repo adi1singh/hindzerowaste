@@ -32,7 +32,15 @@ const labels = {
     const root = document.querySelector<HTMLElement>(`[data-accordion="${ctrl.dataset.accordionControls}"]`);
     if (!root) return;
     const items = [...root.querySelectorAll<HTMLDetailsElement>('details')];
-    let auto = true;
+    const tiles = root.hasAttribute('data-tiles');
+    // Tile grids open only on click; lists open one by one on scroll.
+    let auto = !tiles;
+    if (tiles)
+      items.forEach((d) =>
+        d.addEventListener('toggle', () => {
+          if (d.open && 'touched' in d.dataset) d.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }),
+      );
 
     ctrl.querySelectorAll<HTMLButtonElement>('[data-action]').forEach((btn) =>
       btn.addEventListener('click', () => {

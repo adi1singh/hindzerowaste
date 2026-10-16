@@ -21,6 +21,7 @@ const categories = [...new Set(products.map((p) => p.category))];
   description="Waste-processing machinery engineered and built in-house by Hind Zero Waste: rotary trommels, air density and disc separators, shredders, balers, composters, conveyors, PEB sheds and sewer suction vehicles."
 >
   <IndexHero
+    tone="navy"
     eyebrow="Machinery"
     title="Machines built for the <em>hardest</em> waste."
     lead="Every machine is engineered and fabricated in-house for continuous 24×7 duty, then configured to the waste, throughput and layout of your plant."
@@ -63,7 +64,7 @@ const categories = [...new Set(products.map((p) => p.category))];
         <h2 class="h3 brochure__title">Full technical data for every model, in one document.</h2>
       </div>
       <div class="btn-row">
-        <a class="btn" href={site.downloads.brochure} target="_blank" rel="noopener">Download brochure <span class="arrow">↗</span></a>
+        <a class="btn btn--accent" href={site.downloads.brochure} target="_blank" rel="noopener">Download brochure <span class="arrow">↗</span></a>
         <a class="link-arrow" href={site.downloads.profile} target="_blank" rel="noopener">Company profile <span class="arrow">↗</span></a>
       </div>
     </div>
