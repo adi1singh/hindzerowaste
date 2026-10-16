@@ -19,7 +19,6 @@ const home = localePath(lang, '/');
 const aboutHref = localePath(lang, '/about-us');
 const links = [
   { key: 'nav.about', href: aboutHref, current: path.endsWith('/about-us') },
-  { key: 'nav.insights', href: '/waste-management-blogs', current: path === '/waste-management-blogs' },
   { key: 'nav.contact', href: localePath(lang, '/contact-us'), current: path.endsWith('/contact-us') },
 ] as const;
 
