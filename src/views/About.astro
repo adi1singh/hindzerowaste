@@ -9,6 +9,7 @@ import Count from '../components/Count.astro';
 import ProjectRecord from '../components/ProjectRecord.astro';
 import JobGenCredit from '../components/JobGenCredit.astro';
 import Icon from '../components/Icon.astro';
+import Purpose from '../components/Purpose.astro';
 import StateMark from '../components/StateMark.astro';
 import { figures, footprint, site } from '../data/site';
 import { completedBiomining, machineSupply, ongoingBiomining, plantsInstalled } from '../data/projects';
@@ -417,26 +418,15 @@ const alternates = { en: '/about-us', hi: '/hi/about-us', mr: '/mr/about-us' };
   </section>
 
   <!-- Vision, mission, values -->
-  <section class="section bg-mineral">
-    <div class="container vmv">
-      <div class="vmv__vision" data-reveal>
-        <p class="eyebrow">{copy.visionTitle}</p>
-        <p class="vmv__quote">“{copy.vision}”</p>
-      </div>
-      <div class="vmv__cols">
-        <div data-reveal>
-          <h2 class="vmv__title">{copy.missionTitle}</h2>
-          <ol class="vmv__list">
-            {copy.mission.map((m) => <li>{m}</li>)}
-          </ol>
-        </div>
-        <div data-reveal style="--d: 1">
-          <h2 class="vmv__title">{copy.valuesTitle}</h2>
-          <p class="vmv__values">{copy.values}</p>
-        </div>
-      </div>
-    </div>
-  </section>
+  <Purpose
+    lang={lang}
+    visionTitle={copy.visionTitle}
+    vision={copy.vision}
+    missionTitle={copy.missionTitle}
+    mission={copy.mission}
+    valuesTitle={copy.valuesTitle}
+    values={copy.values}
+  />
 
   <!-- Why us -->
   <section class="section bg-sage">
@@ -757,58 +747,11 @@ const alternates = { en: '/about-us', hi: '/hi/about-us', mr: '/mr/about-us' };
     color: var(--muted);
   }
 
-  /* Vision, mission, values */
-  .vmv__quote {
-    margin-top: 24px;
-    font-family: var(--serif);
-    font-size: clamp(1.9rem, 3.4vw, 3rem);
-    line-height: 1.18;
-    color: var(--paper);
-    max-width: 22em;
-  }
 
-  .vmv__cols {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 48px 72px;
-    margin-top: clamp(48px, 6vw, 80px);
-    padding-top: 40px;
-    border-top: 1px solid var(--line-on-dark);
-  }
 
-  .vmv__title {
-    font: 700 14px/1 var(--sans);
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: var(--saffron-2) !important;
-    margin-bottom: 20px;
-  }
 
-  .vmv__list {
-    list-style: none;
-    counter-reset: m;
-  }
 
-  .vmv__list li {
-    counter-increment: m;
-    display: grid;
-    grid-template-columns: 44px minmax(0, 1fr);
-    padding: 13px 0;
-    border-bottom: 1px solid var(--line-on-dark);
-    color: #e2d9cf;
-  }
 
-  .vmv__list li::before {
-    content: counter(m, decimal-leading-zero);
-    font-weight: 800;
-    color: var(--lime);
-  }
-
-  .vmv__values {
-    color: #e2d9cf;
-    font-size: 1.15rem;
-    line-height: 1.7;
-  }
 
   /* Why us */
   .why__eyebrow {
@@ -990,9 +933,6 @@ const alternates = { en: '/about-us', hi: '/hi/about-us', mr: '/mr/about-us' };
   @media (max-width: 900px) {
     .story,
     .cred,
-    .vmv__cols {
-      grid-template-columns: minmax(0, 1fr);
-    }
 
     .story__media {
       aspect-ratio: 16 / 11;
@@ -1025,22 +965,10 @@ const alternates = { en: '/about-us', hi: '/hi/about-us', mr: '/mr/about-us' };
   .pstats__item dt { color: var(--saffron-ink); }
   .pstats__item:first-child dt { color: var(--green-ink); }
   .pstats__item dd { color: var(--muted); }
-  .vmv__quote, .vmv__values, .vmv__list li { color: var(--ink); }
-  .vmv__cols, .vmv__list li { border-color: var(--line-strong); }
-  .vmv__title { color: var(--saffron-ink) !important; }
-  .vmv__list li::before { color: var(--green-ink); }
 
 
   .pstats__item { background: radial-gradient(ellipse at top right, var(--tile-tint), transparent 95%), #fffaf2; }
   .why__card { background: linear-gradient(145deg, #fffaf2, var(--tile-tint)); }
   .achievements__title :global(em) { text-decoration: underline; text-decoration-color: var(--saffron); text-underline-offset: .16em; text-decoration-thickness: 2px; }
   .achievements .proj__record { margin-top: 0; }
-  .vmv__vision { background: #f3e7d0; padding: clamp(24px,4vw,44px); border-radius: 18px; }
-  .vmv__quote { font-size: clamp(1.5rem,2.6vw,2.25rem); }
-  .vmv__vision .eyebrow, .vmv__title { font-size: clamp(20px,2vw,26px); letter-spacing: .06em; line-height: 1.25; }
-  .vmv__cols { gap: 24px; border-top: 0; padding-top: 0; margin-top: 24px; }
-  .vmv__cols > div { padding: clamp(24px,3vw,36px); border-radius: 18px; background: #e1ebd5; }
-  .vmv__cols > div:last-child { background: #eee2f3; }
-  .vmv__list li::before { color: var(--saffron-ink); }
-  .vmv__values { color: #56366f; }
 </style>

@@ -3,8 +3,7 @@ import { Image } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
 import Base from '../layouts/Base.astro';
 import IndexHero from '../components/IndexHero.astro';
-import Steps from '../components/Steps.astro';
-import Icon from '../components/Icon.astro';
+import ProcessStory from '../components/ProcessStory.astro';
 import CtaBand from '../components/CtaBand.astro';
 import { services } from '../data/services';
 import { localName, localePath, t, type Lang } from '../i18n/ui';
@@ -49,6 +48,7 @@ const copy = {
     consEyebrow: 'Consultancy',
     apprEyebrow: 'How we work',
     apprTitle: 'One partner, from drawing board to <em>daily operation</em>.',
+    apprIntro: 'One team is accountable from the first site survey to everyday operation of the plant.',
     crumbs: ['Home', 'Services'],
   },
   hi: {
@@ -67,6 +67,7 @@ const copy = {
     consEyebrow: 'परामर्श',
     apprEyebrow: 'हमारी कार्यप्रणाली',
     apprTitle: 'डिज़ाइन से <em>दैनिक संचालन</em> तक, एक ही साझेदार।',
+    apprIntro: 'पहले साइट सर्वेक्षण से लेकर प्लांट के रोज़मर्रा के संचालन तक, एक ही टीम ज़िम्मेदार।',
     crumbs: ['होम', 'सेवाएँ'],
   },
   mr: {
@@ -85,6 +86,7 @@ const copy = {
     consEyebrow: 'सल्ला',
     apprEyebrow: 'आमची कार्यपद्धती',
     apprTitle: 'डिझाइनपासून <em>दैनंदिन संचालनापर्यंत</em>, एकच भागीदार.',
+    apprIntro: 'पहिल्या साइट सर्वेक्षणापासून प्लांटच्या दैनंदिन संचालनापर्यंत, एकच टीम जबाबदार.',
     crumbs: ['होम', 'सेवा'],
   },
 }[lang];
@@ -126,17 +128,38 @@ const contact = localePath(lang, '/contact-us');
 
       </div>
 
-      <div class="service-grid">
-        {services.map((s, i) => <article class="service-card" data-reveal style={`--d:${i}`}>
-          <Image src={images[s.slug]} alt={s.images[0].alt} widths={[480,720,960]} sizes="(min-width: 900px) 45vw, 92vw" loading="lazy" />
-          <div class="service-card__body">
-            <span class="chip tabular">{s.range}</span>
-            <h3 class="h3">{localName(lang,s.slug,s.name)}</h3>
-            <p class="muted">{serviceShorts[lang][s.slug]}</p>
-            <ul class="svc-panel__points">{serviceHighlights[lang][s.slug].map(h => <li>{h}</li>)}</ul>
-            <div class="btn-row"><a class="btn" href={`/${s.slug}`}>{copy.explore} {inEnglish[lang]} <span class="arrow">→</span></a><a class="link-arrow" href={`${contact}?subject=${encodeURIComponent(s.name)}#enquiry`}>{copy.discuss} →</a></div>
-          </div>
-        </article>)}
+      <div class="chapters">
+        {
+          services.map((s, i) => (
+            <article class:list={['chapter', { 'chapter--flip': i % 2 === 1 }]} data-reveal>
+              <a class="chapter__media" href={`/${s.slug}`} tabindex="-1" aria-hidden="true">
+                <Image src={images[s.slug]} alt="" widths={[600, 900, 1280]} sizes="(min-width: 900px) 55vw, 92vw" loading="lazy" />
+                <span class="chapter__no tabular">{String(i + 1).padStart(2, '0')}</span>
+              </a>
+              <div class="chapter__body">
+                <p class="chapter__kicker">
+                  <span class="tabular">{String(i + 1).padStart(2, '0')} / {String(services.length).padStart(2, '0')}</span>
+                  <span class="chip tabular">{s.range}</span>
+                </p>
+                <h3 class="chapter__title">{localName(lang, s.slug, s.name)}</h3>
+                <p class="chapter__lead">{serviceShorts[lang][s.slug]}</p>
+                <ul class="chapter__points">
+                  {serviceHighlights[lang][s.slug].map((h) => (
+                    <li>{h}</li>
+                  ))}
+                </ul>
+                <div class="btn-row">
+                  <a class="btn btn--accent" href={`/${s.slug}`}>
+                    {copy.explore} {inEnglish[lang]} <span class="arrow">→</span>
+                  </a>
+                  <a class="link-arrow" href={`${contact}?subject=${encodeURIComponent(s.name)}#enquiry`}>
+                    {copy.discuss} <span class="arrow">→</span>
+                  </a>
+                </div>
+              </div>
+            </article>
+          ))
+        }
       </div>
     </div>
   </section>
@@ -153,15 +176,7 @@ const contact = localePath(lang, '/contact-us');
     </div>
   </section>
 
-  <section class="section bg-sage">
-    <div class="container">
-      <div class="section-head section-head--center" data-reveal>
-        <p class="eyebrow">{copy.apprEyebrow}</p>
-        <h2 class="h2" set:html={copy.apprTitle} />
-      </div>
-      <Steps lang={lang} />
-    </div>
-  </section>
+  <ProcessStory lang={lang} eyebrow={copy.apprEyebrow} title={copy.apprTitle} intro={copy.apprIntro} />
 
   <CtaBand lang={lang} />
 </Base>
@@ -296,9 +311,172 @@ const contact = localePath(lang, '/contact-us');
       display: none;
     }
   }
-  .service-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 28px; }
-  .service-card { background: white; border: 1px solid var(--line); border-radius: 18px; overflow: hidden; }
-  .service-card > :global(img) { width: 100%; aspect-ratio: 16/9; object-fit: cover; }
-  .service-card__body { padding: clamp(22px,3vw,36px); display: flex; flex-direction: column; align-items: flex-start; gap: 20px; }
-  @media(max-width: 760px) { .service-grid { grid-template-columns: minmax(0,1fr); } }
+  /* Four plants as alternating chapters: a large photo that opens up as it
+     scrolls in, and the story beside it. */
+  .chapters {
+    display: grid;
+    gap: clamp(64px, 9vw, 128px);
+  }
+
+  .chapter {
+    display: grid;
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    gap: clamp(32px, 5vw, 80px);
+    align-items: center;
+  }
+
+  .chapter--flip {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  }
+
+  .chapter--flip .chapter__media {
+    order: 2;
+  }
+
+  .chapter__media {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    aspect-ratio: 4 / 3;
+    border-radius: 6px;
+    box-shadow: 0 40px 80px -50px rgba(var(--shade), 0.6);
+  }
+
+  .chapter__media :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 1.2s var(--ease-out);
+  }
+
+  .chapter__media:hover :global(img) {
+    transform: scale(1.04);
+  }
+
+  .chapter__no {
+    position: absolute;
+    left: 22px;
+    bottom: 6px;
+    font: 400 clamp(5rem, 9vw, 8.5rem) / 1 var(--serif);
+    color: transparent;
+    -webkit-text-stroke: 1.5px rgba(255, 255, 255, 0.9);
+    text-shadow: 0 6px 40px rgba(0, 0, 0, 0.35);
+  }
+
+  .chapter--flip .chapter__no {
+    left: auto;
+    right: 22px;
+  }
+
+  .chapter__body {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 18px;
+  }
+
+  .chapter__kicker {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font: 700 12px/1 var(--sans);
+    letter-spacing: 0.18em;
+    color: var(--saffron-ink);
+  }
+
+  .chapter__kicker .chip {
+    letter-spacing: 0;
+  }
+
+  .chapter__title {
+    font: 400 clamp(2.2rem, 3.6vw, 3.3rem) / 1.04 var(--serif);
+    color: var(--ink);
+  }
+
+  .chapter__lead {
+    font-size: 18px;
+    line-height: 1.6;
+    color: var(--muted);
+  }
+
+  .chapter__points {
+    display: grid;
+    width: 100%;
+    list-style: none;
+    border-top: 1px solid var(--line);
+  }
+
+  .chapter__points li {
+    position: relative;
+    padding: 13px 0 13px 28px;
+    border-bottom: 1px solid var(--line);
+    font-weight: 550;
+    color: var(--ink);
+  }
+
+  .chapter__points li::before {
+    content: '';
+    position: absolute;
+    left: 2px;
+    top: 50%;
+    width: 12px;
+    height: 2px;
+    background: var(--saffron);
+  }
+
+  .chapter .btn-row {
+    margin-top: 6px;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    :global(.js) .chapter__media {
+      clip-path: inset(10% 10% 10% 10% round 6px);
+      transition: clip-path 1.2s var(--ease-out);
+    }
+
+    :global(.js) .chapter__media :global(img) {
+      transform: scale(1.18);
+      transition: transform 1.6s var(--ease-out);
+    }
+
+    :global(.js) .chapter.is-visible .chapter__media {
+      clip-path: inset(0 0 0 0 round 6px);
+    }
+
+    :global(.js) .chapter.is-visible .chapter__media :global(img) {
+      transform: none;
+    }
+
+    .chapter__points li {
+      opacity: 0;
+      transform: translateX(-12px);
+      transition:
+        opacity 0.6s var(--ease-out),
+        transform 0.6s var(--ease-out);
+    }
+
+    .chapter.is-visible .chapter__points li {
+      opacity: 1;
+      transform: none;
+    }
+
+    .chapter.is-visible .chapter__points li:nth-child(2) {
+      transition-delay: 0.1s;
+    }
+
+    .chapter.is-visible .chapter__points li:nth-child(3) {
+      transition-delay: 0.2s;
+    }
+  }
+
+  @media (max-width: 900px) {
+    .chapter,
+    .chapter--flip {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .chapter--flip .chapter__media {
+      order: 0;
+    }
+  }
 </style>
