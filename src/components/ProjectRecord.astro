@@ -1,13 +1,38 @@
 ---
+// About page project record (English): a headline volume bar built from the
+// completed projects, then a sliding switch between completed bio-mining (a
+// ranked bar list), bio-mining in progress (cards, with real progress where the
+// data has it) and processing plant / O&M projects (capacity-first cards).
 import Count from './Count.astro';
-import Icon from './Icon.astro';
 import { completedBiomining, ongoingBiomining, plantProjects } from '../data/projects';
-const clearedTotal = completedBiomining.reduce((total, project) => total + Number(project.volume.replace(/[^\d]/g, '')), 0);
+
+const volume = (v: string) => Number(v.replace(/[^\d]/g, ''));
+const completed = [...completedBiomining].sort((a, b) => volume(b.volume) - volume(a.volume));
+const clearedTotal = completed.reduce((t, p) => t + volume(p.volume), 0);
+const maxVolume = volume(completed[0].volume);
+
+// Where an ongoing project states how much is done (e.g. "7,02,900 m³ completed"
+// of an 8,00,000 m³ scope), show it as a progress bar.
+const ongoing = ongoingBiomining.map((p) => {
+  const done = p.note?.match(/^([\d,]+)\s*m³ completed/);
+  const pct = done && p.volume.includes('m³') ? Math.round((volume(done[1]) / volume(p.volume)) * 100) : null;
+  return { ...p, pct };
+});
+
+// Lead each plant project with its capacity, e.g. "100 TPD" or "Two 300 TPD".
+const plants = plantProjects.map((text) => {
+  const m = text.match(/^((?:Two )?\d+ TPD)\s*/);
+  const lead = m ? m[1] : text.split(':')[0];
+  const rest = (m ? text.slice(m[0].length) : text.slice(lead.length + 1)).trim();
+  return { lead, rest: rest.charAt(0).toUpperCase() + rest.slice(1) };
+});
+
 const groups = [
-  { id: 'completed', count: completedBiomining.length, label: 'Completed bio-mining projects', short: 'Completed', detail: `${clearedTotal.toLocaleString('en-IN')} m³ of legacy waste cleared`, rows: completedBiomining },
-  { id: 'ongoing', count: ongoingBiomining.length, label: 'Bio-mining projects in progress', short: 'In progress', detail: 'Maharashtra, Himachal Pradesh and Telangana', rows: ongoingBiomining },
-  { id: 'plants', count: plantProjects.length, label: 'Processing plant & O&M projects', short: 'Plants & O&M', detail: 'Rajasthan, Delhi and Telangana', rows: plantProjects.map(site => ({ site, volume: '', note: '' })) },
+  { id: 'completed', count: completed.length, label: 'Completed bio-mining', detail: `${clearedTotal.toLocaleString('en-IN')} m³ of legacy waste cleared` },
+  { id: 'ongoing', count: ongoing.length, label: 'Bio-mining in progress', detail: 'Maharashtra, Himachal Pradesh and Telangana' },
+  { id: 'plants', count: plants.length, label: 'Plants & O&M', detail: 'Processing plants and long-term operation in Rajasthan, Delhi and Telangana' },
 ];
+const pad = (n: number) => String(n).padStart(2, '0');
 ---
 
 <section class="section record" aria-labelledby="record-title" data-project-record>
@@ -17,49 +42,118 @@ const groups = [
         <p class="eyebrow">Our project record</p>
         <h2 class="record__title" id="record-title">Real projects.<br /><em>Real progress.</em></h2>
       </div>
-      <p class="record__intro">From reclaimed dumpsites to working plants. Explore the projects behind the numbers.</p>
+      <div class="record__hero">
+        <p class="record__hero-num tabular"><Count value={clearedTotal} format="en-IN" /><span>m³</span></p>
+        <p class="record__hero-label">of legacy waste cleared across {completed.length} completed bio-mining projects.</p>
+      </div>
     </div>
-    <div class="record__tabs" aria-label="Project categories" data-record-tabs>
-      {groups.map((group, i) => (
-        <a class={`record__tab record__tab--${group.id}`} id={`record-tab-${group.id}`} href={`#record-panel-${group.id}`} data-record-tab={group.id} data-reveal style={`--d:${i}`}>
-          <span class="record__tab-top"><span class="record__tag">{group.short}</span><span class="record__tab-arrow" aria-hidden="true">↓</span></span>
-          <span class="record__count"><Count value={group.count} /></span>
-          <span class="record__label">{group.label}</span>
-          <span class="record__tab-rule" aria-hidden="true"></span>
-        </a>
-      ))}
+
+    <!-- Each block is one completed project, sized by the volume it cleared. -->
+    <figure class="record__whole" data-record-whole>
+      <div class="record__bar" aria-hidden="true">
+        {
+          completed.map((p, i) => (
+            <span class="record__seg" style={`flex-grow:${volume(p.volume)};--k:${i}`} data-tip={`${p.site} · ${p.volume}`} />
+          ))
+        }
+      </div>
+      <figcaption class="record__caption">
+        <span>Each block is one completed project, sized by the volume it cleared.</span>
+        <span class="tabular">{completed.length} projects</span>
+      </figcaption>
+    </figure>
+
+    <div class="record__switch" aria-label="Project categories" data-record-tabs style="--sel:0">
+      <span class="record__pill" aria-hidden="true"></span>
+      {
+        groups.map((g) => (
+          <a class="record__tab" id={`record-tab-${g.id}`} href={`#record-panel-${g.id}`} data-record-tab={g.id}>
+            <span class="record__tab-count tabular">{g.count}</span>
+            <span class="record__tab-label">{g.label}</span>
+          </a>
+        ))
+      }
     </div>
-    {groups.map(group => (
-      <section class={`record__panel record__panel--${group.id}`} id={`record-panel-${group.id}`} aria-labelledby={`record-heading-${group.id}`} data-record-panel={group.id}>
-        <header class="record__panel-head">
-          <div><h3 id={`record-heading-${group.id}`}>{group.label}</h3><p>{group.detail}</p></div>
-          <span class="record__total">{group.rows.length} projects</span>
-        </header>
-        <div class="record__panel-layout">
-          <aside class="record__summary">
-            <span class="record__summary-mark" aria-hidden="true"><Icon name={group.id === 'completed' ? 'biomining' : group.id === 'ongoing' ? 'operate' : 'factory'} size={48} /></span>
-            <p class="record__summary-value tabular">{group.id === 'completed' ? clearedTotal.toLocaleString('en-IN') : group.count}<span>{group.id === 'completed' ? 'm³' : 'projects'}</span></p>
-            <p class="record__summary-label">{group.id === 'completed' ? 'Legacy waste cleared' : group.id === 'ongoing' ? 'Bio-mining in progress' : 'Processing plants & O&M'}</p>
-            <span class="record__summary-rule" aria-hidden="true"></span>
-            <p class="record__summary-caption">{group.id === 'completed' ? `${group.count} completed bio-mining projects.` : group.detail}</p>
-          </aside>
-          <ol class="record__list">
-          {group.rows.map((project, i) => (
-            <li class="record__project">
-              <div class="record__project-top"><span class="record__index tabular" aria-hidden="true">PROJECT {String(i + 1).padStart(2, '0')}</span><span class="record__project-state">{group.short}</span></div>
-              <div class="record__site"><h4>{project.site}</h4>{project.note && <span class="record__note">{project.note}</span>}</div>
-              {project.volume && <p class="record__volume tabular"><strong>{project.volume.match(/^[\d,]+/)?.[0]}</strong><span>{project.volume.replace(/^[\d,]+\s*/, '')}</span></p>}
+
+    <section class="record__panel" id="record-panel-completed" aria-labelledby="record-h-completed" data-record-panel="completed">
+      <header class="record__panel-head">
+        <h3 id="record-h-completed">Completed bio-mining projects</h3>
+        <p>{groups[0].detail}, largest first.</p>
+      </header>
+      <ol class="record__rank">
+        {
+          completed.map((p, i) => (
+            <li class="record__row" style={`--k:${i}`}>
+              <span class="record__idx tabular">{pad(i + 1)}</span>
+              <span class="record__site">
+                {p.site}
+                {p.note && <small>{p.note}</small>}
+              </span>
+              <span class="record__track" aria-hidden="true">
+                <i style={`--w:${(volume(p.volume) / maxVolume).toFixed(4)}`} />
+              </span>
+              <span class="record__vol tabular">{p.volume}</span>
             </li>
-          ))}
-        </ol>
-        </div>
-      </section>
-    ))}
+          ))
+        }
+      </ol>
+    </section>
+
+    <section class="record__panel" id="record-panel-ongoing" aria-labelledby="record-h-ongoing" data-record-panel="ongoing">
+      <header class="record__panel-head">
+        <h3 id="record-h-ongoing">Bio-mining projects in progress</h3>
+        <p>{groups[1].detail}.</p>
+      </header>
+      <ul class="record__live">
+        {
+          ongoing.map((p, i) => (
+            <li class="record__card" style={`--k:${i}`}>
+              <span class="record__status">
+                <span class="record__pulse" aria-hidden="true" />
+                In progress
+              </span>
+              <p class="record__card-vol tabular">{p.volume}</p>
+              <p class="record__card-site">{p.site}</p>
+              {p.pct !== null ? (
+                <div class="record__progress">
+                  <span class="record__progress-track" aria-hidden="true">
+                    <i style={`--w:${(p.pct / 100).toFixed(3)}`} />
+                  </span>
+                  <span class="record__progress-text tabular">
+                    {p.note} <b>· {p.pct}%</b>
+                  </span>
+                </div>
+              ) : (
+                p.note && <p class="record__card-note">{p.note}</p>
+              )}
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+
+    <section class="record__panel" id="record-panel-plants" aria-labelledby="record-h-plants" data-record-panel="plants">
+      <header class="record__panel-head">
+        <h3 id="record-h-plants">Processing plant and O&amp;M projects</h3>
+        <p>{groups[2].detail}.</p>
+      </header>
+      <ul class="record__plants">
+        {
+          plants.map((p, i) => (
+            <li class="record__plant" style={`--k:${i}`}>
+              <span class="record__plant-no tabular">{pad(i + 1)}</span>
+              <p class="record__plant-lead">{p.lead}</p>
+              <p class="record__plant-text">{p.rest}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
   </div>
 </section>
 
 <script>
-  document.querySelectorAll<HTMLElement>('[data-project-record]').forEach(root => {
+  document.querySelectorAll<HTMLElement>('[data-project-record]').forEach((root) => {
     const tabs = [...root.querySelectorAll<HTMLAnchorElement>('[data-record-tab]')];
     const panels = [...root.querySelectorAll<HTMLElement>('[data-record-panel]')];
     const tablist = root.querySelector<HTMLElement>('[data-record-tabs]');
@@ -67,6 +161,7 @@ const groups = [
     root.classList.add('is-enhanced');
     tablist.setAttribute('role', 'tablist');
     const select = (index: number, focus = false) => {
+      tablist.style.setProperty('--sel', String(index));
       tabs.forEach((tab, i) => {
         tab.setAttribute('role', 'tab');
         tab.setAttribute('aria-controls', panels[i].id);
@@ -79,14 +174,14 @@ const groups = [
       });
       if (focus) tabs[index].focus();
     };
-    const initial = panels.findIndex(panel => `#${panel.id}` === window.location.hash);
+    const initial = panels.findIndex((panel) => `#${panel.id}` === window.location.hash);
     select(initial < 0 ? 0 : initial);
     tabs.forEach((tab, index) => {
-      tab.addEventListener('click', event => {
+      tab.addEventListener('click', (event) => {
         event.preventDefault();
         select(index);
       });
-      tab.addEventListener('keydown', event => {
+      tab.addEventListener('keydown', (event) => {
         let next = index;
         if (event.key === 'ArrowRight') next = (index + 1) % tabs.length;
         else if (event.key === 'ArrowLeft') next = (index + tabs.length - 1) % tabs.length;
@@ -98,118 +193,587 @@ const groups = [
       });
     });
     window.addEventListener('hashchange', () => {
-      const index = panels.findIndex(panel => `#${panel.id}` === window.location.hash);
+      const index = panels.findIndex((panel) => `#${panel.id}` === window.location.hash);
       if (index >= 0) select(index);
     });
+
+    // Bars grow once the section scrolls into view.
+    if ('IntersectionObserver' in window) {
+      const io = new IntersectionObserver(
+        ([entry]) => {
+          if (entry.isIntersecting) {
+            root.classList.add('is-in');
+            io.disconnect();
+          }
+        },
+        { threshold: 0.2 },
+      );
+      io.observe(root.querySelector('[data-record-whole]') ?? root);
+    } else root.classList.add('is-in');
   });
 </script>
 
 <style>
-  .record { background: #ebe0cf; }
-  .record__heading { display: flex; justify-content: space-between; align-items: flex-end; gap: 32px; margin-bottom: 48px; }
-  .record__title { margin-top: 18px; font: 400 clamp(3rem, 6vw, 5.4rem)/.98 var(--serif); letter-spacing: -.04em; color: var(--ink); }
-  .record__title em { color: var(--saffron); font-weight: 400; }
-  .record__intro { max-width: 24em; margin-bottom: 5px; color: var(--muted); font-size: 17px; line-height: 1.7; }
-  .record__tabs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-bottom: 32px; }
-  .record__tab {
-    --record-accent: var(--green-ink);
-    display: flex; flex-direction: column; position: relative;
-    padding: 24px 28px 26px; border: 1px solid var(--line-strong); border-radius: 14px;
-    text-decoration: none; color: var(--ink); background: color-mix(in srgb, var(--white) 62%, var(--paper));
-    overflow: hidden; transition: background-color .3s var(--ease), color .3s var(--ease), box-shadow .3s var(--ease);
-  }
-  .record__tab--ongoing { --record-accent: var(--saffron); }
-  .record__tab--plants { --record-accent: var(--navy); }
-  .record__tab:hover { background: var(--white); box-shadow: var(--shadow-md); }
-  .record__tab:focus-visible { outline: 3px solid var(--saffron); outline-offset: 4px; }
-  .record__tab-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-  .record__tag { display: flex; align-items: center; gap: 8px; font: 650 12px/1.4 var(--sans); letter-spacing: .08em; text-transform: uppercase; }
-  .record__tag::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--record-accent); }
-  .record__tab-arrow { font-size: 23px; line-height: 1; color: var(--record-accent); }
-  .record__count { margin-block: 20px 10px; font: 650 clamp(4rem, 7vw, 6.3rem)/1 var(--sans); letter-spacing: -.07em; color: var(--record-accent); }
-  .record__label { font-size: 16px; font-weight: 550; line-height: 1.45; max-width: 20em; }
-  .record__tab-rule { position: absolute; inset: auto 0 0; height: 4px; background: var(--record-accent); transform: scaleX(.18); transform-origin: left; transition: transform .4s var(--ease); }
-  .record__tab[aria-selected='true'] { background: color-mix(in srgb, var(--record-accent) 13%, var(--white)); color: var(--ink); border-color: var(--record-accent); box-shadow: 0 6px 20px -16px var(--record-accent); }
-  .record__tab[aria-selected='true'] .record__count, .record__tab[aria-selected='true'] .record__tab-arrow { color: var(--record-accent); }
-  .record__tab[aria-selected='true'] .record__tag::before { background: currentColor; }
-  .record__tab[aria-selected='true'] .record__tab-rule { background: var(--record-accent); transform: scaleX(1); }
-  .record__panel { background: #f9f7f2; border: 1px solid var(--line); border-radius: 20px; overflow: clip; scroll-margin-top: calc(var(--header-h) + 30px); }
-  .record__panel[hidden] { display: none; }
-  .record__panel + .record__panel { margin-top: 24px; }
-  .is-enhanced .record__panel + .record__panel { margin-top: 0; }
-  .record__panel-head { display: flex; justify-content: space-between; align-items: center; gap: 20px; padding: 28px 32px; border-bottom: 1px solid var(--line); background: var(--white); }
-  .record__panel-head h3 { font: 700 23px/1.3 var(--sans); letter-spacing: -.03em; }
-  .record__panel-head p { margin-top: 8px; color: var(--muted); font-size: 15px; }
-  .record__total { font-size: 12px; font-weight: 650; padding: 8px 14px; background: var(--sage); color: var(--green-ink); border-radius: 30px; white-space: nowrap; }
-  .record__panel-layout { display: grid; grid-template-columns: 240px minmax(0, 1fr); gap: 28px; padding: 30px; align-items: start; }
-  .record__summary { position: sticky; top: calc(var(--header-h) + 24px); padding: 30px 24px; border-radius: 14px; background: var(--sage); }
-  .record__summary-mark { display: inline-flex; margin-bottom: 38px; color: var(--green-ink); }
-  .record__summary-value { font: 750 clamp(2.2rem, 3.2vw, 3rem)/1 var(--sans); letter-spacing: -.065em; color: var(--ink); }
-  .record__summary-value > span { display: block; margin-top: 8px; font-size: 18px; letter-spacing: -.01em; font-weight: 550; color: var(--green-ink); }
-  .record__summary-label { margin-top: 20px; font: 650 18px/1.4 var(--sans); color: var(--ink); }
-  .record__summary-rule { display: block; width: 36px; height: 2px; margin-block: 28px 18px; background: var(--green-ink); }
-  .record__summary-caption { font-size: 13px; line-height: 1.7; color: var(--muted); }
-  .record__list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; list-style: none; }
-  .record__project { display: flex; flex-direction: column; align-items: flex-start; gap: 18px; padding: 22px; border: 1px solid var(--line); border-radius: 13px; background: var(--white); }
-  .record__project:last-child:nth-child(odd) { grid-column: 1 / -1; }
-  .record__project-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; width: 100%; }
-  .record__index { font: 650 10px/1.4 var(--sans); letter-spacing: .1em; color: var(--muted); }
-  .record__project-state { display: inline-flex; align-items: center; gap: 5px; font-size: 10px; font-weight: 600; color: var(--green-ink); }
-  .record__project-state::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
-  .record__site h4 { font: 650 17px/1.4 var(--sans); letter-spacing: -.025em; color: var(--ink); }
-  .record__note { display: block; margin-top: 8px; font-size: 12px; line-height: 1.5; color: var(--muted); }
-  .record__volume { display: flex; align-items: baseline; flex-wrap: wrap; gap: 6px; margin-top: auto; padding-top: 16px; border-top: 1px solid var(--line); width: 100%; color: var(--green-ink); }
-  .record__volume strong { font: 700 clamp(1.6rem, 2.4vw, 2.1rem)/1.15 var(--sans); letter-spacing: -.05em; }
-  .record__volume > span { font-size: 13px; font-weight: 550; }
-  .record__panel--ongoing .record__summary { background: var(--sky); }
-  .record__panel--ongoing .record__volume, .record__panel--ongoing .record__project-state { color: var(--saffron-ink); }
-  .record__panel--plants .record__summary { background: var(--mineral); }
-  .record__panel--plants .record__project-state { color: #365c68; }
-  @media (prefers-reduced-motion: no-preference) {
-    .is-enhanced .record__panel:not([hidden]) .record__list { animation: record-in .4s var(--ease-out) both; }
-    .record__project { transition: transform .3s var(--ease), border-color .3s var(--ease), box-shadow .3s var(--ease); }
-    .record__project:hover { transform: translateY(-3px); border-color: #a7ba93; box-shadow: 0 12px 24px -20px rgba(var(--shade), .4); }
-  }
-  @keyframes record-in { from { opacity: .25; transform: translateY(8px); } to { opacity: 1; transform: none; } }
-  @media (max-width: 1000px) {
-    .record__heading { align-items: flex-start; flex-direction: column; gap: 24px; }
-    .record__intro { max-width: 35em; }
-    .record__panel-layout { grid-template-columns: minmax(0, 1fr); padding: 24px; }
-    .record__summary { position: static; display: grid; grid-template-columns: 1fr 1fr; align-items: center; gap: 12px 32px; padding: 24px; }
-    .record__summary-mark, .record__summary-rule { display: none; }
-    .record__summary-label { margin-top: 0; }
-    .record__summary-value { grid-row: span 2; }
-    .record__summary-caption { grid-column: 2; }
-    .record__tab { padding: 22px 20px; }
-  }
-  @media (max-width: 600px) {
-    .record__heading { margin-bottom: 32px; }
-    .record__tabs { gap: 8px; margin-bottom: 20px; }
-    .record__tab { padding: 15px 12px 18px; border-radius: 10px; }
-    .record__tag { font-size: 9px; letter-spacing: 0; gap: 5px; }
-    .record__tag::before { width: 4px; height: 4px; flex: none; }
-    .record__tab-arrow { display: none; }
-    .record__count { font-size: 48px; margin-block: 16px 8px; }
-    .record__label { font-size: 11px; font-weight: 600; line-height: 1.5; }
-    .record__panel-head { padding: 22px; }
-    .record__panel-head h3 { font-size: 19px; }
-    .record__panel-head p { font-size: 13px; }
-    .record__total { display: none; }
-    .record__panel-layout { padding: 14px; gap: 14px; }
-    .record__summary { padding: 20px; gap: 10px 20px; }
-    .record__summary-value { font-size: 32px; }
-    .record__summary-value > span { font-size: 14px; }
-    .record__summary-label { font-size: 15px; }
-    .record__summary-caption { font-size: 11px; }
-    .record__list { grid-template-columns: minmax(0, 1fr); }
-    .record__project { padding: 22px; }
-  }
-  @media (max-width: 380px) {
-    .record__summary { grid-template-columns: minmax(0, 1fr); gap: 10px; }
-    .record__summary-value { grid-row: auto; display: flex; align-items: baseline; gap: 8px; }
-    .record__summary-value > span { margin: 0; }
-    .record__summary-caption { display: none; }
+  .record {
+    background: #ebe0cf;
   }
 
-  .record__project { background: radial-gradient(ellipse at top right, var(--tile-tint), transparent 95%), #fffaf2; } .record__panel { background: var(--paper-2); } .record__tab { background: color-mix(in srgb, var(--record-accent) 19%, var(--paper)); }
+  /* Heading with the headline figure */
+  .record__heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 32px;
+    margin-bottom: 36px;
+  }
+
+  .record__title {
+    margin-top: 18px;
+    font: 400 clamp(3rem, 6vw, 5.4rem) / 0.98 var(--serif);
+    letter-spacing: -0.03em;
+    color: var(--ink);
+  }
+
+  .record__title em {
+    color: var(--saffron);
+  }
+
+  .record__hero {
+    max-width: 24em;
+    text-align: right;
+  }
+
+  .record__hero-num {
+    font: 800 clamp(3rem, 5.6vw, 5rem) / 1 var(--sans);
+    letter-spacing: -0.045em;
+    color: var(--saffron-ink);
+  }
+
+  .record__hero-num span {
+    margin-left: 6px;
+    font-size: 0.42em;
+    font-weight: 700;
+    letter-spacing: 0;
+    color: var(--ink);
+  }
+
+  .record__hero-label {
+    margin-top: 10px;
+    font-size: 16px;
+    line-height: 1.5;
+    color: var(--muted);
+  }
+
+  /* The whole: one bar, one block per completed project */
+  .record__whole {
+    margin: 0 0 clamp(40px, 5vw, 64px);
+  }
+
+  .record__bar {
+    display: flex;
+    gap: 2px;
+    height: 22px;
+  }
+
+  .record__seg {
+    position: relative;
+    flex-basis: 0;
+    min-width: 6px;
+    background: var(--saffron);
+    transform-origin: left;
+    transition: background-color 0.2s var(--ease);
+  }
+
+  .record__seg:nth-child(even) {
+    background: #c9714c;
+  }
+
+  .record__seg:first-child {
+    border-radius: 4px 0 0 4px;
+  }
+
+  .record__seg:last-child {
+    border-radius: 0 4px 4px 0;
+  }
+
+  .record__seg:hover {
+    background: var(--ink);
+  }
+
+  .record__seg::after {
+    content: attr(data-tip);
+    position: absolute;
+    bottom: calc(100% + 10px);
+    left: 50%;
+    z-index: 3;
+    padding: 7px 11px;
+    border-radius: 8px;
+    background: var(--ink);
+    color: var(--white);
+    font: 600 13px/1.3 var(--sans);
+    white-space: nowrap;
+    transform: translateX(-50%);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s var(--ease);
+  }
+
+  .record__seg:first-child::after {
+    left: 0;
+    transform: none;
+  }
+
+  .record__seg:last-child::after,
+  .record__seg:nth-last-child(2)::after,
+  .record__seg:nth-last-child(3)::after {
+    left: auto;
+    right: 0;
+    transform: none;
+  }
+
+  .record__seg:hover::after {
+    opacity: 1;
+  }
+
+  .record__caption {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    margin-top: 12px;
+    font-size: 14px;
+    color: var(--muted);
+  }
+
+  /* Sliding switch */
+  .record__switch {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    margin-bottom: 22px;
+    padding: 6px;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.55);
+    border: 1px solid var(--line);
+  }
+
+  .record__pill {
+    position: absolute;
+    top: 6px;
+    bottom: 6px;
+    left: 6px;
+    width: calc((100% - 12px) / 3);
+    border-radius: 13px;
+    background: var(--ink);
+    box-shadow: 0 14px 30px -18px rgba(var(--shade), 0.8);
+    transform: translateX(calc(var(--sel, 0) * 100%));
+    transition: transform 0.5s var(--ease-out);
+  }
+
+  .record__tab {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 20px;
+    border-radius: 13px;
+    color: var(--ink);
+    text-decoration: none;
+    transition: color 0.35s var(--ease);
+  }
+
+  .record__tab-count {
+    font: 800 clamp(2rem, 3vw, 2.6rem) / 1 var(--sans);
+    letter-spacing: -0.04em;
+    color: var(--saffron);
+    transition: color 0.35s var(--ease);
+  }
+
+  .record__tab-label {
+    font: 650 15px/1.3 var(--sans);
+  }
+
+  .record__tab[aria-selected='true'] {
+    color: var(--white);
+  }
+
+  .record__tab[aria-selected='true'] .record__tab-count {
+    color: var(--saffron-2);
+  }
+
+  .record__tab:not([aria-selected='true']):hover {
+    background: rgba(255, 255, 255, 0.6);
+  }
+
+  .record__tab:focus-visible {
+    outline: 3px solid var(--saffron);
+    outline-offset: 2px;
+  }
+
+  /* Panels */
+  .record__panel {
+    padding: clamp(22px, 3vw, 36px);
+    border-radius: 20px;
+    background: var(--white);
+    box-shadow: 0 30px 60px -45px rgba(var(--shade), 0.5);
+    scroll-margin-top: calc(var(--header-h) + 30px);
+  }
+
+  .record__panel[hidden] {
+    display: none;
+  }
+
+  .record__panel + .record__panel {
+    margin-top: 22px;
+  }
+
+  .is-enhanced .record__panel + .record__panel {
+    margin-top: 0;
+  }
+
+  .record__panel-head {
+    margin-bottom: 22px;
+  }
+
+  .record__panel-head h3 {
+    font: 750 clamp(1.3rem, 1.9vw, 1.6rem) / 1.25 var(--sans);
+    letter-spacing: -0.02em;
+    color: var(--ink);
+  }
+
+  .record__panel-head p {
+    margin-top: 6px;
+    font-size: 15px;
+    color: var(--muted);
+  }
+
+  /* Completed: ranked bar list */
+  .record__rank {
+    display: grid;
+    list-style: none;
+  }
+
+  .record__row {
+    display: grid;
+    grid-template-columns: 34px minmax(0, 1.1fr) minmax(0, 1.4fr) 116px;
+    gap: 16px;
+    align-items: center;
+    padding: 12px 10px;
+    border-top: 1px solid var(--line);
+    border-radius: 8px;
+    transition: background-color 0.25s var(--ease);
+  }
+
+  .record__row:hover {
+    background: #f7efe6;
+  }
+
+  .record__idx {
+    font: 700 13px/1 var(--sans);
+    color: var(--muted);
+  }
+
+  .record__site {
+    font: 600 16px/1.35 var(--sans);
+    color: var(--ink);
+  }
+
+  .record__site small {
+    display: block;
+    margin-top: 3px;
+    font-size: 13px;
+    font-weight: 450;
+    color: var(--muted);
+  }
+
+  .record__track {
+    height: 14px;
+    border-radius: 0 4px 4px 0;
+    background: #f2eae0;
+  }
+
+  .record__track i {
+    display: block;
+    height: 100%;
+    width: calc(var(--w) * 100%);
+    min-width: 4px;
+    border-radius: 0 4px 4px 0;
+    background: linear-gradient(90deg, var(--saffron), #c9714c);
+    transform-origin: left;
+  }
+
+  .record__row:hover .record__track i {
+    background: var(--ink);
+  }
+
+  .record__vol {
+    font: 750 17px/1 var(--sans);
+    letter-spacing: -0.02em;
+    text-align: right;
+    color: var(--saffron-ink);
+  }
+
+  /* In progress: cards */
+  .record__live {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+    list-style: none;
+  }
+
+  .record__card {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 24px;
+    border-radius: 14px;
+    background: #faf5ee;
+    border: 1px solid var(--line);
+  }
+
+  .record__status {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    align-self: flex-start;
+    margin-bottom: 8px;
+    padding: 6px 12px 6px 10px;
+    border-radius: 999px;
+    background: #f6e3d6;
+    font: 700 12px/1 var(--sans);
+    letter-spacing: 0.04em;
+    color: var(--saffron-ink);
+  }
+
+  .record__pulse {
+    position: relative;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--saffron);
+  }
+
+  .record__card-vol {
+    font: 800 clamp(1.9rem, 2.8vw, 2.5rem) / 1.05 var(--sans);
+    letter-spacing: -0.035em;
+    color: var(--saffron-ink);
+  }
+
+  .record__card-site {
+    font: 600 16px/1.4 var(--sans);
+    color: var(--ink);
+  }
+
+  .record__card-note {
+    font-size: 14px;
+    color: var(--muted);
+  }
+
+  .record__progress {
+    display: grid;
+    gap: 8px;
+    margin-top: 8px;
+  }
+
+  .record__progress-track {
+    height: 10px;
+    border-radius: 4px;
+    background: #ecdccd;
+    overflow: hidden;
+  }
+
+  .record__progress-track i {
+    display: block;
+    height: 100%;
+    width: calc(var(--w) * 100%);
+    border-radius: 0 4px 4px 0;
+    background: linear-gradient(90deg, var(--saffron), #c9714c);
+    transform-origin: left;
+  }
+
+  .record__progress-text {
+    font-size: 14px;
+    color: var(--muted);
+  }
+
+  .record__progress-text b {
+    color: var(--saffron-ink);
+  }
+
+  /* Plants & O&M */
+  .record__plants {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+    list-style: none;
+  }
+
+  .record__plant {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 24px 22px;
+    border-radius: 14px;
+    background: #faf5ee;
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--green-ink);
+  }
+
+  .record__plant-no {
+    font: 700 12px/1 var(--sans);
+    letter-spacing: 0.12em;
+    color: var(--muted);
+  }
+
+  .record__plant-lead {
+    font: 800 clamp(1.5rem, 2.2vw, 1.9rem) / 1.1 var(--sans);
+    letter-spacing: -0.03em;
+    color: var(--green-ink);
+  }
+
+  .record__plant-text {
+    font-size: 15px;
+    line-height: 1.55;
+    color: var(--ink);
+  }
+
+  /* Motion */
+  @media (prefers-reduced-motion: no-preference) {
+    :global(.js) .record__seg {
+      transform: scaleX(0);
+    }
+
+    .is-in .record__seg {
+      animation: record-grow 0.9s var(--ease-out) both;
+      animation-delay: calc(var(--k) * 60ms);
+    }
+
+    .is-in .record__panel:not([hidden]) .record__track i,
+    .is-in .record__panel:not([hidden]) .record__progress-track i {
+      animation: record-grow 1s var(--ease-out) both;
+      animation-delay: calc(var(--k, 0) * 50ms + 150ms);
+    }
+
+    .is-enhanced .record__panel:not([hidden]) :is(.record__row, .record__card, .record__plant) {
+      animation: record-rise 0.55s var(--ease-out) both;
+      animation-delay: calc(var(--k, 0) * 35ms);
+    }
+
+    .record__pulse::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      background: var(--saffron);
+      animation: record-pulse 1.8s ease-out infinite;
+    }
+
+    .record__card,
+    .record__plant {
+      transition:
+        transform 0.35s var(--ease-out),
+        box-shadow 0.35s var(--ease-out);
+    }
+
+    .record__card:hover,
+    .record__plant:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 18px 36px -26px rgba(var(--shade), 0.5);
+    }
+  }
+
+  @keyframes record-grow {
+    from {
+      transform: scaleX(0);
+    }
+    to {
+      transform: scaleX(1);
+    }
+  }
+
+  @keyframes record-rise {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+  }
+
+  @keyframes record-pulse {
+    to {
+      transform: scale(2.8);
+      opacity: 0;
+    }
+  }
+
+  @media (max-width: 1000px) {
+    .record__heading {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 20px;
+    }
+
+    .record__hero {
+      text-align: left;
+    }
+
+    .record__plants {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 700px) {
+    .record__tab {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 6px;
+      padding: 12px;
+    }
+
+    .record__tab-label {
+      font-size: 12.5px;
+    }
+
+    .record__row {
+      grid-template-columns: 28px minmax(0, 1fr) auto;
+      grid-template-areas: 'idx site vol' 'idx track track';
+      gap: 8px 12px;
+      padding: 14px 4px;
+    }
+
+    .record__idx {
+      grid-area: idx;
+      align-self: start;
+      padding-top: 2px;
+    }
+
+    .record__site {
+      grid-area: site;
+    }
+
+    .record__vol {
+      grid-area: vol;
+      align-self: start;
+      font-size: 15px;
+    }
+
+    .record__track {
+      grid-area: track;
+      height: 10px;
+    }
+
+    .record__live,
+    .record__plants {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .record__caption {
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .record__seg::after {
+      display: none;
+    }
+  }
 </style>
