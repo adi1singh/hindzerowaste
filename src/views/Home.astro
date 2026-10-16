@@ -9,7 +9,7 @@ import ClientWall from '../components/ClientWall.astro';
 import CtaBand from '../components/CtaBand.astro';
 import Count from '../components/Count.astro';
 import Icon from '../components/Icon.astro';
-import Steps from '../components/Steps.astro';
+import ProcessStory from '../components/ProcessStory.astro';
 import ProjectCards from '../components/ProjectCards.astro';
 import { products } from '../data/products';
 import { services } from '../data/services';
@@ -69,7 +69,7 @@ const copy = {
     scroll: 'Scroll',
     figures: figures.map((f) => f.label),
     projEyebrow: 'Selected projects',
-    projTitle: 'Trusted by municipal bodies across <em class="projects__india">India</em>.',
+    projTitle: 'Trusted by municipal bodies <span class="projects__across">across <em class="projects__india">India</em></span>.',
     projIntro: 'Bio-mining, MSW and MRF projects in 12 states, from Punjab to Telangana.',
     projAll: 'View the full project record',
     philEyebrow: 'Our philosophy',
@@ -328,7 +328,7 @@ const aboutHref = localePath(lang, '/about-us');
   </section>
 
   <!-- Projects -->
-  <section class="section bg-mineral projects">
+  <section class="section bg-ink on-dark projects">
     <div class="container">
       <div class="section-head section-head--center" data-reveal>
         <p class="eyebrow">{copy.projEyebrow}</p>
@@ -445,18 +445,7 @@ const aboutHref = localePath(lang, '/about-us');
   </section>
 
   <!-- Approach -->
-  <section class="section bg-lavender process-scroll" data-process-scroll>
-    <div class="process-pin">
-    <div class="container">
-      <div class="section-head section-head--center" data-reveal>
-        <p class="eyebrow">{copy.apprEyebrow}</p>
-        <h2 class="h2" set:html={copy.apprTitle} />
-        <p class="muted">{copy.apprIntro}</p>
-      </div>
-      <Steps lang={lang} />
-    </div>
-    </div>
-  </section>
+  <ProcessStory lang={lang} eyebrow={copy.apprEyebrow} title={copy.apprTitle} intro={copy.apprIntro} />
 
   <!-- Clients -->
   <section class="section bg-white clients-sec">
@@ -1680,11 +1669,9 @@ const aboutHref = localePath(lang, '/about-us');
   .hero__shade { background: linear-gradient(180deg, rgba(var(--shade), .34), rgba(var(--shade), .48) 60%, rgba(var(--shade), .65)); }
   .hero__content::before { background: radial-gradient(closest-side, rgba(var(--shade), .42), transparent); }
   .hero__dots { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .projects::before { background: radial-gradient(circle, rgba(117, 150, 159, .13), transparent 65%); }
-  .projects__title { color: var(--saffron-ink); }
-  .projects__title :global(em) { color: inherit; }
-  .projects__intro { color: var(--muted); text-decoration-color: var(--saffron); }
-  .services-section { background: var(--honey); }
+  .projects::before { background: radial-gradient(circle, rgba(168, 79, 50, .3), transparent 62%); }
+  .projects__title :global(.projects__across) { color: var(--white); }
+  .services-section { background: var(--paper); }
   .services-section .section-head--split { align-items: start; }
   .services-section .section-head--split > .muted { margin-top: 40px; max-width: 30em; }
   .filters__btn { color: var(--ink); border-color: var(--saffron); }
@@ -1694,10 +1681,5 @@ const aboutHref = localePath(lang, '/about-us');
   @media (max-width: 899px) { .services-section .section-head--split > .muted { margin-top: 0; } }
 
 
-  .svc > li { background: linear-gradient(110deg, color-mix(in srgb, var(--tile-tint) 70%, white), transparent); } .projects__title :global(.projects__india) { font-size: 1.22em; display: inline-block; color: #286039; background: linear-gradient(180deg, #b65019 0% 31%, #fffaf0 34% 63%, #286039 67% 100%); background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 1px 1px #263f5140); }
-  @media (prefers-reduced-motion: no-preference) and (min-width: 1001px) {
-    .process-scroll { height: 310vh; padding: 0; }
-    .process-pin { position: sticky; top: var(--header-h); min-height: calc(100vh - var(--header-h)); display: flex; align-items: center; padding-block: 30px; }
-    .process-pin .section-head { margin-bottom: 28px; }
-  }
+  .svc > li { background: linear-gradient(110deg, color-mix(in srgb, var(--tile-tint) 70%, white), transparent); } .projects__title :global(.projects__india) { font-size: 1.22em; display: inline-block; color: #286039; background: linear-gradient(180deg, #ffad61 0% 32%, #fff8ed 34% 65%, #91ce8c 68% 100%); background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 </style>
