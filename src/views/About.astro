@@ -315,7 +315,7 @@ const alternates = { en: '/about-us', hi: '/hi/about-us', mr: '/mr/about-us' };
   </IndexHero>
 
   <!-- Projects: the six landmark projects first, then the overall record -->
-  <section class="section bg-mineral proj" id="projects">
+  <section class="section bg-paper proj" id="projects">
     <div class="container">
       <div class="section-head section-head--center proj__head" data-reveal>
         <p class="eyebrow">{copy.landmarkEyebrow}</p>
@@ -326,7 +326,7 @@ const alternates = { en: '/about-us', hi: '/hi/about-us', mr: '/mr/about-us' };
     </div>
   </section>
 
-  <section class="section bg-lavender achievements">
+  <section class="section on-dark achievements">
     <div class="container">
       <div class="section-head section-head--center proj__record" data-reveal>
         <p class="eyebrow">{{ en: "Our achievements", hi: "हमारी उपलब्धियाँ", mr: "आमची कामगिरी" }[lang]}</p>
@@ -350,7 +350,7 @@ const alternates = { en: '/about-us', hi: '/hi/about-us', mr: '/mr/about-us' };
   {lang === 'en' && <ProjectRecord />}
 
   <!-- Installed base -->
-  <section class="section bg-sage">
+  <section class="section installed">
     <div class="container">
       <div class="section-head section-head--center" data-reveal>
         <p class="eyebrow">{copy.installedEyebrow}</p>
@@ -398,7 +398,7 @@ const alternates = { en: '/about-us', hi: '/hi/about-us', mr: '/mr/about-us' };
   </section>
 
   <!-- Story -->
-  <section class="section bg-paper">
+  <section class="section bg-white">
     <div class="container story">
       <div data-reveal="left">
         <p class="eyebrow">{copy.storyEyebrow}</p>
@@ -971,4 +971,37 @@ const alternates = { en: '/about-us', hi: '/hi/about-us', mr: '/mr/about-us' };
   .why__card { background: linear-gradient(145deg, #fffaf2, var(--tile-tint)); }
   .achievements__title :global(em) { text-decoration: underline; text-decoration-color: var(--saffron); text-underline-offset: .16em; text-decoration-thickness: 2px; }
   .achievements .proj__record { margin-top: 0; }
+
+  /* Each block on the page gets its own surface: ivory projects, charcoal
+     achievements, sand record (ProjectRecord), sage installed base, white story. */
+  .achievements {
+    background: radial-gradient(120% 140% at 100% 0%, #3d2b20 0%, #1e1814 55%, #141110 100%);
+    color: #e8e0d6;
+  }
+
+  .achievements .pstats__item {
+    background: rgba(246, 243, 236, 0.05);
+    border: 1px solid var(--line-on-dark);
+    border-top: 3px solid var(--saffron-2);
+  }
+
+  .achievements .pstats__item:nth-child(3n + 2) {
+    border-top-color: #a6bd80;
+  }
+
+  .achievements .pstats__item dt {
+    color: var(--saffron-2);
+  }
+
+  .achievements .pstats__item:first-child dt {
+    color: #c9df8f;
+  }
+
+  .achievements .pstats__item dd {
+    color: #d6ccc1;
+  }
+
+  .installed {
+    background: #e3e9d5;
+  }
 </style>

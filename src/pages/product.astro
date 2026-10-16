@@ -275,10 +275,9 @@ const intro: Record<string, string> = {
     margin-bottom: 22px;
     padding: 18px 22px 18px 18px;
     border-radius: 14px;
-    background: var(--white);
-    border: 1px solid var(--line);
-    border-left: 5px solid var(--saffron);
-    box-shadow: 0 10px 30px -24px rgba(var(--shade), 0.45);
+    background: linear-gradient(120deg, #7a5236 0%, #5e3d27 60%, #4a2f1e 100%);
+    border-left: 5px solid var(--saffron-2);
+    box-shadow: 0 16px 34px -22px rgba(74, 47, 30, 0.7);
   }
 
   .range__big {
@@ -288,8 +287,8 @@ const intro: Record<string, string> = {
     width: 56px;
     height: 56px;
     border-radius: 12px;
-    background: var(--saffron);
-    color: var(--white);
+    background: #f6e7d7;
+    color: #5e3d27;
     font: 800 20px/1 var(--sans);
     letter-spacing: -0.02em;
   }
@@ -302,23 +301,23 @@ const intro: Record<string, string> = {
   .range__title {
     font: 750 clamp(1.35rem, 2vw, 1.7rem) / 1.2 var(--sans);
     letter-spacing: -0.02em;
-    color: var(--ink);
+    color: var(--white);
   }
 
   .range__intro {
     margin-top: 4px;
     font-size: 15.5px;
     line-height: 1.5;
-    color: var(--muted);
+    color: #f0dccb;
   }
 
   .range__qty {
     flex: none;
     padding: 7px 14px;
     border-radius: 999px;
-    background: var(--paper-2);
+    background: rgba(255, 255, 255, 0.16);
     font: 700 13px/1 var(--sans);
-    color: var(--ink);
+    color: var(--white);
   }
 
   .range__cards {
