@@ -271,6 +271,9 @@ const aboutHref = localePath(lang, '/about-us');
           <a class="btn btn--accent" href={localePath(lang, '/contact-us') + '#enquiry'}>{t(lang, 'cta.quote')} <span class="arrow">→</span></a>
           <a class="btn btn--ghost" href="/product">{t(lang, 'cta.explore')} <span class="arrow">→</span></a>
         </div>
+        <a class="hero__powered" href="https://jobgen.ai/" target="_blank" rel="noopener noreferrer" data-reveal style="--d: 7">
+          POWERED BY <strong>JOBGEN.AI</strong> <span aria-hidden="true">↗</span>
+        </a>
       </div>
 
       <div class="hero__foot">
@@ -759,6 +762,25 @@ const aboutHref = localePath(lang, '/about-us');
     to {
       clip-path: inset(0 0 0 0);
     }
+  }
+
+  .hero__powered {
+    margin-top: -6px;
+    font: 600 11px/1 var(--sans);
+    letter-spacing: 0.18em;
+    color: rgba(255, 246, 236, 0.75);
+    text-decoration: none;
+    text-shadow: 0 1px 10px rgba(var(--shade), 0.7);
+    transition: color 0.25s var(--ease);
+  }
+
+  .hero__powered strong {
+    font-weight: 800;
+    color: var(--white);
+  }
+
+  .hero__powered:hover {
+    color: var(--white);
   }
 
   .hero__lead-short {
