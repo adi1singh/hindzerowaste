@@ -1,4 +1,5 @@
 ---
+import JobGenCredit from './JobGenCredit.astro';
 import { site, telHref } from '../data/site';
 import { localePath, type Lang } from '../i18n/ui';
 
@@ -54,6 +55,7 @@ const href = localePath(lang, '/contact-us') + (subject ? `?subject=${encodeURIC
         <span>{c.or}</span>
         {site.phones.map((p) => <a href={telHref(p)}>{p}</a>)}
       </p>
+      <JobGenCredit lang={lang} compact />
     </div>
   </div>
 </section>

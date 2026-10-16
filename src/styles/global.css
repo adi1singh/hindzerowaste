@@ -28,12 +28,19 @@
   --saffron: #a84f32;
   --saffron-2: #e08a62;
   --saffron-ink: #8a3c22;
-  --paper: #f5efe6;
-  --paper-2: #ebe3d7;
-  --sage: #e5edd8;
-  --sky: #f1e5db;
-  --mineral: #e6eef0;
-  --clay-wash: #efd5c3;
+  --paper: #faf4e9;
+  --paper-2: #eadfcb;
+  --sage: #cbdcc5;
+  --sky: #f0cbb3;
+  --mineral: #bcd3dd;
+  --clay-wash: #decbe2;
+  --lavender: #d5cfe7;
+  --tint-peach: #f4d9c7;
+  --tint-sage: #dce8cf;
+  --tint-blue: #d4e5ec;
+  --tint-lilac: #e5daef;
+  --tint-sand: #f0e1b9;
+  --tint-rose: #eed6d5;
   --white: #ffffff;
   --shade: 28, 22, 18;
   --text: #26211e;
@@ -996,3 +1003,14 @@ ol {
 
 .bg-mineral { background: var(--mineral); color: var(--text); }
 .bg-clay-wash { background: var(--clay-wash); color: var(--text); }
+
+/* Softly coloured cards repeat a coordinated six-colour palette. */
+.bg-lavender { background: var(--lavender); }
+:is(.pgrid__card, .pstats__item, .record__project, .pcard, .svc > li, .why__card, .acc > li) { --tile-tint: var(--tint-peach); }
+:is(.pgrid__card, .pstats__item, .record__project, .pcard, .svc > li, .why__card, .acc > li):nth-child(6n + 2) { --tile-tint: var(--tint-sage); }
+:is(.pgrid__card, .pstats__item, .record__project, .pcard, .svc > li, .why__card, .acc > li):nth-child(6n + 3) { --tile-tint: var(--tint-blue); }
+:is(.pgrid__card, .pstats__item, .record__project, .pcard, .svc > li, .why__card, .acc > li):nth-child(6n + 4) { --tile-tint: var(--tint-lilac); }
+:is(.pgrid__card, .pstats__item, .record__project, .pcard, .svc > li, .why__card, .acc > li):nth-child(6n + 5) { --tile-tint: var(--tint-sand); }
+:is(.pgrid__card, .pstats__item, .record__project, .pcard, .svc > li, .why__card, .acc > li):nth-child(6n + 6) { --tile-tint: var(--tint-rose); }
+
+.acc > li { background: linear-gradient(120deg, color-mix(in srgb, var(--tile-tint) 65%, white), transparent); }

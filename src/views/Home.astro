@@ -1,4 +1,5 @@
 ---
+import JobGenCredit from '../components/JobGenCredit.astro';
 import { Image, getImage } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
 import { getCollection } from 'astro:content';
@@ -274,6 +275,7 @@ const aboutHref = localePath(lang, '/about-us');
       </div>
 
       <div class="hero__foot">
+        <div class="hero__credit"><JobGenCredit lang={lang} compact light /></div>
         <ol class="hero__dots">
           {
             copy.slides.map((caption, i) => (
@@ -443,7 +445,7 @@ const aboutHref = localePath(lang, '/about-us');
   </section>
 
   <!-- Approach -->
-  <section class="section bg-sage">
+  <section class="section bg-lavender">
     <div class="container">
       <div class="section-head section-head--center" data-reveal>
         <p class="eyebrow">{copy.apprEyebrow}</p>
@@ -806,6 +808,8 @@ const aboutHref = localePath(lang, '/about-us');
     align-items: flex-end;
     justify-content: center;
   }
+
+  .hero__credit { position: absolute; left: 0; bottom: 100%; padding-bottom: 22px; }
 
   .hero__dots {
     display: grid;
@@ -1686,4 +1690,6 @@ const aboutHref = localePath(lang, '/about-us');
   .filters__btn[aria-pressed='true'] span { background: rgba(255,255,255,.16); }
   @media (max-width: 899px) { .services-section .section-head--split > .muted { margin-top: 0; } }
 
+
+  .svc > li { background: linear-gradient(110deg, color-mix(in srgb, var(--tile-tint) 70%, white), transparent); } .projects__title :global(em) { color: #286039; background: linear-gradient(180deg, #b65019 0% 31%, #fffaf0 34% 63%, #286039 67% 100%); background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 1px 1px #263f5140); }
 </style>
