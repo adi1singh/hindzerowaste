@@ -11,10 +11,9 @@ interface Props {
   missionTitle: string;
   mission: string[];
   valuesTitle: string;
-  values: string;
 }
 
-const { lang, visionTitle, vision, missionTitle, mission, valuesTitle, values } = Astro.props;
+const { lang, visionTitle, vision, missionTitle, mission, valuesTitle } = Astro.props;
 
 // The six values named in the values statement, in each language.
 const valueWords = {
@@ -73,9 +72,6 @@ const pad = (n: number) => String(n).padStart(2, '0');
     <ul class="visually-hidden">
       {valueWords.map((v) => <li>{v}</li>)}
     </ul>
-    <div class="container">
-      <p class="purpose__statement" data-reveal>{values}</p>
-    </div>
   </div>
 </section>
 
@@ -164,7 +160,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
 
   /* Mission */
   .purpose__mission {
-    margin-top: clamp(72px, 9vw, 120px);
+    margin-top: clamp(56px, 6vw, 88px);
   }
 
   .purpose__label {
@@ -227,8 +223,8 @@ const pad = (n: number) => String(n).padStart(2, '0');
 
   /* Values */
   .purpose__values {
-    margin-top: clamp(72px, 9vw, 120px);
-    padding: clamp(40px, 5vw, 64px) 0 var(--section);
+    margin-top: clamp(56px, 6vw, 88px);
+    padding: clamp(36px, 4vw, 56px) 0 clamp(56px, 6vw, 88px);
     border-top: 1px solid var(--line-on-dark);
   }
 
@@ -276,14 +272,6 @@ const pad = (n: number) => String(n).padStart(2, '0');
     opacity: 0.8;
   }
 
-  .purpose__statement {
-    max-width: 46em;
-    margin: clamp(32px, 4vw, 48px) auto 0;
-    text-align: center;
-    font-size: clamp(1.05rem, 1.3vw, 1.2rem);
-    line-height: 1.75;
-    color: #d6ccc1;
-  }
 
   @media (prefers-reduced-motion: reduce) {
     .purpose__track {

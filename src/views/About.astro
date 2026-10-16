@@ -69,7 +69,6 @@ const copy = {
     storyTitle: 'From Kolhapur, <em>for all of India</em>.',
     story: [
       'Founded in 2017 as Hind Agro and Chemicals in Kolhapur, Maharashtra, we have evolved with purpose and innovation into Hind Zero Waste Management Pvt. Ltd., a trusted name in integrated solid waste management across India.',
-      'We design, manufacture and supply energy-efficient, low-maintenance waste-processing equipment: balers, organic waste and vessel composters, shredders, trommels, separators and conveyor systems. Around them we build complete plants for municipal, industrial, institutional and residential clients.',
       'Our work is not just a service but a responsibility: conserving natural resources and significantly reducing environmental impact, for cleaner cities and a greener planet.',
     ],
     figures: ['Bio-mining projects', 'Balers supplied', 'Clients in India & South Africa'],
@@ -144,7 +143,6 @@ const copy = {
     storyTitle: 'कोल्हापुर से, <em>पूरे भारत</em> के लिए।',
     story: [
       '2017 में कोल्हापुर, महाराष्ट्र में हिंद एग्रो एंड केमिकल्स के रूप में स्थापित, हम उद्देश्य और नवाचार के साथ आगे बढ़ते हुए आज हिंद ज़ीरो वेस्ट मैनेजमेंट प्रा. लि. हैं, जो पूरे भारत में एकीकृत ठोस कचरा प्रबंधन का विश्वसनीय नाम है।',
-      'हम ऊर्जा-कुशल और कम रखरखाव वाले कचरा प्रसंस्करण उपकरणों का डिज़ाइन, निर्माण और आपूर्ति करते हैं: बेलर, ऑर्गेनिक वेस्ट कम्पोस्टर और वेसल कम्पोस्टर, श्रेडर, ट्रॉमेल, सेपरेटर और कन्वेयर सिस्टम। इन्हीं के आधार पर हम नगरपालिका, औद्योगिक, संस्थागत और आवासीय ग्राहकों के लिए पूर्ण प्लांट बनाते हैं।',
       'हमारा काम केवल सेवा नहीं, बल्कि ज़िम्मेदारी है: प्राकृतिक संसाधनों का संरक्षण और पर्यावरण पर प्रभाव में उल्लेखनीय कमी, स्वच्छ शहरों और हरित धरती के लिए।',
     ],
     figures: ['बायो-माइनिंग परियोजनाएँ', 'बेलिंग मशीनें आपूर्ति', 'ग्राहक, भारत और दक्षिण अफ़्रीका'],
@@ -219,7 +217,6 @@ const copy = {
     storyTitle: 'कोल्हापूरपासून, <em>संपूर्ण भारतासाठी</em>.',
     story: [
       '2017 मध्ये कोल्हापूर, महाराष्ट्र येथे हिंद ॲग्रो अँड केमिकल्स म्हणून स्थापन झालेली आमची कंपनी उद्दिष्ट आणि नावीन्यासह वाटचाल करत आज हिंद झिरो वेस्ट मॅनेजमेंट प्रा. लि. म्हणून संपूर्ण भारतात एकात्मिक घनकचरा व्यवस्थापनातील विश्वासार्ह नाव आहे.',
-      'आम्ही ऊर्जा-कार्यक्षम व कमी देखभालीच्या कचरा प्रक्रिया उपकरणांचे डिझाइन, निर्मिती व पुरवठा करतो: बेलर, ऑरगॅनिक वेस्ट कंपोस्टर व व्हेसल कंपोस्टर, श्रेडर, ट्रॉमेल, सेपरेटर आणि कन्व्हेयर सिस्टीम. याच आधारावर आम्ही नागरी, औद्योगिक, संस्थात्मक व निवासी ग्राहकांसाठी संपूर्ण प्लांट उभारतो.',
       'आमचे काम केवळ सेवा नाही, तर जबाबदारी आहे: नैसर्गिक संसाधनांचे संवर्धन आणि पर्यावरणावरील परिणामात लक्षणीय घट, स्वच्छ शहरे आणि हरित पृथ्वीसाठी.',
     ],
     figures: ['बायो-मायनिंग प्रकल्प', 'बेलिंग मशीन पुरवल्या', 'ग्राहक, भारत व दक्षिण आफ्रिका'],
@@ -326,6 +323,9 @@ const alternates = { en: '/about-us', hi: '/hi/about-us', mr: '/mr/about-us' };
     </div>
   </section>
 
+  {
+    /* English shows these figures in the project record below, so only HI/MR keep this summary. */
+    lang !== 'en' && (
   <section class="section on-dark achievements">
     <div class="container">
       <div class="section-head section-head--center proj__record" data-reveal>
@@ -346,6 +346,8 @@ const alternates = { en: '/about-us', hi: '/hi/about-us', mr: '/mr/about-us' };
       </dl>
     </div>
   </section>
+    )
+  }
 
   {lang === 'en' && <ProjectRecord />}
 
@@ -425,7 +427,6 @@ const alternates = { en: '/about-us', hi: '/hi/about-us', mr: '/mr/about-us' };
     missionTitle={copy.missionTitle}
     mission={copy.mission}
     valuesTitle={copy.valuesTitle}
-    values={copy.values}
   />
 
   <!-- Why us -->

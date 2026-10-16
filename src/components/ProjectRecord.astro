@@ -1,8 +1,8 @@
 ---
-// About page project record (English): a headline volume bar built from the
-// completed projects, then a sliding switch between completed bio-mining (a
-// ranked bar list), bio-mining in progress (cards, with real progress where the
-// data has it) and processing plant / O&M projects (capacity-first cards).
+// About page project record (English): the headline volume cleared, then a
+// sliding switch between completed bio-mining (a ranked bar list), bio-mining in
+// progress (cards, with real progress where the data has it) and processing
+// plant / O&M projects (capacity-first cards).
 import Count from './Count.astro';
 import { completedBiomining, ongoingBiomining, plantProjects } from '../data/projects';
 
@@ -47,21 +47,6 @@ const pad = (n: number) => String(n).padStart(2, '0');
         <p class="record__hero-label">of legacy waste cleared across {completed.length} completed bio-mining projects.</p>
       </div>
     </div>
-
-    <!-- Each block is one completed project, sized by the volume it cleared. -->
-    <figure class="record__whole" data-record-whole>
-      <div class="record__bar" aria-hidden="true">
-        {
-          completed.map((p, i) => (
-            <span class="record__seg" style={`flex-grow:${volume(p.volume)};--k:${i}`} data-tip={`${p.site} · ${p.volume}`} />
-          ))
-        }
-      </div>
-      <figcaption class="record__caption">
-        <span>Each block is one completed project, sized by the volume it cleared.</span>
-        <span class="tabular">{completed.length} projects</span>
-      </figcaption>
-    </figure>
 
     <div class="record__switch" aria-label="Project categories" data-record-tabs style="--sel:0">
       <span class="record__pill" aria-hidden="true"></span>
@@ -208,7 +193,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
         },
         { threshold: 0.2 },
       );
-      io.observe(root.querySelector('[data-record-whole]') ?? root);
+      io.observe(root);
     } else root.classList.add('is-in');
   });
 </script>
@@ -224,7 +209,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
     justify-content: space-between;
     align-items: flex-end;
     gap: 32px;
-    margin-bottom: 36px;
+    margin-bottom: clamp(36px, 4vw, 52px);
   }
 
   .record__title {
@@ -261,86 +246,6 @@ const pad = (n: number) => String(n).padStart(2, '0');
     margin-top: 10px;
     font-size: 16px;
     line-height: 1.5;
-    color: var(--muted);
-  }
-
-  /* The whole: one bar, one block per completed project */
-  .record__whole {
-    margin: 0 0 clamp(40px, 5vw, 64px);
-  }
-
-  .record__bar {
-    display: flex;
-    gap: 2px;
-    height: 22px;
-  }
-
-  .record__seg {
-    position: relative;
-    flex-basis: 0;
-    min-width: 6px;
-    background: var(--saffron);
-    transform-origin: left;
-    transition: background-color 0.2s var(--ease);
-  }
-
-  .record__seg:nth-child(even) {
-    background: #c9714c;
-  }
-
-  .record__seg:first-child {
-    border-radius: 4px 0 0 4px;
-  }
-
-  .record__seg:last-child {
-    border-radius: 0 4px 4px 0;
-  }
-
-  .record__seg:hover {
-    background: var(--ink);
-  }
-
-  .record__seg::after {
-    content: attr(data-tip);
-    position: absolute;
-    bottom: calc(100% + 10px);
-    left: 50%;
-    z-index: 3;
-    padding: 7px 11px;
-    border-radius: 8px;
-    background: var(--ink);
-    color: var(--white);
-    font: 600 13px/1.3 var(--sans);
-    white-space: nowrap;
-    transform: translateX(-50%);
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.2s var(--ease);
-  }
-
-  .record__seg:first-child::after {
-    left: 0;
-    transform: none;
-  }
-
-  .record__seg:last-child::after,
-  .record__seg:nth-last-child(2)::after,
-  .record__seg:nth-last-child(3)::after {
-    left: auto;
-    right: 0;
-    transform: none;
-  }
-
-  .record__seg:hover::after {
-    opacity: 1;
-  }
-
-  .record__caption {
-    display: flex;
-    justify-content: space-between;
-    gap: 16px;
-    margin-top: 12px;
-    font-size: 14px;
     color: var(--muted);
   }
 
@@ -640,15 +545,6 @@ const pad = (n: number) => String(n).padStart(2, '0');
 
   /* Motion */
   @media (prefers-reduced-motion: no-preference) {
-    :global(.js) .record__seg {
-      transform: scaleX(0);
-    }
-
-    .is-in .record__seg {
-      animation: record-grow 0.9s var(--ease-out) both;
-      animation-delay: calc(var(--k) * 60ms);
-    }
-
     .is-in .record__panel:not([hidden]) .record__track i,
     .is-in .record__panel:not([hidden]) .record__progress-track i {
       animation: record-grow 1s var(--ease-out) both;
@@ -767,13 +663,5 @@ const pad = (n: number) => String(n).padStart(2, '0');
       grid-template-columns: minmax(0, 1fr);
     }
 
-    .record__caption {
-      flex-direction: column;
-      gap: 4px;
-    }
-
-    .record__seg::after {
-      display: none;
-    }
   }
 </style>
