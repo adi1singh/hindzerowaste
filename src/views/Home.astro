@@ -379,7 +379,7 @@ const aboutHref = localePath(lang, '/about-us');
   </section>
 
   <!-- Machinery -->
-  <section class="section bg-sage mach">
+  <section class="section on-dark mach">
     <div class="container">
       <div class="section-head section-head--split" data-reveal>
         <div>
@@ -1674,10 +1674,38 @@ const aboutHref = localePath(lang, '/about-us');
   .services-section { background: var(--paper); }
   .services-section .section-head--split { align-items: start; }
   .services-section .section-head--split > .muted { margin-top: 40px; max-width: 30em; }
-  .filters__btn { color: var(--ink); border-color: var(--saffron); }
-  .filters__btn span { background: rgba(var(--shade), .07); }
-  .filters__btn[aria-pressed='true'] { color: var(--white); }
-  .filters__btn[aria-pressed='true'] span { background: rgba(255,255,255,.16); }
+  /* Machinery sits on deep olive (the logo's green, darkened) with a faint
+     engineering grid, so it stands apart from the ivory sections either side. */
+  .mach {
+    position: relative;
+    isolation: isolate;
+    background: radial-gradient(120% 120% at 0% 0%, #44522a 0%, #2b3519 52%, #1a200f 100%);
+    color: #e4e7d8;
+  }
+
+  .mach::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+    background-size: 56px 56px;
+    -webkit-mask-image: radial-gradient(90% 70% at 30% 20%, #000, transparent);
+    mask-image: radial-gradient(90% 70% at 30% 20%, #000, transparent);
+    pointer-events: none;
+  }
+
+  .mach .eyebrow { color: #cfe08a; }
+  .mach .h2 em { color: var(--saffron-2); }
+  .mach .mach__side .muted { color: #d3d8c2; }
+
+  .filters__btn { color: #eef0e2; border-color: rgba(238, 240, 226, 0.32); background: transparent; }
+  .filters__btn:hover { border-color: var(--saffron-2); }
+  .filters__btn span { background: rgba(255, 255, 255, .1); }
+  .filters__btn[aria-pressed='true'] { color: var(--white); background: var(--saffron); border-color: var(--saffron); }
+  .filters__btn[aria-pressed='true'] span { background: rgba(255,255,255,.18); }
   @media (max-width: 899px) { .services-section .section-head--split > .muted { margin-top: 0; } }
 
 
