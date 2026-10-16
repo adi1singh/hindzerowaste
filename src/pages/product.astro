@@ -1,9 +1,9 @@
 ---
-import { Image } from 'astro:assets';
+
 import Base from '../layouts/Base.astro';
 import IndexHero from '../components/IndexHero.astro';
 import ProductCard from '../components/ProductCard.astro';
-import AccordionControls from '../components/AccordionControls.astro';
+
 import CtaBand from '../components/CtaBand.astro';
 import { products } from '../data/products';
 import { site } from '../data/site';
@@ -13,15 +13,7 @@ import tileB from '../assets/photos/disc-separator.jpg';
 import tileC from '../assets/photos/horizontal-baler.jpg';
 
 const categories = [...new Set(products.map((p) => p.category))];
-const intro: Record<string, string> = {
-  'Screening & separation': 'Trommels, air density and disc separators that split waste into clean fractions.',
-  'Size reduction': 'Wet and dry shredders, single- and twin-shaft, from 100 kg/h to 20 TPH.',
-  Compaction: 'Vertical and horizontal balers that press recyclables into saleable bales.',
-  'Organic waste': 'On-site composting, from 50 kg a day to 20 tonnes.',
-  'Material handling': 'Belt, chain, screw and inclined conveyors that tie a line together.',
-  Infrastructure: 'Pre-engineered steel sheds sized around the machinery they house.',
-  Vehicles: 'Truck-mounted vacuum tankers for sewers, septic tanks and drains.',
-};
+
 ---
 
 <Base
@@ -53,64 +45,14 @@ const intro: Record<string, string> = {
       <div class="cat-head" data-reveal>
         <div>
           <p class="eyebrow">The range</p>
-          <h2 class="h2">Browse by <em>category</em></h2>
+          <h2 class="h2">Explore our <em>machinery</em></h2>
         </div>
-        <AccordionControls target="machinery" />
+
       </div>
 
-      <ol class="acc" data-accordion="machinery">
-        {
-          categories.map((c, ci) => {
-            const items = products.filter((p) => p.category === c);
-            return (
-              <li data-reveal style={`--d:${ci % 4}`}>
-                <details open={ci === 0}>
-                  <summary>
-                    <span class="acc__num tabular">{String(ci + 1).padStart(2, '0')}</span>
-                    <span class="acc__title">
-                      <span class="acc__name">{c}</span>
-                      <span class="acc__sub">{intro[c]}</span>
-                    </span>
-                    <span class="acc__meta">
-                      <span class="acc__thumbs">
-                        {items.map((p) => (
-                          <Image src={p.images[0].src} alt="" width={104} height={104} loading="lazy" />
-                        ))}
-                      </span>
-                      <span class="chip tabular">
-                        {items.length} {items.length === 1 ? 'machine' : 'machines'}
-                      </span>
-                    </span>
-                    <span class="acc__action"><span class="acc__hint">{'Click to expand'}</span><span class="acc__toggle" aria-hidden="true" /></span>
-                  </summary>
-                  <div class="acc__panel">
-                    <ul class:list={['cat-grid', { 'cat-grid--single': items.length === 1 }]}>
-                      {items.map((p) => (
-                        <li>
-                          <ProductCard product={p} />
-                        </li>
-                      ))}
-                      {items.length === 1 && (
-                        <li class="cat-note">
-                          <p class="cat-note__lead">{items[0].lead}</p>
-                          <ul class="cat-note__apps">
-                            {items[0].applications.slice(0, 4).map((a) => (
-                              <li>{a}</li>
-                            ))}
-                          </ul>
-                          <a class="link-arrow" href={`/${items[0].slug}`}>
-                            Specifications and models <span class="arrow">→</span>
-                          </a>
-                        </li>
-                      )}
-                    </ul>
-                  </div>
-                </details>
-              </li>
-            );
-          })
-        }
-      </ol>
+      <div class="catalogue-grid">
+        {products.map((product, i) => <div data-reveal style={`--d:${i % 3}`}><ProductCard product={product} index={i} /></div>)}
+      </div>
     </div>
   </section>
 
@@ -218,4 +160,7 @@ const intro: Record<string, string> = {
       padding: 0;
     }
   }
+  .catalogue-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
+  @media(max-width: 1000px) { .catalogue-grid { grid-template-columns: repeat(2,minmax(0,1fr)); } }
+  @media(max-width: 600px) { .catalogue-grid { grid-template-columns: minmax(0,1fr); } }
 </style>

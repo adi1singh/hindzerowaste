@@ -3,7 +3,6 @@ import { Image } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
 import Base from '../layouts/Base.astro';
 import IndexHero from '../components/IndexHero.astro';
-import AccordionControls from '../components/AccordionControls.astro';
 import Steps from '../components/Steps.astro';
 import Icon from '../components/Icon.astro';
 import CtaBand from '../components/CtaBand.astro';
@@ -30,12 +29,7 @@ const images: Record<string, ImageMetadata> = {
   'material-recovery-facility-mrf-plant': mrfImg,
   'rdf-afr-plant': rdfImg,
 };
-const icons = {
-  'bio-mining-and-legacy-waste-management': 'biomining',
-  'msw-processing-plant': 'msw',
-  'material-recovery-facility-mrf-plant': 'mrf',
-  'rdf-afr-plant': 'rdf',
-} as const;
+
 
 const copy = {
   en: {
@@ -128,55 +122,21 @@ const contact = localePath(lang, '/contact-us');
           <p class="eyebrow">{copy.listEyebrow}</p>
           <h2 class="h2" set:html={copy.listTitle} />
         </div>
-        <AccordionControls target="services" lang={lang} />
+
       </div>
 
-      <ol class="acc" data-accordion="services">
-        {
-          services.map((s, i) => (
-            <li data-reveal style={`--d:${i}`}>
-              <details open={i === 0}>
-                <summary>
-                  <span class="acc__num tabular">{String(i + 1).padStart(2, '0')}</span>
-                  <span class="acc__title">
-                    <span class="acc__name">{localName(lang, s.slug, s.name)}</span>
-                    <span class="acc__sub">{serviceShorts[lang][s.slug]}</span>
-                  </span>
-                  <span class="acc__meta">
-                    <span class="svc-icon">
-                      <Icon name={icons[s.slug as keyof typeof icons]} size={26} />
-                    </span>
-                    <span class="chip tabular">{s.range}</span>
-                  </span>
-                  <span class="acc__action"><span class="acc__hint">{{ en: 'Click to expand', hi: 'खोलने के लिए क्लिक करें', mr: 'उघडण्यासाठी क्लिक करा' }[lang]}</span><span class="acc__toggle" aria-hidden="true" /></span>
-                </summary>
-                <div class="acc__panel">
-                  <div class="svc-panel">
-                    <div class="svc-panel__media">
-                      <Image src={images[s.slug]} alt={s.images[0].alt} widths={[480, 720, 960]} sizes="(min-width: 900px) 45vw, 92vw" loading="lazy" />
-                    </div>
-                    <div class="svc-panel__body">
-                      <ul class="svc-panel__points">
-                        {serviceHighlights[lang][s.slug].map((h) => (
-                          <li>{h}</li>
-                        ))}
-                      </ul>
-                      <div class="btn-row">
-                        <a class="btn" href={`/${s.slug}`}>
-                          {copy.explore} {inEnglish[lang]} <span class="arrow">→</span>
-                        </a>
-                        <a class="link-arrow" href={`${contact}?subject=${encodeURIComponent(s.name)}#enquiry`}>
-                          {copy.discuss} <span class="arrow">→</span>
-                        </a>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </details>
-            </li>
-          ))
-        }
-      </ol>
+      <div class="service-grid">
+        {services.map((s, i) => <article class="service-card" data-reveal style={`--d:${i}`}>
+          <Image src={images[s.slug]} alt={s.images[0].alt} widths={[480,720,960]} sizes="(min-width: 900px) 45vw, 92vw" loading="lazy" />
+          <div class="service-card__body">
+            <span class="chip tabular">{s.range}</span>
+            <h3 class="h3">{localName(lang,s.slug,s.name)}</h3>
+            <p class="muted">{serviceShorts[lang][s.slug]}</p>
+            <ul class="svc-panel__points">{serviceHighlights[lang][s.slug].map(h => <li>{h}</li>)}</ul>
+            <div class="btn-row"><a class="btn" href={`/${s.slug}`}>{copy.explore} {inEnglish[lang]} <span class="arrow">→</span></a><a class="link-arrow" href={`${contact}?subject=${encodeURIComponent(s.name)}#enquiry`}>{copy.discuss} →</a></div>
+          </div>
+        </article>)}
+      </div>
     </div>
   </section>
 
@@ -322,4 +282,9 @@ const contact = localePath(lang, '/contact-us');
       display: none;
     }
   }
+  .service-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 28px; }
+  .service-card { background: white; border: 1px solid var(--line); border-radius: 18px; overflow: hidden; }
+  .service-card > :global(img) { width: 100%; aspect-ratio: 16/9; object-fit: cover; }
+  .service-card__body { padding: clamp(22px,3vw,36px); display: flex; flex-direction: column; align-items: flex-start; gap: 20px; }
+  @media(max-width: 760px) { .service-grid { grid-template-columns: minmax(0,1fr); } }
 </style>
