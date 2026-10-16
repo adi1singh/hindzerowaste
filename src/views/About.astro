@@ -321,10 +321,14 @@ const alternates = { en: '/about-us', hi: '/hi/about-us', mr: '/mr/about-us' };
         <p class="muted proj__intro">{copy.projIntro}</p>
       </div>
       <ProjectCards lang={lang} />
+    </div>
+  </section>
 
+  <section class="section bg-lavender achievements">
+    <div class="container">
       <div class="section-head section-head--center proj__record" data-reveal>
         <p class="eyebrow">{{ en: "Our achievements", hi: "हमारी उपलब्धियाँ", mr: "आमची कामगिरी" }[lang]}</p>
-        <h3 class="h2" set:html={copy.projTitle} />
+        <h3 class="h2 achievements__title" set:html={copy.projTitle} />
       </div>
       <dl class="pstats">
         {
@@ -344,7 +348,7 @@ const alternates = { en: '/about-us', hi: '/hi/about-us', mr: '/mr/about-us' };
   {lang === 'en' && <ProjectRecord />}
 
   <!-- Installed base -->
-  <section class="section bg-sky">
+  <section class="section bg-sage">
     <div class="container">
       <div class="section-head section-head--center" data-reveal>
         <p class="eyebrow">{copy.installedEyebrow}</p>
@@ -1028,4 +1032,6 @@ const alternates = { en: '/about-us', hi: '/hi/about-us', mr: '/mr/about-us' };
 
   .pstats__item { background: radial-gradient(ellipse at top right, var(--tile-tint), transparent 95%), #fffaf2; }
   .why__card { background: linear-gradient(145deg, #fffaf2, var(--tile-tint)); }
+  .achievements__title :global(em) { text-decoration: underline; text-decoration-color: var(--saffron); text-underline-offset: .16em; text-decoration-thickness: 2px; }
+  .achievements .proj__record { margin-top: 0; }
 </style>

@@ -54,8 +54,8 @@ const stepIcons = ['design', 'factory', 'commission', 'operate'] as const;
       if (motion.matches || !inView || document.hidden) return;
       root.classList.add('is-playing');
       show();
-      if (index < items.length - 1) connectTimer = window.setTimeout(() => items[index].classList.add('is-connecting'), 900);
-      advanceTimer = window.setTimeout(() => { index = (index + 1) % items.length; run(); }, index === items.length - 1 ? 2600 : 1900);
+      if (index < items.length - 1) connectTimer = window.setTimeout(() => items[index].classList.add('is-connecting'), 400);
+      advanceTimer = window.setTimeout(() => { index = (index + 1) % items.length; run(); }, index === items.length - 1 ? 1700 : 1100);
     };
     if ('IntersectionObserver' in window) new IntersectionObserver(([entry]) => {
       inView = entry.isIntersecting;
@@ -118,7 +118,7 @@ const stepIcons = ['design', 'factory', 'commission', 'operate'] as const;
     .steps.is-playing .is-current .steps__title { color: var(--saffron-ink); }
     .steps.is-playing .steps__line::before { transform: scaleX(0); transition: none; }
     .steps.is-playing .is-passed .steps__line::before, .steps.is-playing .is-connecting .steps__line::before { transform: scaleX(1); }
-    .steps.is-playing .is-connecting .steps__line::before { transition: transform .85s linear; }
+    .steps.is-playing .is-connecting .steps__line::before { transition: transform .6s linear; }
     .steps.is-playing .steps__line svg { color: var(--muted); stroke: currentColor; transition: color .4s ease; }
     .steps.is-playing .is-connecting .steps__line svg, .steps.is-playing .is-passed .steps__line svg { color: var(--saffron); }
   }
