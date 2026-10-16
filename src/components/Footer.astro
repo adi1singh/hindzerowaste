@@ -1,5 +1,6 @@
 ---
 import BrandLogo from './BrandLogo.astro';
+import JobGenCredit from './JobGenCredit.astro';
 import { site, telHref } from '../data/site';
 import { products } from '../data/products';
 import { services } from '../data/services';
@@ -20,12 +21,12 @@ const company = [
 ] as const;
 ---
 
-<footer class="footer bg-ink on-dark">
+<footer class="footer bg-mineral">
   <div class="container">
     <div class="footer__top">
       <div class="footer__brand">
         <a href={localePath(lang, '/')} aria-label={`${site.name}, home`}>
-          <BrandLogo light />
+          <BrandLogo />
         </a>
         <p class="footer__blurb">{t(lang, 'footer.blurb')}</p>
         <div class="footer__downloads">
@@ -97,7 +98,7 @@ const company = [
       </div>
     </div>
 
-    <p class="jobgen-credit footer__credit">POWERED BY <strong>JOB GEN</strong></p>
+    <JobGenCredit lang={lang} />
     <div class="footer__bottom">
       <p>© {year} {site.name} {t(lang, 'footer.rights')}</p>
       <ul class="footer__legal">
@@ -132,7 +133,7 @@ const company = [
   }
 
   .footer a:hover {
-    color: var(--saffron-2);
+    color: var(--saffron-ink);
     text-decoration: underline;
     text-underline-offset: 0.25em;
   }
@@ -152,7 +153,7 @@ const company = [
   .footer__blurb {
     margin-top: 28px;
     max-width: 26em;
-    color: var(--muted-on-dark);
+    color: var(--muted);
     line-height: 1.7;
   }
 
@@ -173,7 +174,7 @@ const company = [
     font-weight: 600;
     letter-spacing: 0.16em;
     text-transform: uppercase;
-    color: var(--lime);
+    color: var(--green-ink);
   }
 
   .footer__title--spaced {
@@ -187,12 +188,12 @@ const company = [
   }
 
   .footer__col {
-    color: #d4c9bc;
+    color: var(--muted);
   }
 
   .footer__phones a {
     font-variant-numeric: tabular-nums;
-    color: var(--paper);
+    color: var(--ink);
   }
 
   .footer__mail {
@@ -204,7 +205,7 @@ const company = [
     font-style: normal;
     display: grid;
     gap: 2px;
-    color: var(--muted-on-dark);
+    color: var(--muted);
   }
 
   .footer__bottom {
@@ -213,8 +214,8 @@ const company = [
     align-items: center;
     gap: 16px 32px;
     padding-block: 28px 36px;
-    border-top: 1px solid var(--line-on-dark);
-    color: var(--muted-on-dark);
+    border-top: 1px solid var(--line);
+    color: var(--muted);
     font-size: 14px;
   }
 

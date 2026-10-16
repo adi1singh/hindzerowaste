@@ -35,7 +35,7 @@ const chevron =
   '<svg width="12" height="12" viewBox="0 0 10 10" aria-hidden="true"><path d="M1 3.5l4 3.5 4-3.5" fill="none" stroke="currentColor" stroke-width="1.5"></path></svg>';
 ---
 
-<div class="topbar on-dark">
+<div class="topbar">
   <div class="container topbar__inner">
     <p class="topbar__creds">
       <span class="topbar__dot" aria-hidden="true"></span>{t(lang, 'top.credentials')}
@@ -940,4 +940,12 @@ const chevron =
   :global(html.menu-open) {
     overflow: hidden;
   }
+
+  .topbar { background: var(--paper-2); color: var(--muted); }
+  .topbar__phone, .lang a { color: var(--ink); }
+  .lang { background: rgba(var(--shade), .04); }
+  .lang a:hover { color: var(--saffron-ink); background: var(--sky); }
+  .lang a[aria-current] { color: var(--white); }
+
+  .topbar__phone:hover { color: var(--saffron-ink); }
 </style>

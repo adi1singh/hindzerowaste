@@ -6,10 +6,12 @@ import ProjectCards from '../components/ProjectCards.astro';
 import ClientWall from '../components/ClientWall.astro';
 import CtaBand from '../components/CtaBand.astro';
 import Count from '../components/Count.astro';
+import ProjectRecord from '../components/ProjectRecord.astro';
+import JobGenCredit from '../components/JobGenCredit.astro';
 import Icon from '../components/Icon.astro';
 import StateMark from '../components/StateMark.astro';
 import { figures, footprint, site } from '../data/site';
-import { completedBiomining, machineSupply, ongoingBiomining, plantProjects, plantsInstalled } from '../data/projects';
+import { completedBiomining, machineSupply, ongoingBiomining, plantsInstalled } from '../data/projects';
 import type { Lang } from '../i18n/ui';
 
 import heroA from '../assets/photos/trommel-and-baler.jpg';
@@ -311,7 +313,7 @@ const alternates = { en: '/about-us', hi: '/hi/about-us', mr: '/mr/about-us' };
   </IndexHero>
 
   <!-- Projects: the six landmark projects first, then the overall record -->
-  <section class="section bg-ink on-dark proj" id="projects">
+  <section class="section bg-mineral proj" id="projects">
     <div class="container">
       <div class="section-head section-head--center proj__head" data-reveal>
         <p class="eyebrow">{copy.landmarkEyebrow}</p>
@@ -339,76 +341,7 @@ const alternates = { en: '/about-us', hi: '/hi/about-us', mr: '/mr/about-us' };
     </div>
   </section>
 
-  {
-    lang === 'en' && (
-      <section class="section bg-white">
-        <div class="container">
-          <div class="section-head section-head--center" data-reveal><p class="eyebrow">Our project journey</p><h2 class="h2">Achievements <em>on the ground</em></h2></div>
-          <div class="tables">
-          <div class="rec rec--done" data-reveal>
-            <h3 class="rec__head">
-              <span class="rec__num tabular"><Count value={completedBiomining.length} /></span>
-              <span class="rec__text">
-                <span class="rec__label">{copy.completed}</span>
-                <span class="rec__sub">{copy.completedSub}</span>
-              </span>
-            </h3>
-            <ul class="rows">
-              {completedBiomining.map((r) => (
-                <li class="rows__item">
-                  <span class="rows__site">
-                    {r.site}
-                    {r.note && <span class="rows__note">{r.note}</span>}
-                  </span>
-                  <span class="rows__value tabular">{r.volume}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div class="tables__col">
-          <div class="rec rec--live" data-reveal>
-            <h3 class="rec__head">
-              <span class="rec__num tabular"><Count value={ongoingBiomining.length} /></span>
-              <span class="rec__text">
-                <span class="rec__label">{copy.ongoing}</span>
-                <span class="rec__sub">{copy.ongoingSub}</span>
-              </span>
-            </h3>
-            <ul class="rows">
-              {ongoingBiomining.map((r) => (
-                <li class="rows__item">
-                  <span class="rows__site">
-                    {r.site}
-                    {r.note && <span class="rows__note">{r.note}</span>}
-                  </span>
-                  <span class="rows__value tabular">{r.volume}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div class="rec rec--plant" data-reveal>
-            <h3 class="rec__head">
-              <span class="rec__num tabular"><Count value={plantProjects.length} /></span>
-              <span class="rec__text">
-                <span class="rec__label">{copy.plants}</span>
-                <span class="rec__sub">{copy.plantsSub}</span>
-              </span>
-            </h3>
-            <ul class="rows">
-              {plantProjects.map((p) => (
-                <li class="rows__item rows__item--text">
-                  <span class="rows__site">{p}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-          </div>
-          </div>
-        </div>
-      </section>
-    )
-  }
+  {lang === 'en' && <ProjectRecord />}
 
   <!-- Installed base -->
   <section class="section bg-sky">
@@ -479,7 +412,7 @@ const alternates = { en: '/about-us', hi: '/hi/about-us', mr: '/mr/about-us' };
   </section>
 
   <!-- Vision, mission, values -->
-  <section class="section bg-navy-deep on-dark">
+  <section class="section bg-mineral">
     <div class="container vmv">
       <div class="vmv__vision" data-reveal>
         <p class="eyebrow">{copy.visionTitle}</p>
@@ -557,9 +490,7 @@ const alternates = { en: '/about-us', hi: '/hi/about-us', mr: '/mr/about-us' };
     <div data-reveal><ClientWall /></div>
   </section>
 
-  <section class="jobgen-section bg-sky" aria-label="Website partner">
-    <div class="container"><p class="eyebrow">{{ en: 'Website partner', hi: 'वेबसाइट साझेदार', mr: 'वेबसाइट भागीदार' }[lang]}</p><p class="jobgen-credit">POWERED BY <strong>JOB GEN</strong></p></div>
-  </section>
+  <JobGenCredit lang={lang} detailed />
   <CtaBand lang={lang} />
 </Base>
 
@@ -728,141 +659,6 @@ const alternates = { en: '/about-us', hi: '/hi/about-us', mr: '/mr/about-us' };
     font-size: 16px;
     color: #d4c9bc;
     max-width: 22em;
-  }
-
-  /* Tables as hoverable rows */
-  .tables {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 48px 56px;
-  }
-
-  .tables__col {
-    display: grid;
-    align-content: start;
-    gap: 32px;
-  }
-
-  /* Each group opens with a big figure and a plain label, so the count reads first. */
-  .rec {
-    --rec: var(--green-ink);
-    --rec-tint: color-mix(in srgb, var(--green-ink) 10%, var(--white));
-    padding: 10px;
-    border-radius: 20px;
-    background: var(--paper);
-    border: 1px solid var(--line);
-  }
-
-  .rec--live {
-    --rec: var(--saffron);
-    --rec-tint: color-mix(in srgb, var(--saffron) 10%, var(--white));
-  }
-
-  .rec--plant {
-    --rec: var(--navy);
-    --rec-tint: color-mix(in srgb, var(--navy) 8%, var(--white));
-  }
-
-  .rec__head {
-    display: flex;
-    align-items: center;
-    gap: 22px;
-    margin-bottom: 10px;
-    padding: 22px 24px;
-    border-radius: 14px;
-    background: var(--rec-tint);
-    border-left: 6px solid var(--rec);
-  }
-
-  .rec__num {
-    flex: none;
-    font: 800 clamp(3.4rem, 5.4vw, 4.8rem) / 0.9 var(--sans);
-    letter-spacing: -0.05em;
-    color: var(--rec);
-  }
-
-  .rec__text {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-
-  .rec__label {
-    font: 700 clamp(1.2rem, 1.7vw, 1.45rem) / 1.2 var(--sans);
-    letter-spacing: -0.01em;
-    color: var(--ink);
-  }
-
-  .rec__sub {
-    font-size: 15px;
-    font-weight: 500;
-    color: var(--muted);
-  }
-
-  .rec .rows {
-    padding: 4px;
-  }
-
-  .rec .rows__item {
-    background: var(--white);
-  }
-
-  .rows {
-    list-style: none;
-    display: grid;
-    gap: 6px;
-  }
-
-  .rows__item {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    gap: 16px;
-    padding: 13px 18px;
-    border-radius: 10px;
-    background: var(--paper);
-    transition:
-      transform 0.35s var(--ease-out),
-      background-color 0.35s var(--ease-out),
-      box-shadow 0.35s var(--ease-out);
-  }
-
-  .rows__site {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    font-weight: 550;
-    color: var(--ink);
-    transition: color 0.3s var(--ease);
-  }
-
-  .rows__note {
-    font-size: 14px;
-    font-weight: 400;
-    color: var(--muted);
-  }
-
-  .rows__value {
-    flex: none;
-    font: 750 18px/1.2 var(--sans);
-    color: var(--navy-2);
-    transition: color 0.3s var(--ease);
-  }
-
-  .rows__item:hover {
-    transform: scale(1.03);
-    background: #fbeee7;
-    box-shadow: 0 14px 30px -18px rgba(143, 63, 29, 0.45);
-  }
-
-  .rows__item:hover .rows__value,
-  .rows__item:hover .rows__site {
-    color: var(--saffron-ink);
-  }
-
-  .rows__item--text .rows__site {
-    font-weight: 450;
-    font-size: 16px;
   }
 
   /* Installed base */
@@ -1129,9 +925,8 @@ const alternates = { en: '/about-us', hi: '/hi/about-us', mr: '/mr/about-us' };
 
   .cred__label {
     margin: 34px 0 14px;
-    font: 700 14px/1.4 var(--sans);
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
+    font: 750 clamp(1.15rem, 2.2vw, 1.75rem)/1.35 var(--sans);
+    letter-spacing: -0.02em;
     color: var(--green-ink);
   }
 
@@ -1190,8 +985,7 @@ const alternates = { en: '/about-us', hi: '/hi/about-us', mr: '/mr/about-us' };
   @media (max-width: 900px) {
     .story,
     .cred,
-    .vmv__cols,
-    .tables {
+    .vmv__cols {
       grid-template-columns: minmax(0, 1fr);
     }
 
@@ -1216,12 +1010,19 @@ const alternates = { en: '/about-us', hi: '/hi/about-us', mr: '/mr/about-us' };
   .proj__title :global(u) { text-underline-offset: .16em; text-decoration-thickness: 2px; text-decoration-color: var(--saffron-2); }
   .pstats__item { position: relative; overflow: hidden; border-top: 3px solid var(--saffron-2); background: linear-gradient(135deg, #e08a621c, #ffffff08); }
   .pstats__item:nth-child(3n + 2) { border-top-color: #a6bd80; }
-  .tables { align-items: start; }
-  .rec { box-shadow: 0 18px 45px -30px #3338; border-top: 3px solid var(--rec); }
-  .rec__head { padding-block: 30px; }
-  .rec__num { font-size: clamp(4rem, 6vw, 5.5rem); }
   @media (prefers-reduced-motion: no-preference) {
-    .pstats__item.is-visible dt, .rec.is-visible .rec__num { animation: achievement-pop .85s var(--ease-out) both; animation-delay: calc(var(--d, 0) * .1s); }
+    .pstats__item.is-visible dt { animation: achievement-pop .85s var(--ease-out) both; animation-delay: calc(var(--d, 0) * .1s); }
   }
   @keyframes achievement-pop { from { opacity: .2; transform: translateY(15px) scale(.9); } to { opacity: 1; transform: none; } }
+
+  .proj::before { background: radial-gradient(circle, rgba(117, 150, 159, .14), transparent 65%); }
+  .pstats__item { background: var(--white); border-color: var(--line); border-top-color: var(--saffron); }
+  .pstats__item dt { color: var(--saffron-ink); }
+  .pstats__item:first-child dt { color: var(--green-ink); }
+  .pstats__item dd { color: var(--muted); }
+  .vmv__quote, .vmv__values, .vmv__list li { color: var(--ink); }
+  .vmv__cols, .vmv__list li { border-color: var(--line-strong); }
+  .vmv__title { color: var(--saffron-ink) !important; }
+  .vmv__list li::before { color: var(--green-ink); }
+
 </style>

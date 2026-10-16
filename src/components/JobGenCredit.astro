@@ -1,0 +1,63 @@
+---
+import type { Lang } from '../i18n/ui';
+interface Props { lang?: Lang; detailed?: boolean; }
+const { lang = 'en', detailed = false } = Astro.props;
+const copy = {
+  en: { label: 'Website partner', line: 'AI-powered workforces and automation for everyday business.', website: 'Visit website', linkedin: 'Find us on LinkedIn' },
+  hi: { label: 'वेबसाइट साझेदार', line: 'कारोबार के रोज़मर्रा के कामों के लिए AI कार्यबल और ऑटोमेशन।', website: 'वेबसाइट देखें', linkedin: 'LinkedIn पर जुड़ें' },
+  mr: { label: 'वेबसाइट भागीदार', line: 'व्यवसायातील दैनंदिन कामांसाठी AI कार्यबल आणि ऑटोमेशन.', website: 'वेबसाइट पहा', linkedin: 'LinkedIn वर जोडा' },
+}[lang];
+// Official links confirmed through https://jobgen.ai/about/.
+const website = 'https://jobgen.ai/';
+const linkedin = 'https://www.linkedin.com/company/jobgenai/';
+---
+{detailed ? (
+  <section class="studio" aria-label={copy.label}>
+    <div class="container">
+      <div class="studio__inner" data-reveal>
+        <div class="studio__identity">
+          <p class="studio__eyebrow">{copy.label}</p>
+          <p class="studio__powered">POWERED BY</p>
+          <a class="studio__name" href={website} target="_blank" rel="noopener noreferrer">JOBGEN.AI<span aria-hidden="true">↗</span></a>
+        </div>
+        <div class="studio__about">
+          <p>{copy.line}</p>
+          <div class="studio__links">
+            <a href={website} target="_blank" rel="noopener noreferrer" aria-label={`${copy.website}: JOBGEN.AI`}>jobgen.ai <span aria-hidden="true">↗</span></a>
+            <a href={linkedin} target="_blank" rel="noopener noreferrer" aria-label={copy.linkedin}>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M5.3 7.5a2.2 2.2 0 1 0 0-4.4 2.2 2.2 0 0 0 0 4.4ZM3.5 9h3.6v12H3.5V9Zm5.8 0h3.5v1.6c.7-1.2 1.8-1.9 3.5-1.9 3.7 0 4.4 2.4 4.4 5.5V21h-3.6v-6c0-1.4 0-3.1-1.9-3.1s-2.2 1.4-2.2 3V21H9.3V9Z" /></svg>
+              <span>@jobgenai</span><span aria-hidden="true">↗</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+) : (
+  <p class="studio-credit">POWERED BY <a href={website} target="_blank" rel="noopener noreferrer">JOBGEN.AI <span aria-hidden="true">↗</span></a></p>
+)}
+
+<style>
+  .studio-credit { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px; padding-block: 24px; border-top: 1px solid var(--line); font: 550 11px/1.5 var(--sans); letter-spacing: .13em; color: var(--muted); }
+  .studio-credit a { color: var(--ink); font-size: 13px; font-weight: 800; letter-spacing: .02em; text-decoration: none; white-space: nowrap; }
+  .studio-credit a:hover { color: var(--saffron-2); }
+  .studio-credit a span { margin-left: 3px; }
+  .studio { padding-block: 32px 56px; background: var(--white); }
+  .studio__inner { display: grid; grid-template-columns: 1fr 1fr; align-items: center; gap: 32px 72px; padding: clamp(28px, 4vw, 52px); border: 1px solid var(--line-strong); border-radius: 18px; background: var(--paper-2); }
+  .studio__eyebrow { margin-bottom: 24px; font: 600 11px/1.5 var(--sans); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+  .studio__powered { font: 550 11px/1.5 var(--sans); letter-spacing: .14em; margin-bottom: 4px; color: var(--muted); }
+  .studio__name { display: inline-flex; align-items: center; gap: 18px; font: 800 clamp(1.9rem, 3.7vw, 3.2rem)/1.2 var(--sans); letter-spacing: -.055em; text-decoration: none; color: var(--ink); white-space: nowrap; }
+  .studio__name span { display: inline-grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--line-strong); font-size: 20px; font-weight: 400; color: var(--saffron); }
+  .studio__about { border-left: 1px solid var(--line-strong); padding-left: 48px; }
+  .studio__about > p { max-width: 27em; font-size: 18px; line-height: 1.6; color: var(--muted); }
+  .studio__links { display: flex; flex-wrap: wrap; gap: 16px 28px; margin-top: 22px; }
+  .studio__links a { display: inline-flex; align-items: center; gap: 7px; color: var(--ink); font-size: 14px; font-weight: 650; text-decoration: underline; text-decoration-color: var(--line-strong); text-underline-offset: 5px; }
+  .studio__links a:hover, .studio__name:hover { color: var(--saffron-ink); }
+  a:focus-visible { outline: 2px solid var(--saffron); outline-offset: 5px; border-radius: 2px; }
+  @media (max-width: 760px) {
+    .studio__inner { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+    .studio__about { border-left: 0; border-top: 1px solid var(--line-strong); padding: 24px 0 0; }
+    .studio__eyebrow { margin-bottom: 18px; }
+    .studio__about > p { font-size: 16px; }
+  }
+</style>
