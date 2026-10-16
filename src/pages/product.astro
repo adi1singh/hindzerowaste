@@ -58,14 +58,15 @@ const intro: Record<string, string> = {
         <AccordionControls target="machinery" />
       </div>
 
-      <ol class="acc" data-accordion="machinery">
+      <ol class="acc acc--tiles" data-accordion="machinery" data-tiles>
         {
           categories.map((c, ci) => {
             const items = products.filter((p) => p.category === c);
             return (
               <li data-reveal style={`--d:${ci % 4}`}>
-                <details open={ci === 0}>
+                <details>
                   <summary>
+                    <span class="acc__cover"><Image src={items[0].images[0].src} alt="" widths={[480, 720]} sizes="(min-width: 900px) 30vw, 92vw" loading="lazy" style={items[0].images[0].focus ? `object-position: ${items[0].images[0].focus}` : undefined} /></span>
                     <span class="acc__num tabular">{String(ci + 1).padStart(2, '0')}</span>
                     <span class="acc__title">
                       <span class="acc__name">{c}</span>
@@ -121,7 +122,7 @@ const intro: Record<string, string> = {
         <h2 class="h3 brochure__title">Full technical data for every model, in one document.</h2>
       </div>
       <div class="btn-row">
-        <a class="btn" href={site.downloads.brochure} target="_blank" rel="noopener">Download brochure <span class="arrow">↗</span></a>
+        <a class="btn btn--accent" href={site.downloads.brochure} target="_blank" rel="noopener">Download brochure <span class="arrow">↗</span></a>
         <a class="link-arrow" href={site.downloads.profile} target="_blank" rel="noopener">Company profile <span class="arrow">↗</span></a>
       </div>
     </div>
