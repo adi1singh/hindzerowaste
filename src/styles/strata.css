@@ -157,6 +157,10 @@ body.strata {
   color: var(--text-2, var(--ink-2));
 }
 
+.nowrap {
+  white-space: nowrap;
+}
+
 .tabular {
   font-variant-numeric: tabular-nums;
 }
