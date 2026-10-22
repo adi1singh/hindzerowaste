@@ -20,3 +20,11 @@ Astro static site for hindzerowaste.com. Pushing to `main` deploys to Vercel (hi
 ## Commands
 - `npm run dev`, `npm run build`, `npm run check` (astro check, must be 0 errors).
 - A hook in `.claude/settings.json` runs build + check before every `git commit` and blocks on failure.
+
+## Strata redesign (Oct 2026, branch `redesign`)
+The home page (`src/views/HomeStrata.astro`, used by `/`, `/hi/`, `/mr/`) runs on a new system; the other pages still use `Base.astro` and `global.css` until they are moved over. The old `src/views/Home.astro` is kept for rollback.
+- Layout `src/layouts/Strata.astro` with `components/strata/StrataHeader.astro` and `StrataFooter.astro`. Tokens and base classes in `src/styles/strata.css`; home sections in `src/styles/strata-home.css`. Type is Archivo (variable width; headings at `font-stretch: 125%`), Noto Sans Devanagari for Hindi and Marathi (headings drop back to normal width there).
+- The page is a dig through a dumpsite: each section is a `.stratum` with a `.tone-*` class (dark: overburden, humus, ash, field; light: silt, reclaimed, paper) and a ragged top edge. Neighbouring sections never share a tone and dark and light alternate. Hindi and Marathi have no Insights section, so the closing band switches to `tone-reclaimed` there to keep the alternation.
+- Safety orange `--safety` is for action fills only, always with charcoal text (`s-btn s-btn--go`, 6:1). Focus rings are orange on dark tones and charcoal on light ones (`--focus`). The four fraction colours (`--f-fines`, `--f-recyclables`, `--f-rdf`, `--f-inerts`) mark the bio-mining outputs and nothing else.
+- Motion is React islands with Motion (`motion/react`) in `src/components/strata/*.tsx`: `StrataHero` (client:load), `TheSort` (client:idle, the signature scene), `MachineReel`, `ProcessCore`, `WordsScrub` (client:visible). Every island renders its full content on the server; `html:not(.js) [data-m]` forces reveal elements visible. Scenes pin only at `(min-width: 1000px) and (min-height: 700px) and (prefers-reduced-motion: no-preference)` and follow the scroll through a spring; otherwise they show their finished state. Figures are always shown still (no counting up).
+- No italic accent words, all-caps eyebrows, monospace labels, arrows in buttons or rows of stat tiles. The one heading accent is the tricolour "India" (`.india`).

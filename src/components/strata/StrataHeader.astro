@@ -1,0 +1,572 @@
+---
+// Strata header: logo, main navigation with two disclosure menus (Machinery,
+// Services), language switch and the quote action. On phones a menu button
+// opens a full panel. Escape closes menus and the panel; focus returns to the
+// button. Without JavaScript the top-level links still navigate.
+import BrandLogo from '../BrandLogo.astro';
+import { products } from '../../data/products';
+import { services } from '../../data/services';
+import { site, telHref } from '../../data/site';
+import { languages, localName, localePath, t, type Lang } from '../../i18n/ui';
+
+interface Props {
+  lang: Lang;
+  alternates?: Partial<Record<Lang, string>>;
+}
+
+const { lang, alternates } = Astro.props;
+const path = Astro.url.pathname.replace(/\/$/, '') || '/';
+const home = localePath(lang, '/');
+const servicesHref = localePath(lang, '/services');
+const productSlugs = new Set(products.map((p) => `/${p.slug}`));
+const serviceSlugs = new Set(services.map((s) => `/${s.slug}`));
+const isHome = path === (home.replace(/\/$/, '') || '/');
+const inMachinery = path === '/product' || productSlugs.has(path);
+const inServices = path.endsWith('/services') || serviceSlugs.has(path);
+const langHref = (code: Lang) => alternates?.[code] ?? localePath(code, '/');
+
+const menus = [
+  {
+    id: 'sm-machinery',
+    label: t(lang, 'nav.machinery'),
+    href: '/product',
+    current: inMachinery,
+    all: t(lang, 'nav.allMachinery'),
+    items: products.map((p) => ({ href: `/${p.slug}`, name: localName(lang, p.slug, p.name), meta: p.range })),
+    toggle: t(lang, 'nav.showMachinery'),
+  },
+  {
+    id: 'sm-services',
+    label: t(lang, 'nav.services'),
+    href: servicesHref,
+    current: inServices,
+    all: t(lang, 'nav.allServices'),
+    items: services.map((s) => ({ href: `/${s.slug}`, name: localName(lang, s.slug, s.name), meta: s.range })),
+    toggle: t(lang, 'nav.showServices'),
+  },
+];
+const links = [
+  { label: t(lang, 'nav.about'), href: localePath(lang, '/about-us'), current: path.endsWith('/about-us') },
+  { label: t(lang, 'nav.contact'), href: localePath(lang, '/contact-us'), current: path.endsWith('/contact-us') },
+];
+---
+
+<header class="sh" data-sh>
+  <div class="sh__bar wrap">
+    <a class="sh__brand" href={home} aria-label={`${site.name}, ${t(lang, 'nav.home')}`}>
+      <BrandLogo light />
+    </a>
+
+    <nav class="sh__nav" aria-label="Main">
+      <ul class="sh__list">
+        <li><a class="sh__link" href={home} aria-current={isHome ? 'page' : undefined}>{t(lang, 'nav.home')}</a></li>
+        {
+          menus.map((m) => (
+            <li class="sh__item">
+              <a class="sh__link" href={m.href} aria-current={m.current ? 'page' : undefined}>{m.label}</a>
+              <button class="sh__toggle" type="button" aria-expanded="false" aria-controls={m.id} aria-label={m.toggle} data-sh-toggle>
+                <svg width="12" height="12" viewBox="0 0 10 10" aria-hidden="true"><path d="M1 3.5l4 3.5 4-3.5" fill="none" stroke="currentColor" stroke-width="1.6" /></svg>
+              </button>
+              <div class="sh__drop" id={m.id} hidden>
+                <ul>
+                  {m.items.map((it) => (
+                    <li>
+                      <a href={it.href}>
+                        <span>{it.name}</span>
+                        <small class="tabular">{it.meta}</small>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+                <a class="sh__all" href={m.href}>{m.all}</a>
+              </div>
+            </li>
+          ))
+        }
+        {
+          links.map((l) => (
+            <li><a class="sh__link" href={l.href} aria-current={l.current ? 'page' : undefined}>{l.label}</a></li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <div class="sh__actions">
+      <nav class="sh__lang" aria-label={t(lang, 'lang.label')}>
+        {
+          (Object.keys(languages) as Lang[]).map((code) => (
+            <a href={langHref(code)} lang={languages[code].htmlLang} hreflang={languages[code].htmlLang} aria-current={code === lang ? 'true' : undefined}>
+              {languages[code].short}
+            </a>
+          ))
+        }
+      </nav>
+      <a class="s-btn s-btn--go sh__quote" href={localePath(lang, '/contact-us') + '#enquiry'}>
+        <span class="sh__quote-long">{t(lang, 'cta.quote')}</span><span class="sh__quote-short">{t(lang, 'cta.quoteShort')}</span>
+      </a>
+      <button class="sh__menu" type="button" aria-expanded="false" aria-controls="sh-panel" data-sh-menu>
+        <span class="sh__menu-label">{t(lang, 'nav.menu')}</span>
+        <span class="sh__burger" aria-hidden="true"><i></i><i></i></span>
+      </button>
+    </div>
+  </div>
+
+  <div class="sh__panel" id="sh-panel" hidden data-sh-panel>
+    <div class="wrap">
+      <ul class="sh__plist">
+        <li><a href={home}>{t(lang, 'nav.home')}</a></li>
+        {
+          menus.map((m) => (
+            <li>
+              <details>
+                <summary>{m.label}</summary>
+                <ul>
+                  <li><a class="sh__pall" href={m.href}>{m.all}</a></li>
+                  {m.items.map((it) => (
+                    <li><a href={it.href}>{it.name}</a></li>
+                  ))}
+                </ul>
+              </details>
+            </li>
+          ))
+        }
+        {links.map((l) => <li><a href={l.href}>{l.label}</a></li>)}
+      </ul>
+      <nav class="sh__plang" aria-label={t(lang, 'lang.label')}>
+        {
+          (Object.keys(languages) as Lang[]).map((code) => (
+            <a href={langHref(code)} lang={languages[code].htmlLang} hreflang={languages[code].htmlLang} aria-current={code === lang ? 'true' : undefined}>
+              {languages[code].label}
+            </a>
+          ))
+        }
+      </nav>
+      <p class="sh__phones">{site.phones.map((p) => <a href={telHref(p)}>{p}</a>)}</p>
+    </div>
+  </div>
+</header>
+
+<script>
+  const header = document.querySelector<HTMLElement>('[data-sh]');
+  if (header) {
+    const toggles = [...header.querySelectorAll<HTMLButtonElement>('[data-sh-toggle]')];
+    const drop = (b: HTMLButtonElement) => document.getElementById(b.getAttribute('aria-controls')!)!;
+    const close = (b: HTMLButtonElement) => {
+      b.setAttribute('aria-expanded', 'false');
+      drop(b).hidden = true;
+    };
+    toggles.forEach((b) =>
+      b.addEventListener('click', () => {
+        const open = b.getAttribute('aria-expanded') !== 'true';
+        toggles.forEach(close);
+        b.setAttribute('aria-expanded', String(open));
+        drop(b).hidden = !open;
+      }),
+    );
+    document.addEventListener('click', (e) => {
+      if (!header.contains(e.target as Node)) toggles.forEach(close);
+    });
+
+    const menuBtn = header.querySelector<HTMLButtonElement>('[data-sh-menu]')!;
+    const panel = header.querySelector<HTMLElement>('[data-sh-panel]')!;
+    const setPanel = (open: boolean) => {
+      menuBtn.setAttribute('aria-expanded', String(open));
+      panel.hidden = !open;
+      document.documentElement.classList.toggle('sh-locked', open);
+      if (open) panel.querySelector<HTMLElement>('a, summary')?.focus();
+    };
+    menuBtn.addEventListener('click', () => setPanel(menuBtn.getAttribute('aria-expanded') !== 'true'));
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key !== 'Escape') return;
+      const open = toggles.find((b) => b.getAttribute('aria-expanded') === 'true');
+      if (open) {
+        close(open);
+        open.focus();
+      } else if (!panel.hidden) {
+        setPanel(false);
+        menuBtn.focus();
+      }
+    });
+
+    const onScroll = () => header.classList.toggle('is-scrolled', window.scrollY > 24);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+  }
+</script>
+
+<style>
+  .sh {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: var(--overburden);
+    color: var(--chalk);
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.3s var(--ease);
+  }
+
+  .sh:global(.is-scrolled) {
+    border-bottom-color: rgba(244, 238, 227, 0.12);
+  }
+
+  .sh__bar {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    height: var(--header-h);
+  }
+
+  .sh__brand {
+    flex: none;
+  }
+
+  .sh__brand :global(.brand-logo) {
+    width: 196px;
+  }
+
+  .sh__nav {
+    margin-left: auto;
+  }
+
+  .sh__list {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .sh__item {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .sh__link {
+    display: inline-block;
+    padding: 10px 10px;
+    font-weight: 560;
+    font-size: 16px;
+    text-decoration: none;
+    color: var(--chalk);
+    border-radius: 6px;
+  }
+
+  .sh__link:hover {
+    background: rgba(244, 238, 227, 0.08);
+  }
+
+  .sh__link[aria-current='page'] {
+    text-decoration: underline;
+    text-decoration-color: var(--safety);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 8px;
+  }
+
+  .sh__toggle {
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 32px;
+    margin-left: -6px;
+    border: 0;
+    border-radius: 6px;
+    background: none;
+    color: var(--chalk-2);
+    cursor: pointer;
+  }
+
+  .sh__toggle:hover {
+    color: var(--chalk);
+    background: rgba(244, 238, 227, 0.08);
+  }
+
+  .sh__toggle[aria-expanded='true'] svg {
+    transform: rotate(180deg);
+  }
+
+  .sh__drop {
+    position: absolute;
+    top: calc(100% + 12px);
+    left: -12px;
+    width: 380px;
+    padding: 14px;
+    border-radius: 12px;
+    background: var(--paperwhite);
+    color: var(--ink);
+    box-shadow: 0 30px 60px -30px rgba(0, 0, 0, 0.6);
+    --focus: var(--ink);
+  }
+
+  .sh__drop ul {
+    display: grid;
+  }
+
+  .sh__drop li a {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 580;
+  }
+
+  .sh__drop li a:hover {
+    background: var(--silt);
+  }
+
+  .sh__drop small {
+    flex: none;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--ink-2);
+  }
+
+  .sh__all {
+    display: block;
+    margin-top: 8px;
+    padding: 12px;
+    border-top: 1px solid rgba(33, 26, 20, 0.12);
+    font-weight: 700;
+    text-decoration: underline;
+    text-decoration-color: var(--safety);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.25em;
+  }
+
+  .sh__actions {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .sh__lang {
+    display: flex;
+    gap: 2px;
+    padding: 3px;
+    border-radius: 8px;
+    background: rgba(244, 238, 227, 0.08);
+  }
+
+  .sh__lang a {
+    min-width: 40px;
+    padding: 6px 8px;
+    border-radius: 6px;
+    text-align: center;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 650;
+    color: var(--chalk-2);
+  }
+
+  .sh__lang a:hover {
+    color: var(--chalk);
+  }
+
+  .sh__lang a[aria-current] {
+    background: var(--chalk);
+    color: var(--ink);
+  }
+
+  .sh__quote {
+    min-height: 44px;
+    padding: 10px 18px;
+    font-size: 15px;
+  }
+
+  .sh__quote-short {
+    display: none;
+  }
+
+  .sh__menu {
+    display: none;
+    align-items: center;
+    gap: 10px;
+    min-height: 44px;
+    padding: 0 6px 0 10px;
+    border: 0;
+    background: none;
+    color: var(--chalk);
+    font: 650 15px/1 var(--font);
+    cursor: pointer;
+  }
+
+  .sh__burger {
+    position: relative;
+    width: 22px;
+    height: 10px;
+  }
+
+  .sh__burger i {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: currentColor;
+    transition: transform 0.3s var(--ease), top 0.3s var(--ease);
+  }
+
+  .sh__burger i:first-child {
+    top: 0;
+  }
+
+  .sh__burger i:last-child {
+    top: 8px;
+  }
+
+  .sh__menu[aria-expanded='true'] .sh__burger i:first-child {
+    top: 4px;
+    transform: rotate(45deg);
+  }
+
+  .sh__menu[aria-expanded='true'] .sh__burger i:last-child {
+    top: 4px;
+    transform: rotate(-45deg);
+  }
+
+  .sh__panel {
+    position: fixed;
+    inset: var(--header-h) 0 0;
+    overflow-y: auto;
+    padding-block: 12px 40px;
+    background: var(--overburden);
+  }
+
+  :global(html.sh-locked) {
+    overflow: hidden;
+  }
+
+  .sh__plist > li {
+    border-bottom: 1px solid rgba(244, 238, 227, 0.14);
+  }
+
+  .sh__plist > li > a,
+  .sh__plist summary {
+    display: block;
+    padding: 16px 0;
+    font-size: 24px;
+    font-weight: 700;
+    font-stretch: 118%;
+    text-decoration: none;
+    list-style: none;
+    cursor: pointer;
+  }
+
+  .sh__plist summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .sh__plist summary::after {
+    content: '+';
+    float: right;
+    color: var(--safety);
+  }
+
+  .sh__plist details[open] summary::after {
+    content: '−';
+  }
+
+  .sh__plist details ul {
+    padding: 0 0 16px;
+  }
+
+  .sh__plist details a {
+    display: block;
+    padding: 9px 0;
+    color: var(--chalk-2);
+    text-decoration: none;
+  }
+
+  .sh__pall {
+    color: var(--chalk) !important;
+    font-weight: 700;
+  }
+
+  .sh__phones {
+    display: grid;
+    gap: 8px;
+    margin-top: 28px;
+    font-size: 18px;
+  }
+
+  .sh__phones a {
+    text-decoration: none;
+  }
+
+  .sh__plang {
+    display: flex;
+    gap: 8px;
+    margin-top: 24px;
+  }
+
+  .sh__plang a {
+    padding: 10px 16px;
+    border: 1px solid rgba(244, 238, 227, 0.3);
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 650;
+  }
+
+  .sh__plang a[aria-current] {
+    background: var(--chalk);
+    color: var(--ink);
+    border-color: var(--chalk);
+  }
+
+  @media (max-width: 1180px) {
+    .sh__nav {
+      display: none;
+    }
+
+    .sh__actions {
+      margin-left: auto;
+    }
+
+    .sh__menu {
+      display: inline-flex;
+    }
+
+    .sh__quote-long {
+      display: none;
+    }
+
+    .sh__quote-short {
+      display: inline;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .sh__brand :global(.brand-logo) {
+      width: 150px;
+    }
+
+    .sh__menu-label {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0 0 0 0);
+    }
+
+    .sh__quote {
+      padding: 10px 14px;
+      font-size: 14px;
+    }
+
+    .sh__actions {
+      gap: 6px;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .sh__lang {
+      display: none;
+    }
+  }
+
+  @media (min-width: 1181px) {
+    .sh__panel {
+      display: none !important;
+    }
+  }
+</style>

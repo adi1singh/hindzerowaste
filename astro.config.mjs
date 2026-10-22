@@ -1,6 +1,7 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
+import react from '@astrojs/react';
 
 export default defineConfig({
   site: 'https://www.hindzerowaste.com',
@@ -17,6 +18,7 @@ export default defineConfig({
     routing: { prefixDefaultLocale: false },
   },
   integrations: [
+    react(),
     sitemap({
       i18n: {
         defaultLocale: 'en',

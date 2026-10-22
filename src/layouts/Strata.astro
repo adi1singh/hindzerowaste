@@ -1,0 +1,90 @@
+---
+// Layout for pages in the Strata redesign (Oct 2026). Same head and SEO as
+// Base.astro; its own header and footer, Archivo type and strata.css. Motion
+// comes from React islands (motion/react) that render their content on the
+// server, so every page reads fully without JavaScript.
+import '../styles/strata.css';
+import StrataHeader from '../components/strata/StrataHeader.astro';
+import StrataFooter from '../components/strata/StrataFooter.astro';
+import { site } from '../data/site';
+import { languages, t, type Lang } from '../i18n/ui';
+
+interface Props {
+  title: string;
+  description: string;
+  lang?: Lang;
+  alternates?: Partial<Record<Lang, string>>;
+  image?: string;
+  schema?: Record<string, unknown>[];
+}
+
+const { title, description, lang = 'en', alternates, image = '/og-image.jpg', schema = [] } = Astro.props;
+const fullTitle = title.includes(site.shortName) ? title : `${title} | ${site.name}`;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const ogImage = new URL(image, Astro.site);
+const organization = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: site.name,
+  alternateName: site.formerName,
+  url: site.url,
+  logo: new URL('/logo.png', Astro.site).href,
+  foundingDate: String(site.founded),
+  description:
+    'Manufacturer of waste-processing machinery and turnkey plants: bio-mining of legacy waste, MSW processing, MRF and RDF/AFR plants.',
+  telephone: site.phones[0].replace(/\s/g, ''),
+  email: site.emails.info,
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: site.address.lines.join(', '),
+    addressLocality: site.address.city,
+    postalCode: site.address.postcode,
+    addressRegion: site.address.region,
+    addressCountry: 'IN',
+  },
+  sameAs: site.socials.map((s) => s.href),
+};
+---
+
+<!doctype html>
+<html lang={languages[lang].htmlLang} dir="ltr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {
+      alternates &&
+        Object.entries(alternates).map(([code, path]) => (
+          <link rel="alternate" hreflang={languages[code as Lang].htmlLang} href={new URL(path!, Astro.site)} />
+        ))
+    }
+    {alternates?.en && <link rel="alternate" hreflang="x-default" href={new URL(alternates.en, Astro.site)} />}
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:locale" content={languages[lang].htmlLang.replace('-', '_')} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/icon-192.png" type="image/png" sizes="192x192" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta name="theme-color" content="#211a14" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <script is:inline>document.documentElement.classList.add('js');</script>
+    <script type="application/ld+json" set:html={JSON.stringify(organization)} />
+    {schema.map((s) => <script type="application/ld+json" set:html={JSON.stringify(s)} />)}
+  </head>
+  <body class="strata">
+    <a class="skip" href="#main">{t(lang, 'skip')}</a>
+    <StrataHeader lang={lang} alternates={alternates} />
+    <main id="main">
+      <slot />
+    </main>
+    <StrataFooter lang={lang} />
+  </body>
+</html>

@@ -17,6 +17,12 @@ Everything on the new site comes from the current hindzerowaste.com, the brochur
 - [ ] **Hero photo** (`hero-plant-shed.jpg`, from the brochure). Its caption reads "A segregation and RDF line by Hind Zero Waste". Confirm it is their installation.
 - [ ] **Hindi and Marathi translations** are drafts and need a native speaker's review, especially the technical terms. They cover the home, services, about and contact pages, plus menus, footer and product names.
 
+## Home page redesign (Strata, Oct 2026)
+
+- [ ] **The sort** (the bio-mining scene on the home page). It describes four streams from legacy waste: soil-like fines, recyclables, RDF and inerts. The wording of how each is separated and where it goes comes from the MSW plant's process steps in `src/data/services.ts` and the bio-mining page's highlights. Confirm it is also accurate for bio-mining sites, especially "organic fines are composted aerobically, or treated by bio-methanation".
+- [ ] **Hero photo** (`trommel-dumpsite.jpg`, also the first photo on the rotary trommel page). Alt text: "Hind Zero Waste rotary trommel screen working at a legacy waste dumpsite". Confirm the machine is theirs.
+- [ ] **New Hindi and Marathi strings** for the home page (`strataHome` in `src/i18n/home.ts`): the figures sentence, the six sort stages, the closing band and the logo pause button. These are drafts and need a native speaker's review.
+
 ## Inconsistencies in the brochure's technical data
 
 Model tables are shown on product pages as "indicative", as in the brochure. Each item below lists what the brochure says, then what the site shows.

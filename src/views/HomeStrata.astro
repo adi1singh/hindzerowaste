@@ -1,0 +1,289 @@
+---
+// Home page in the Strata redesign (Oct 2026). The page reads as a dig through
+// a legacy dumpsite: dark layers first, the sort in the middle, reclaimed land
+// at the end. Neighbouring sections never share a tone. Motion lives in the
+// React islands; each renders its full content on the server.
+import { Image, getImage } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import { getCollection } from 'astro:content';
+import Strata from '../layouts/Strata.astro';
+import '../styles/strata-home.css';
+import StrataHero from '../components/strata/StrataHero';
+import TheSort from '../components/strata/TheSort';
+import WordsScrub from '../components/strata/WordsScrub';
+import MachineReel from '../components/strata/MachineReel';
+import ProcessCore from '../components/strata/ProcessCore';
+import { products } from '../data/products';
+import { services } from '../data/services';
+import { featuredProjects, type Project } from '../data/projects';
+import { clients } from '../data/clients';
+import { figures, site, telHref } from '../data/site';
+import { localName, localePath, t, type Lang } from '../i18n/ui';
+import { approachSteps, categoryName, consultancyCopy, featuredProjectsLocal, serviceShorts, statusLabels } from '../i18n/content';
+import { homeCopy, strataHome } from '../i18n/home';
+
+import heroPhoto from '../assets/photos/trommel-dumpsite.jpg';
+import bioImg from '../assets/photos/biomining-trommel-site.jpg';
+import mswImg from '../assets/photos/plant-line-wide.jpg';
+import mrfImg from '../assets/photos/mrf-sorting-floor.jpg';
+import rdfImg from '../assets/photos/shredder-ads-line.jpg';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const copy = homeCopy[lang];
+const s = strataHome[lang];
+
+// Headings come from the old home page; its italic accents are dropped. The one
+// kept accent is the tricolour "India" in the projects heading.
+const plain = (html: string) =>
+  html
+    .replace(/<em class="projects__india">(.*?)<\/em>/g, '<span class="india">$1</span>')
+    .replace(/<\/?em>/g, '');
+
+const hero = await getImage({ src: heroPhoto, widths: [800, 1280, 1920, 2400], format: 'webp' });
+const heroImg = {
+  src: hero.src,
+  srcset: hero.srcSet.attribute,
+  width: heroPhoto.width,
+  height: heroPhoto.height,
+  alt: s.heroAlt,
+};
+const heroWords = copy.heroWords.map(([text]) => ({ text, india: /India|भारत/.test(text) }));
+
+const serviceImages: Record<string, ImageMetadata> = {
+  'bio-mining-and-legacy-waste-management': bioImg,
+  'msw-processing-plant': mswImg,
+  'material-recovery-facility-mrf-plant': mrfImg,
+  'rdf-afr-plant': rdfImg,
+};
+
+const machines = await Promise.all(
+  products.map(async (p) => {
+    const photo = p.images[0];
+    const img = await getImage({ src: photo.src, widths: [480, 720, 960], format: 'webp' });
+    return {
+      name: localName(lang, p.slug, p.name),
+      category: categoryName(lang, p.category),
+      range: p.range,
+      short: lang === 'en' ? p.short : '',
+      href: `/${p.slug}`,
+      img: { src: img.src, srcset: img.srcSet.attribute, width: photo.src.width, height: photo.src.height, alt: photo.alt, position: photo.focus },
+    };
+  }),
+);
+
+const projects: Project[] =
+  lang === 'en' ? featuredProjects : featuredProjects.map((p, i) => ({ ...p, ...(featuredProjectsLocal[lang][i] as Partial<Project>) }));
+
+const posts =
+  lang === 'en'
+    ? (await getCollection('blog'))
+        .sort((a, b) => a.data.order - b.data.order)
+        .slice(0, 3)
+        .map((p) => ({ post: p, minutes: Math.max(2, Math.round((p.body ?? '').split(/\s+/).length / 200)) }))
+    : [];
+
+// The proof sentence, with the three figures set heavier in place.
+const proofParts = s.proof.split(/(\{[abc]\})/).map((part) => {
+  const i = ['{a}', '{b}', '{c}'].indexOf(part);
+  return i >= 0 ? { fig: figures[i].value } : { text: part };
+});
+
+// Hindi and Marathi have no Insights section, so the closing band takes the
+// light tone there to keep dark and light alternating into the footer.
+const ctaTone = posts.length > 0 ? 'tone-field' : 'tone-reclaimed';
+
+const alternates = { en: '/', hi: '/hi/', mr: '/mr/' };
+const quoteHref = localePath(lang, '/contact-us') + '#enquiry';
+const aboutHref = localePath(lang, '/about-us');
+---
+
+<Strata title={copy.title} description={copy.description} lang={lang} alternates={alternates}>
+  <StrataHero
+    client:load
+    img={heroImg}
+    words={heroWords}
+    sub={copy.heroSub}
+    quote={{ label: t(lang, 'cta.quote'), href: quoteHref }}
+    explore={{ label: t(lang, 'cta.explore'), href: '/product' }}
+    powered={s.powered}
+  />
+
+  <section class="proof stratum tone-silt" aria-label={copy.figures[0]}>
+    <div class="wrap">
+      <p class="proof__line">
+        {proofParts.map((p) => ('fig' in p ? <strong class="proof__fig tabular">{p.fig}</strong> : p.text))}
+      </p>
+      <p class="proof__creds s-muted">{s.creds}</p>
+    </div>
+  </section>
+
+  <TheSort client:idle title={s.sortTitle} lead={s.sortLead} stages={s.sortStages as any} labels={s.sortLabels as [string, string, string, string]} drawingLabel={s.sortDrawing} />
+
+  <section class="plants stratum tone-reclaimed" aria-labelledby="plants-title">
+    <div class="wrap plants__grid">
+      <div class="plants__head">
+        <h2 class="s-h2" id="plants-title" set:html={plain(copy.svcTitle)} />
+        <p class="s-lead s-muted">{copy.svcIntro}</p>
+        <p class="plants__also">
+          <a class="s-link" href="/services">{consultancyCopy[lang].name}</a>
+        </p>
+      </div>
+      <ol class="plants__list">
+        {
+          services.map((sv) => (
+            <li>
+              <a class="plant" href={`/${sv.slug}`}>
+                <span class="plant__photo">
+                  <Image src={serviceImages[sv.slug]} alt="" widths={[360, 560]} sizes="(min-width: 1000px) 220px, 34vw" loading="lazy" />
+                </span>
+                <span class="plant__body">
+                  <span class="plant__name">{localName(lang, sv.slug, sv.name)}</span>
+                  <span class="plant__short">{serviceShorts[lang][sv.slug]}</span>
+                  <span class="plant__range tabular">{sv.range}</span>
+                </span>
+              </a>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <section class="projects stratum tone-overburden" aria-labelledby="projects-title">
+    <div class="wrap">
+      <div class="projects__head">
+        <h2 class="s-h2 projects__title" id="projects-title" set:html={plain(copy.projTitle)} />
+        <p class="s-lead s-muted">{copy.projIntro}</p>
+      </div>
+      <ol class="ledger">
+        {
+          projects.map((p) => (
+            <li class="ledger__row">
+              <p class="ledger__scale tabular">{p.scale}</p>
+              <div class="ledger__who">
+                <h3 class="ledger__client">{p.client}</h3>
+                <p class="ledger__loc">{p.location}</p>
+              </div>
+              <p class="ledger__scope">
+                {p.scope}
+                {p.note && <span class="ledger__note">{p.note}</span>}
+              </p>
+              <p class:list={['ledger__status', `is-${p.status.toLowerCase()}`]}>{statusLabels[lang][p.status]}</p>
+            </li>
+          ))
+        }
+      </ol>
+      <a class="s-btn s-btn--line projects__all" href={`${aboutHref}#projects`}>{copy.projAll}</a>
+    </div>
+  </section>
+
+  <WordsScrub client:visible words={copy.philWords} paras={copy.philParas} link={{ label: copy.philLink, href: aboutHref }} />
+
+  <MachineReel
+    client:visible
+    title={plain(copy.machTitle)}
+    intro={copy.machIntro}
+    machines={machines}
+    all={{ label: copy.machAllN.replace('{n}', String(products.length)), href: '/product' }}
+  />
+
+  <ProcessCore client:visible title={plain(copy.apprTitle)} intro={copy.apprIntro} steps={approachSteps[lang]} />
+
+  <section class="clients stratum tone-humus" aria-labelledby="clients-title">
+    <div class="wrap clients__head">
+      <h2 class="s-h2" id="clients-title" set:html={plain(copy.clientsTitle)} />
+      <p class="s-lead s-muted">{copy.clientsIntro}</p>
+    </div>
+    <div class="logos" data-logos>
+      <ul class="logos__track">
+        {
+          [0, 1].map((dup) =>
+            clients.map((c) => (
+              <li class="logos__tile" aria-hidden={dup === 1 ? 'true' : undefined}>
+                <Image src={c.logo} alt={dup === 1 ? '' : c.name} height={72} densities={[1, 2]} loading="lazy" />
+              </li>
+            )),
+          )
+        }
+      </ul>
+    </div>
+    <div class="wrap logos__controls">
+      <button type="button" class="logos__toggle" data-logos-toggle data-pause={s.pause} data-play={s.play}>
+        <span class="logos__icon" aria-hidden="true"></span>
+        <span data-logos-label>{s.pause}</span>
+      </button>
+    </div>
+  </section>
+
+  {
+    posts.length > 0 && (
+      <section class="insights stratum tone-silt" aria-labelledby="insights-title">
+        <div class="wrap">
+          <div class="insights__head">
+            <h2 class="s-h2" id="insights-title" set:html={plain(copy.insTitle)} />
+            <a class="s-link" href="/waste-management-blogs">{copy.insAll}</a>
+          </div>
+          <ul class="insights__list">
+            {posts.map(({ post, minutes }) => (
+              <li>
+                <a class="post" href={`/${post.id}`}>
+                  <span class="post__media">
+                    <Image src={post.data.cover} alt={post.data.coverAlt} widths={[480, 720]} sizes="(min-width: 1000px) 30vw, 92vw" loading="lazy" />
+                  </span>
+                  <span class="post__topic">{post.data.topic}</span>
+                  <span class="post__title">{post.data.title}</span>
+                  <span class="post__excerpt">{post.data.description}</span>
+                  <span class="post__time">
+                    {minutes} {copy.minRead}
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+    )
+  }
+
+  <section class:list={['cta stratum', ctaTone]} aria-labelledby="cta-title">
+    <div class="wrap cta__grid">
+      <div>
+        <h2 class="s-h2" id="cta-title">{s.ctaTitle}</h2>
+        <p class="s-lead cta__text">{s.ctaText}</p>
+      </div>
+      <div class="cta__act">
+        <a class="s-btn s-btn--go" href={quoteHref}>{t(lang, 'cta.quote')}</a>
+        <p class="cta__or">{s.ctaOr}</p>
+        <ul class="cta__phones">
+          {
+            site.phones.map((ph) => (
+              <li>
+                <a class="tabular" href={telHref(ph)}>
+                  {ph}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </div>
+  </section>
+</Strata>
+
+<script>
+  // Client logos: a pause / play button for the moving row (WCAG 2.2.2).
+  const root = document.querySelector<HTMLElement>('[data-logos]');
+  const btn = document.querySelector<HTMLButtonElement>('[data-logos-toggle]');
+  const label = btn?.querySelector<HTMLElement>('[data-logos-label]');
+  if (root && btn && label) {
+    btn.addEventListener('click', () => {
+      const paused = root.classList.toggle('is-paused');
+      btn.classList.toggle('is-paused', paused);
+      label.textContent = (paused ? btn.dataset.play : btn.dataset.pause) ?? '';
+    });
+  }
+</script>
